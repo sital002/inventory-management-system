@@ -25,6 +25,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { loginUser } from "@/actions/auth";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
@@ -36,6 +37,7 @@ const loginSchema = z.object({
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -46,14 +48,19 @@ export default function LoginPage() {
   });
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
-    setIsLoading(true);
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    console.log("Login values:", values);
-    setIsLoading(false);
-    // Here you would typically handle authentication
+    try {
+      setIsLoading(true);
+      const result = await loginUser(values.email, values.password);
+      if (!result.success) {
+        return setError(result.error);
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
+      setError("Something went wrong");
+      return;
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -67,6 +74,7 @@ export default function LoginPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
+            <p className="text-destructive">{error}</p>
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
