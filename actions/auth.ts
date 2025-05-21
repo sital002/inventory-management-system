@@ -3,7 +3,7 @@
 import User from "@/app/models/user";
 import { connectToDatabase } from "@/utils/db";
 import { z } from "zod";
-
+import bcrypt from "bcrypt";
 const loginSchema = z.object({
   email: z
     .string()
@@ -47,7 +47,67 @@ export async function loginUser(
         error: "User does not exist",
       };
     }
-    return { success: true, data: userExists };
+
+    const isPasswordValid = bcrypt.compareSync(password, userExists.password);
+    if (!isPasswordValid) {
+      return {
+        success: false,
+        error: "Invalid password",
+      };
+    }
+    return {
+      success: true,
+      data: {
+        id: userExists.id,
+        role: userExists.role,
+        email: userExists.email,
+      },
+    };
+  } catch (error) {
+    console.error("Error connecting to database:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Something went wrong",
+    };
+  }
+}
+
+export async function registerUser(
+  name: string,
+  email: string,
+  password: string,
+  role: "admin" | "user" = "user"
+): Promise<Response> {
+  const result = loginSchema.safeParse({ email, password });
+  if (!result.success) {
+    return {
+      success: false,
+      error: result.error.errors[0].message,
+    };
+  }
+  try {
+    await connectToDatabase();
+    const userExists = await User.findOne({ email });
+
+    if (userExists) {
+      return {
+        success: false,
+        error: "User already exists",
+      };
+    }
+
+    const hashedPassword = bcrypt.hashSync(password, 10);
+
+    const newUser = new User({
+      name,
+      email,
+      role,
+      password: hashedPassword,
+    });
+
+    await newUser.save();
+
+    return { success: true, data: newUser };
   } catch (error) {
     console.error("Error connecting to database:", error);
     return {
