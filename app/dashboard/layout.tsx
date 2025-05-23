@@ -1,6 +1,6 @@
 import { Navbar } from "@/components/navbar";
-import { DashboardSidebar } from "@/components/sidebar";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { InventorySidebar } from "@/components/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -15,10 +15,12 @@ export default function RootLayout({
 }>) {
   return (
     <div>
-      <Navbar />
       <SidebarProvider>
-        <DashboardSidebar />
-        {children}
+        <InventorySidebar />
+        <SidebarInset>
+          <Navbar />
+          {children}
+        </SidebarInset>
       </SidebarProvider>
     </div>
   );
