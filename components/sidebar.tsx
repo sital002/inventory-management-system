@@ -1,3 +1,7 @@
+"use client";
+
+import { usePathname } from "next/navigation";
+
 import {
   BarChart3,
   Box,
@@ -9,7 +13,6 @@ import {
   Truck,
   Users,
 } from "lucide-react";
-
 import {
   Sidebar,
   SidebarContent,
@@ -23,8 +26,45 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import Link from "next/link";
+
+const mainMenuItems = [
+  { icon: Home, label: "Dashboard", href: "/dashboard" },
+  { icon: Package, label: "Products", href: "/dashboard/products" },
+  { icon: ClipboardList, label: "Categories", href: "/categories" },
+  { icon: ShoppingCart, label: "Orders", href: "/orders" },
+  { icon: Truck, label: "Suppliers", href: "/suppliers" },
+];
+
+const reportMenuItems = [
+  { icon: BarChart3, label: "Sales Report", href: "/reports/sales" },
+  { icon: Package, label: "Inventory Report", href: "/reports/inventory" },
+];
+
+const footerMenuItems = [
+  { icon: Users, label: "Users", href: "/users" },
+  { icon: Settings, label: "Settings", href: "/settings" },
+];
 
 export function InventorySidebar() {
+  const pathname = usePathname();
+
+  const renderMenuItems = (items: typeof mainMenuItems) =>
+    items.map(({ icon: Icon, label, href }) => (
+      <SidebarMenuItem key={label}>
+        <SidebarMenuButton
+          className="text-green-900 hover:bg-green-200 hover:text-green-900 data-[active=true]:bg-green-200 data-[active=true]:text-green-900"
+          data-active={pathname === href}
+          asChild
+        >
+          <Link href={href} className="flex items-center gap-2">
+            <Icon className="h-5 w-5" />
+            <span>{label}</span>
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    ));
+
   return (
     <Sidebar className="border-r border-green-200 bg-green-100">
       <SidebarHeader className="bg-green-200 pb-4">
@@ -35,84 +75,28 @@ export function InventorySidebar() {
           <div className="font-semibold text-green-900">Inventory Pro</div>
         </div>
       </SidebarHeader>
+
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  className="text-green-900 hover:bg-green-200 hover:text-green-900 data-[active=true]:bg-green-200 data-[active=true]:text-green-900"
-                  isActive
-                >
-                  <Home className="h-5 w-5" />
-                  <span>Dashboard</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton className="text-green-900 hover:bg-green-200 hover:text-green-900 data-[active=true]:bg-green-200 data-[active=true]:text-green-900">
-                  <Package className="h-5 w-5" />
-                  <span>Products</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton className="text-green-900 hover:bg-green-200 hover:text-green-900 data-[active=true]:bg-green-200 data-[active=true]:text-green-900">
-                  <ClipboardList className="h-5 w-5" />
-                  <span>Categories</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton className="text-green-900 hover:bg-green-200 hover:text-green-900 data-[active=true]:bg-green-200 data-[active=true]:text-green-900">
-                  <ShoppingCart className="h-5 w-5" />
-                  <span>Orders</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton className="text-green-900 hover:bg-green-200 hover:text-green-900 data-[active=true]:bg-green-200 data-[active=true]:text-green-900">
-                  <Truck className="h-5 w-5" />
-                  <span>Suppliers</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
+            <SidebarMenu>{renderMenuItems(mainMenuItems)}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
         <SidebarGroup>
           <SidebarGroupLabel className="text-green-800">
             Reports
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton className="text-green-900 hover:bg-green-200 hover:text-green-900 data-[active=true]:bg-green-200 data-[active=true]:text-green-900">
-                  <BarChart3 className="h-5 w-5" />
-                  <span>Sales Report</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton className="text-green-900 hover:bg-green-200 hover:text-green-900 data-[active=true]:bg-green-200 data-[active=true]:text-green-900">
-                  <Package className="h-5 w-5" />
-                  <span>Inventory Report</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
+            <SidebarMenu>{renderMenuItems(reportMenuItems)}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
       <SidebarFooter className="border-t border-green-200 bg-green-100">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton className="text-green-900 hover:bg-green-200 hover:text-green-900 data-[active=true]:bg-green-200 data-[active=true]:text-green-900">
-              <Users className="h-5 w-5" />
-              <span>Users</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton className="text-green-900 hover:bg-green-200 hover:text-green-900 data-[active=true]:bg-green-200 data-[active=true]:text-green-900">
-              <Settings className="h-5 w-5" />
-              <span>Settings</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <SidebarMenu>{renderMenuItems(footerMenuItems)}</SidebarMenu>
       </SidebarFooter>
+
       <SidebarRail />
     </Sidebar>
   );
