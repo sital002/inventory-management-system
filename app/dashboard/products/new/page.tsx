@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -63,6 +63,8 @@ export default function AddProductPage() {
       handleInputChange("sku", `${prefix}-${random}`);
     }
   };
+
+  useEffect(() => {}, []);
 
   return (
     <main className="flex-1 overflow-auto p-4 md:p-6">

@@ -1,0 +1,28 @@
+import Supplier from "@/app/models/supplier";
+import { connectToDatabase } from "@/utils/db";
+import { z } from "zod";
+
+const supplierSchema = z.object({
+  name: z.string().min(1, "Supplier name is required"),
+  email: z.string().email("Please enter a valid email address"),
+  phone: z.string(),
+});
+export async function addNewSupplier(
+  supplier: z.infer<typeof supplierSchema>
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    await connectToDatabase();
+    const result = supplierSchema.safeParse(supplier);
+    if (!result.success) {
+      return { success: false, error: result.error.errors[0].message };
+    }
+
+    const newSupplier = new Supplier(supplier);
+    await newSupplier.save();
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error adding supplier:", error);
+    return { success: false, error: "Failed to add supplier" };
+  }
+}

@@ -4,6 +4,7 @@ import User from "@/app/models/user";
 import { connectToDatabase } from "@/utils/db";
 import { z } from "zod";
 import bcrypt from "bcrypt";
+import { cookies } from "next/headers";
 const loginSchema = z.object({
   email: z
     .string()
@@ -55,6 +56,15 @@ export async function loginUser(
         error: "Invalid password",
       };
     }
+
+    (await cookies()).set(
+      "user",
+      JSON.stringify({
+        id: userExists.id,
+        role: userExists.role,
+        email: userExists.email,
+      })
+    );
     return {
       success: true,
       data: {
