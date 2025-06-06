@@ -54,3 +54,16 @@ export async function addNewProduct(product: z.infer<typeof productSchema>) {
     throw error;
   }
 }
+
+export async function getAllProducts() {
+  try {
+    await connectToDatabase();
+    const products = await Product.find().populate("supplier").lean();
+    if (!products) {
+      throw new Error("No products found");
+    }
+    return JSON.parse(JSON.stringify(products));
+  } catch (error) {
+    console.error("Error fetching products:", error);
+  }
+}

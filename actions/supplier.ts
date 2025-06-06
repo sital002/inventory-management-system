@@ -1,4 +1,4 @@
-import Supplier from "@/app/models/supplier";
+import Supplier, { ISupplier } from "@/app/models/supplier";
 import { connectToDatabase } from "@/utils/db";
 import { z } from "zod";
 
@@ -24,5 +24,23 @@ export async function addNewSupplier(
   } catch (error) {
     console.error("Error adding supplier:", error);
     return { success: false, error: "Failed to add supplier" };
+  }
+}
+
+export async function getAllSuppliers(): Promise<{
+  success: boolean;
+  data?: ISupplier[];
+  error?: string;
+}> {
+  try {
+    await connectToDatabase();
+    const suppliers = await Supplier.find().lean();
+    if (!suppliers) {
+      return { success: false, error: "No suppliers found" };
+    }
+    return { success: true, data: suppliers };
+  } catch (error) {
+    console.error("Error fetching suppliers:", error);
+    return { success: false, error: "Failed to fetch suppliers" };
   }
 }

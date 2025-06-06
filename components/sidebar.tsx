@@ -31,9 +31,9 @@ import Link from "next/link";
 const mainMenuItems = [
   { icon: Home, label: "Dashboard", href: "/dashboard" },
   { icon: Package, label: "Products", href: "/dashboard/products" },
-  { icon: ClipboardList, label: "Categories", href: "/categories" },
-  { icon: ShoppingCart, label: "Orders", href: "/orders" },
-  { icon: Truck, label: "Suppliers", href: "/suppliers" },
+  { icon: ClipboardList, label: "Categories", href: "/dashboard/categories" },
+  { icon: ShoppingCart, label: "Orders", href: "/dashboard/orders" },
+  { icon: Truck, label: "Suppliers", href: "/dashboard/suppliers" },
 ];
 
 const reportMenuItems = [
