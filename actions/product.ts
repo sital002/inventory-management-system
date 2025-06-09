@@ -8,13 +8,19 @@ const productSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"),
   price: z.number().positive("Price must be a positive number"),
-
-  quantity: z
+  category: z.string().min(1, "Category is required"),
+  sku: z.string().min(1, "SKU is required"),
+  sellingPrice: z.number().positive("Selling price must be a positive number"),
+  costPrice: z.number().positive("Cost price must be a positive number"),
+  initialStock: z
     .number()
     .int()
-    .nonnegative("Quantity must be a non-negative integer"),
-  category: z.string().min(1, "Category is required"),
-
+    .nonnegative("Initial stock must be a non-negative integer"),
+  minStock: z
+    .number()
+    .int()
+    .nonnegative("Minimum stock must be a non-negative integer"),
+  productStatus: z.enum(["active", "inactive", "draft"]),
   supplier: z
     .string()
     .refine(
@@ -28,7 +34,7 @@ export async function addNewProduct(product: z.infer<typeof productSchema>) {
     await connectToDatabase();
     const result = productSchema.safeParse(product);
     if (!result.success) {
-      throw new Error(result.error.errors.map((e) => e.message).join(", "));
+      throw new Error(result.error.errors[0].path);
     }
     const data = (await cookies()).get("user");
 
@@ -43,7 +49,12 @@ export async function addNewProduct(product: z.infer<typeof productSchema>) {
       name: result.data.name,
       description: result.data.description,
       price: result.data.price,
-      quantity: result.data.quantity,
+      minStock: result.data.minStock,
+      initialStock: result.data.initialStock,
+      costPrice: result.data.costPrice,
+      sellingPrice: result.data.sellingPrice,
+      sku: result.data.sku,
+      productStatus: result.data.productStatus,
       category: result.data.category,
       supplier: result.data.supplier,
     });

@@ -143,8 +143,8 @@ export function ListProducts({ products }: { products: any[] }) {
                       </p>
                     </div>
                   </div>
-                  <Badge className={getStatusColor(product.status)}>
-                    {product.status}
+                  <Badge className={getStatusColor(product.productStatus)}>
+                    {product.productStatus}
                   </Badge>
                 </div>
               </CardHeader>

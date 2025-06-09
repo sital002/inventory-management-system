@@ -9,8 +9,13 @@ export default async function page() {
       price: 400,
       category: "test category",
       description: "This is description",
-      quantity: 100,
       supplier: "683bc1abd8c3a0f92fe668db",
+      costPrice: 300,
+      initialStock: 100,
+      minStock: 10,
+      productStatus: "active",
+      sellingPrice: 500,
+      sku: "SKU12345",
     });
     console.log(result);
     // const newSupplier = await addNewSupplier({
