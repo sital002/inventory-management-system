@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { ArrowLeft, ImagePlus, Package } from "lucide-react";
+import { ArrowLeft, Package } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -68,7 +67,6 @@ const formSchema = z.object({
 
 export default function AddInventoryItem() {
   const router = useRouter();
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -85,7 +83,6 @@ export default function AddInventoryItem() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // In a real application, you would send this data to your API
     console.log(values);
 
     toast({
@@ -93,22 +90,10 @@ export default function AddInventoryItem() {
       description: `${values.name} has been added to inventory.`,
     });
 
-    // Redirect back to inventory page
     setTimeout(() => {
       router.push("/inventory");
     }, 1500);
   }
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   return (
     <div className="container mx-auto py-6">
@@ -330,42 +315,6 @@ export default function AddInventoryItem() {
                     </FormItem>
                   )}
                 />
-              </div>
-
-              <div className="space-y-3">
-                <FormLabel>Product Image</FormLabel>
-                <div className="flex items-center gap-4">
-                  <div
-                    className="flex h-32 w-32 cursor-pointer items-center justify-center rounded-md border border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100"
-                    onClick={() =>
-                      document.getElementById("image-upload")?.click()
-                    }
-                  >
-                    {imagePreview ? (
-                      <img
-                        src={imagePreview || "/placeholder.svg"}
-                        alt="Product preview"
-                        className="h-full w-full rounded-md object-cover"
-                      />
-                    ) : (
-                      <div className="flex flex-col items-center text-sm text-gray-500">
-                        <ImagePlus className="mb-1 h-6 w-6" />
-                        <span>Upload image</span>
-                      </div>
-                    )}
-                  </div>
-                  <Input
-                    id="image-upload"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleImageChange}
-                  />
-                  <div className="text-sm text-gray-500">
-                    <p>Drag and drop or click to upload</p>
-                    <p>SVG, PNG, JPG or GIF (max. 2MB)</p>
-                  </div>
-                </div>
               </div>
 
               <div className="flex justify-end space-x-4">

@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,21 +21,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Save, Upload } from "lucide-react";
+import { ArrowLeft, Save } from "lucide-react";
 import { categories, suppliers } from "@/lib/dummy-data";
 import Link from "next/link";
 
 export default function AddProductPage() {
   const [formData, setFormData] = useState({
-    name: "",
-    sku: "",
-    category: "",
-    supplier: "",
-    price: "",
-    cost: "",
-    stock: "",
-    minStock: "",
-    description: "",
+    name: "Test Product",
+    sku: "FU-3232",
+    category: "Furniture",
+    supplier: "Furniture Wholesale",
+    price: "300",
+    cost: "200",
+    stock: "1000",
+    minStock: "200",
+    description: "This is a description",
     status: "Active",
   });
 
@@ -46,10 +46,10 @@ export default function AddProductPage() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send the data to your backend
     console.log("Product data:", formData);
+    // const result = await addNewProduct(formData);
     alert("Product added successfully!");
   };
 
@@ -64,12 +64,9 @@ export default function AddProductPage() {
     }
   };
 
-  useEffect(() => {}, []);
-
   return (
     <main className="flex-1 overflow-auto p-4 md:p-6">
       <div className="flex flex-col gap-6 max-w-4xl">
-        {/* Header */}
         <div className="flex items-center gap-4">
           <Link href="/dashboard/products">
             <Button
@@ -91,7 +88,6 @@ export default function AddProductPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Basic Information */}
           <Card className="border-green-200 bg-white shadow-sm">
             <CardHeader>
               <CardTitle className="text-green-900">
@@ -159,7 +155,6 @@ export default function AddProductPage() {
             </CardContent>
           </Card>
 
-          {/* Category and Supplier */}
           <Card className="border-green-200 bg-white shadow-sm">
             <CardHeader>
               <CardTitle className="text-green-900">
@@ -219,7 +214,6 @@ export default function AddProductPage() {
             </CardContent>
           </Card>
 
-          {/* Pricing and Inventory */}
           <Card className="border-green-200 bg-white shadow-sm">
             <CardHeader>
               <CardTitle className="text-green-900">
@@ -330,34 +324,6 @@ export default function AddProductPage() {
             </CardContent>
           </Card>
 
-          {/* Product Image */}
-          <Card className="border-green-200 bg-white shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-green-900">Product Image</CardTitle>
-              <CardDescription>
-                Upload an image for your product
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="border-2 border-dashed border-green-200 rounded-lg p-6 text-center">
-                <Upload className="mx-auto h-12 w-12 text-green-400" />
-                <div className="mt-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="border-green-200 text-green-800 hover:bg-green-100 hover:text-green-900"
-                  >
-                    Choose File
-                  </Button>
-                  <p className="mt-2 text-sm text-gray-500">
-                    PNG, JPG, GIF up to 10MB
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Status */}
           <Card className="border-green-200 bg-white shadow-sm">
             <CardHeader>
               <CardTitle className="text-green-900">Product Status</CardTitle>
@@ -387,7 +353,6 @@ export default function AddProductPage() {
             </CardContent>
           </Card>
 
-          {/* Submit Buttons */}
           <div className="flex gap-4 pt-4">
             <Button
               type="submit"
