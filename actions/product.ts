@@ -1,3 +1,4 @@
+"use server";
 import Product from "@/app/models/product";
 import { connectToDatabase } from "@/utils/db";
 import mongoose from "mongoose";
@@ -10,7 +11,6 @@ const productSchema = z.object({
   price: z.number().positive("Price must be a positive number"),
   category: z.string().min(1, "Category is required"),
   sku: z.string().min(1, "SKU is required"),
-  sellingPrice: z.number().positive("Selling price must be a positive number"),
   costPrice: z.number().positive("Cost price must be a positive number"),
   initialStock: z
     .number()
@@ -20,7 +20,7 @@ const productSchema = z.object({
     .number()
     .int()
     .nonnegative("Minimum stock must be a non-negative integer"),
-  productStatus: z.enum(["active", "inactive", "draft"]),
+  status: z.enum(["Active", "Inactive", "Draft"]),
   supplier: z
     .string()
     .refine(
@@ -34,7 +34,7 @@ export async function addNewProduct(product: z.infer<typeof productSchema>) {
     await connectToDatabase();
     const result = productSchema.safeParse(product);
     if (!result.success) {
-      throw new Error(result.error.errors[0].path);
+      throw new Error(result.error.errors[0].path.toString());
     }
     const data = (await cookies()).get("user");
 
@@ -52,16 +52,15 @@ export async function addNewProduct(product: z.infer<typeof productSchema>) {
       minStock: result.data.minStock,
       initialStock: result.data.initialStock,
       costPrice: result.data.costPrice,
-      sellingPrice: result.data.sellingPrice,
       sku: result.data.sku,
-      productStatus: result.data.productStatus,
+      productStatus: result.data.status,
       category: result.data.category,
       supplier: result.data.supplier,
     });
     if (!newProduct) {
       throw new Error("Failed to create product");
     }
-    return newProduct;
+    return JSON.parse(JSON.stringify(newProduct));
   } catch (error) {
     console.error("Error adding new product:", error);
     throw error;

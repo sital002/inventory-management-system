@@ -13,8 +13,7 @@ export default async function page() {
       costPrice: 300,
       initialStock: 100,
       minStock: 10,
-      productStatus: "active",
-      sellingPrice: 500,
+      status: "Active",
       sku: "SKU12345",
     });
     console.log(result);

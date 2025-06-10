@@ -7,30 +7,28 @@ export interface IProduct extends Document {
   sku: string;
   price: number;
   category: string;
-  sellingPrice: number;
   costPrice: number;
   supplier: ISupplier;
   initialStock: number;
   minStock: number;
-  productStatus: "active" | "inactive" | "draft";
+  status: "Active" | "Inactive" | "Draft";
   createdAt: Date;
   updatedAt: Date;
 }
 
-const ProductSchema: Schema = new Schema(
+const ProductSchema: Schema = new Schema<IProduct>(
   {
     name: { type: String, required: true, trim: true },
     description: { type: String, required: true },
     price: { type: Number, required: true, min: 0 },
     sku: { type: String, required: true, unique: true, trim: true },
-    sellingPrice: { type: Number, required: true, min: 0 },
     costPrice: { type: Number, required: true, min: 0 },
     initialStock: { type: Number, required: true, min: 0 },
     minStock: { type: Number, required: true, min: 0 },
-    productStatus: {
+    status: {
       type: String,
-      enum: ["active", "inactive", "draft"],
-      default: "active",
+      enum: ["Active", "Inactive", "Draft"],
+      default: "Active",
       required: true,
     },
 

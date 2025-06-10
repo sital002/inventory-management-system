@@ -21,8 +21,9 @@ import {
 import { Search, Plus, Eye, Edit, Package } from "lucide-react";
 import { categories } from "@/lib/dummy-data";
 import Link from "next/link";
+import { IProduct } from "@/app/models/product";
 
-export function ListProducts({ products }: { products: any[] }) {
+export function ListProducts({ products }: { products: IProduct[] }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
@@ -143,8 +144,8 @@ export function ListProducts({ products }: { products: any[] }) {
                       </p>
                     </div>
                   </div>
-                  <Badge className={getStatusColor(product.productStatus)}>
-                    {product.productStatus}
+                  <Badge className={getStatusColor(product.status)}>
+                    {product.status}
                   </Badge>
                 </div>
               </CardHeader>
@@ -166,12 +167,12 @@ export function ListProducts({ products }: { products: any[] }) {
                     <span className="text-gray-500">Stock:</span>
                     <span
                       className={`font-medium ${
-                        product.stock <= product.minStock
+                        product.initialStock <= product.minStock
                           ? "text-amber-600"
                           : "text-green-900"
                       }`}
                     >
-                      {product.stock} units
+                      {product.initialStock} units
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
