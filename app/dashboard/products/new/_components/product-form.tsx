@@ -25,11 +25,14 @@ import { ArrowLeft, Save } from "lucide-react";
 import { categories, suppliers } from "@/lib/dummy-data";
 import Link from "next/link";
 import { toast } from "sonner";
+import { IProduct } from "@/app/models/product";
+import { Response } from "@/actions/product";
+import { redirect } from "next/navigation";
 
 export default function ProductForm({
   addNewProduct,
 }: {
-  addNewProduct: (data: any) => Promise<any>;
+  addNewProduct: (data: unknown) => Promise<Response<IProduct>>;
 }) {
   enum ProductStatus {
     Active = "Active",
@@ -49,6 +52,7 @@ export default function ProductForm({
     description: "This is a description",
     status: ProductStatus.Active,
   });
+  const [error, setError] = useState<string | null>(null);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
@@ -71,9 +75,14 @@ export default function ProductForm({
       supplier: "683bc1abd8c3a0f92fe668db",
       status: formData.status,
     });
-    if (result) {
-      toast("Product added successfully!");
+    if (!result.success) {
+      setError(result.error);
+      console.log(result.error);
+      return;
     }
+    console.log(error);
+    toast("Product added successfully!");
+    redirect("/dashboard/products");
   };
 
   const generateSKU = () => {
@@ -375,7 +384,7 @@ export default function ProductForm({
               </div>
             </CardContent>
           </Card>
-
+          <p className="text-destructive">{error}</p>
           <div className="flex gap-4 pt-4">
             <Button
               type="submit"
