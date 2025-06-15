@@ -4,19 +4,16 @@ export interface ISupplier extends Document {
   name: string;
   email: string;
   phone: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  country?: string;
+  address: string;
+  city: string;
+  state: string;
   postalCode?: string;
-  companyName?: string;
-  taxId?: string;
+  taxId: string;
   website?: string;
-  contactPerson?: string;
-  notes?: string;
-  status?: "Active" | "Inactive";
-  createdAt?: Date;
-  updatedAt?: Date;
+  contactPerson: string;
+  status: "Active" | "Inactive";
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const SupplierSchema: Schema = new Schema(
@@ -27,13 +24,10 @@ const SupplierSchema: Schema = new Schema(
     address: { type: String, trim: true },
     city: { type: String, trim: true },
     state: { type: String, trim: true },
-    country: { type: String, trim: true },
     postalCode: { type: String, trim: true },
-    companyName: { type: String, trim: true },
     taxId: { type: String, trim: true },
     website: { type: String, trim: true },
     contactPerson: { type: String, trim: true },
-    notes: { type: String, trim: true },
     status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
   },
   { timestamps: true }
