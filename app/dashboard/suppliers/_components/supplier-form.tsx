@@ -1,4 +1,5 @@
 "use client";
+import { addNewSupplier } from "@/actions/supplier";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -10,6 +11,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { redirect } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -61,6 +63,7 @@ const formSchema = z.object({
     .max(100, "Contact person must be less than 100 characters"),
 });
 export default function SupplierForm() {
+  const [error, setError] = React.useState<string | null>(null);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -78,7 +81,13 @@ export default function SupplierForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    setError(null);
+    const result = await addNewSupplier(values);
+    if (!result.success) {
+      setError(result.error);
+      return;
+    }
+    redirect("/dashboard/suppliers");
   }
 
   return (
@@ -271,6 +280,7 @@ export default function SupplierForm() {
               />
             </div>
           </div>
+          {error && <p className="text-destructive"> Error: {error}</p>}
           <Button className="w-full">Submit</Button>
         </form>
       </Form>
