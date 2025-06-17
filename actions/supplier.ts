@@ -77,6 +77,36 @@ export async function addNewSupplier(
   }
 }
 
+export async function updateSupplier(
+  supplierId: string,
+  supplier: z.infer<typeof supplierSchema>
+): Promise<Response<ISupplier>> {
+  try {
+    await connectToDatabase();
+    const result = supplierSchema.safeParse(supplier);
+    if (!result.success) {
+      return { success: false, error: result.error.errors[0].message };
+    }
+
+    const supplierExists = Supplier.find({ _id: supplierId });
+    if (!supplierExists) {
+      return { success: false, error: "Supplier not found" };
+    }
+    const updatedSupplier = await Supplier.findByIdAndUpdate(
+      supplierId,
+      result.data
+    ).lean();
+
+    if (!updatedSupplier) {
+      return { success: false, error: "Failed to update supplier" };
+    }
+    return { success: true, data: JSON.parse(JSON.stringify(updatedSupplier)) };
+  } catch (error) {
+    console.error("Error updating supplier:", error);
+    return { success: false, error: "Failed to update supplier" };
+  }
+}
+
 export async function getAllSuppliers(): Promise<Response<ISupplier[]>> {
   try {
     await connectToDatabase();

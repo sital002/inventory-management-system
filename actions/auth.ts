@@ -73,7 +73,7 @@ export async function loginUser(
         email: userExists.email,
       },
     };
-  } catch (error) {
+  } catch (_error) {
     console.error("Error connecting to database:", error);
     return {
       success: false,
@@ -124,5 +124,17 @@ export async function registerUser(
       success: false,
       error: error instanceof Error ? error.message : "Something went wrong",
     };
+  }
+}
+
+export async function isAuthenticated() {
+  try {
+    const userCookie = (await cookies()).get("user");
+    if (!userCookie) {
+      return false;
+    }
+    return true;
+  } catch {
+    return false;
   }
 }

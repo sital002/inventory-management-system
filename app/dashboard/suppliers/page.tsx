@@ -4,8 +4,12 @@ import { SuppliierTable } from "./_components/supplier-table";
 import { supplierColumns } from "./_components/columns";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { isAuthenticated } from "@/actions/auth";
+import { redirect } from "next/navigation";
 
 export default async function page() {
+  const isLoggedIn = await isAuthenticated();
+  if (!isLoggedIn) redirect("/");
   const data = await getAllSuppliers();
   if (!data.success) return <p>{data.error}</p>;
   return (
@@ -15,7 +19,7 @@ export default async function page() {
           <Button>Add New</Button>
         </Link>
       </div>
-      <SuppliierTable columns={supplierColumns} data={data.data} />;
+      <SuppliierTable columns={supplierColumns} data={data.data} />
     </div>
   );
 }

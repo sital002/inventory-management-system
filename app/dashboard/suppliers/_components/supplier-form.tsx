@@ -1,5 +1,6 @@
 "use client";
-import { addNewSupplier } from "@/actions/supplier";
+import { addNewSupplier, updateSupplier } from "@/actions/supplier";
+import { ISupplier } from "@/app/models/supplier";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -62,36 +63,62 @@ const formSchema = z.object({
     .min(1, "Contact person is required")
     .max(100, "Contact person must be less than 100 characters"),
 });
-export default function SupplierForm() {
+
+type SupplierFormProps =
+  | {
+      update: true;
+      supplierId: string;
+      data: ISupplier;
+      hanldeClose?: () => void;
+    }
+  | { update?: false };
+export default function SupplierForm(props: SupplierFormProps) {
   const [error, setError] = React.useState<string | null>(null);
+  const [loading, setLoading] = React.useState<boolean>(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      address: "",
-      city: "",
-      state: "",
-      postalCode: "",
-      taxId: "",
-      website: null,
-      contactPerson: "",
-    },
+    defaultValues: props.update
+      ? props.data
+      : {
+          name: "",
+          email: "",
+          phone: "",
+          address: "",
+          city: "",
+          state: "",
+          postalCode: "",
+          taxId: "",
+          website: null,
+          contactPerson: "",
+        },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setError(null);
+    setLoading(true);
+    if (props.update) {
+      const result = await updateSupplier(props.supplierId, values);
+      if (!result.success) {
+        setError(result.error);
+        setLoading(false);
+        return;
+      }
+      props.hanldeClose?.();
+      setLoading(false);
+      redirect("/dashboard/suppliers");
+    }
     const result = await addNewSupplier(values);
     if (!result.success) {
       setError(result.error);
+      setLoading(false);
       return;
     }
+    setLoading(false);
     redirect("/dashboard/suppliers");
   }
 
   return (
-    <div className="m-2 px-10 my-5">
+    <div className="m-2 md:px-10 my-3">
       <h2 className="text-xl bold text-center my-2">Add new Supplier</h2>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
@@ -281,7 +308,9 @@ export default function SupplierForm() {
             </div>
           </div>
           {error && <p className="text-destructive"> Error: {error}</p>}
-          <Button className="w-full">Submit</Button>
+          <Button className="w-full" disabled={loading}>
+            Submit
+          </Button>
         </form>
       </Form>
     </div>

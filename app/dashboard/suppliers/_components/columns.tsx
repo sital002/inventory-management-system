@@ -2,8 +2,11 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { ISupplier } from "@/app/models/supplier";
+import SupplierForm from "./supplier-form";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { DialogTitle } from "@radix-ui/react-dialog";
+import { useState } from "react";
 
 export const supplierColumns: ColumnDef<ISupplier>[] = [
   {
@@ -54,14 +57,38 @@ export const supplierColumns: ColumnDef<ISupplier>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => (
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => console.log("Edit", row.original.id)}
-      >
-        Edit
-      </Button>
-    ),
+    cell: ({ row }) => {
+      return <SupplierActions row={row} />;
+    },
   },
 ];
+
+interface SupplierActionsProps {
+  row: {
+    original: ISupplier;
+  };
+}
+
+const SupplierActions: React.FC<SupplierActionsProps> = ({ row }) => {
+  const [open, setOpen] = useState(false);
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger>Edit</DialogTrigger>
+      <DialogContent className="w-full sm:max-w-3xl">
+        <DialogTitle></DialogTitle>
+        <SupplierForm
+          supplierId={row.original._id.toString()}
+          data={row.original}
+          update={true}
+          hanldeClose={handleClose}
+        />
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default SupplierActions;
