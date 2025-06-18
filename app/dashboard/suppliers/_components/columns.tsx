@@ -99,7 +99,11 @@ const SupplierActions: React.FC<SupplierActionsProps> = ({ row }) => {
     <div className="flex gap-2">
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Edit size={16} className="opacity-75 cursor-pointer" />
+          <Edit
+            size={16}
+            className="opacity-75 cursor-pointer"
+            aria-label="Edit"
+          />
         </DialogTrigger>
         <DialogContent className="w-full sm:max-w-3xl">
           <DialogTitle></DialogTitle>
@@ -115,6 +119,7 @@ const SupplierActions: React.FC<SupplierActionsProps> = ({ row }) => {
         <AlertDialogTrigger asChild>
           <Trash2
             size={16}
+            aria-label="Delete"
             className="opacity-75 cursor-pointer text-red-600 hover:text-red-800"
             onClick={() => setDeleteOpen(true)}
           />

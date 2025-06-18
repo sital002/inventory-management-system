@@ -1,12 +1,23 @@
-import { getAllProducts } from "@/actions/product";
+import { getPaginatedProducts } from "@/actions/product";
 import React from "react";
 import { ListProducts } from "./_components/list-products";
 
 export default async function page() {
-  const products = (await getAllProducts()) as any[];
+  const page = 1;
+  const limit = 8;
+
+  const result = await getPaginatedProducts(page, limit);
+  if (!result.success) {
+    return <p>{result.error}</p>;
+  }
   return (
-    <div>
-      <ListProducts products={products} />
+    <div className="m-3">
+      <ListProducts
+        initialProducts={result.data.products}
+        totalPages={result.data.pages}
+        initialPage={page}
+        itemsPerPage={limit}
+      />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 "use server";
 
+import Product from "@/app/models/product";
 import Supplier, { ISupplier } from "@/app/models/supplier";
 import { connectToDatabase } from "@/utils/db";
 import { revalidatePath } from "next/cache";
@@ -116,9 +117,12 @@ export async function deleteSupplier(id: string): Promise<Response<string>> {
       return { success: false, error: "Supplier not found" };
     }
     const deletedSupplier = await Supplier.findByIdAndDelete(id);
+    await Product.deleteMany({ supplierId: id });
+
     if (!deletedSupplier) {
       return { success: false, error: "Failed to delete supplier" };
     }
+
     revalidatePath("/dashboard/suppliers");
     return { success: true, data: "Supplier deleted successfully" };
   } catch (error) {

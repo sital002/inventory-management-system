@@ -88,15 +88,43 @@ export async function addNewProduct(
   }
 }
 
-export async function getAllProducts() {
+export async function getPaginatedProducts(
+  page: number = 1,
+  limit: number = 10
+): Promise<Response<{ products: IProduct[]; total: number; pages: number }>> {
   try {
     await connectToDatabase();
-    const products = await Product.find().populate("supplier").lean();
-    if (!products) {
+
+    const skip = (page - 1) * limit;
+
+    const products = await Product.find()
+      .populate("supplier")
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    const total = await Product.countDocuments();
+
+    const pages = Math.ceil(total / limit);
+
+    if (!products || products.length === 0) {
       throw new Error("No products found");
     }
-    return JSON.parse(JSON.stringify(products));
+
+    return {
+      success: true,
+      data: {
+        products: JSON.parse(JSON.stringify(products)),
+        total,
+        pages,
+      },
+    };
   } catch (error) {
-    console.error("Error fetching products:", error);
+    console.error("Error fetching paginated products:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "An unexpected error occurred",
+    };
   }
 }

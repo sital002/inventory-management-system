@@ -11,7 +11,7 @@ export interface IProduct extends Document {
   supplier: ISupplier;
   initialStock: number;
   minStock: number;
-  status: "Active" | "Inactive" | "Draft";
+  status: "Active" | "Low Stock" | "Out of Stock";
   createdAt: Date;
   updatedAt: Date;
 }
@@ -27,7 +27,7 @@ const ProductSchema: Schema = new Schema<IProduct>(
     minStock: { type: Number, required: true, min: 0 },
     status: {
       type: String,
-      enum: ["Active", "Inactive", "Draft"],
+      enum: ["Active", "Low Stock", "Out of Stock"],
       default: "Active",
       required: true,
     },
