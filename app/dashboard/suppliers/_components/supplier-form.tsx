@@ -80,16 +80,16 @@ export default function SupplierForm(props: SupplierFormProps) {
     defaultValues: props.update
       ? props.data
       : {
-          name: "",
-          email: "",
-          phone: "",
-          address: "",
-          city: "",
-          state: "",
-          postalCode: "",
-          taxId: "",
+          name: "Test Supplier",
+          email: "test@gmail.com",
+          phone: "9876543212",
+          address: "Test ",
+          city: "test",
+          state: "test",
+          postalCode: "44200",
+          taxId: "test3223",
           website: null,
-          contactPerson: "",
+          contactPerson: "432432432",
         },
   });
 
@@ -119,7 +119,10 @@ export default function SupplierForm(props: SupplierFormProps) {
 
   return (
     <div className="m-2 md:px-10 my-3">
-      <h2 className="text-xl bold text-center my-2">Add new Supplier</h2>
+      <h2 className="text-xl bold text-center my-2">
+        {props.update ? "Update Supplier" : "Add new Supplier"}
+      </h2>
+
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
           <div className="flex gap-2 my-6">

@@ -2,6 +2,7 @@
 
 import Supplier, { ISupplier } from "@/app/models/supplier";
 import { connectToDatabase } from "@/utils/db";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 type Response<T> =
@@ -104,6 +105,25 @@ export async function updateSupplier(
   } catch (error) {
     console.error("Error updating supplier:", error);
     return { success: false, error: "Failed to update supplier" };
+  }
+}
+
+export async function deleteSupplier(id: string): Promise<Response<string>> {
+  try {
+    await connectToDatabase();
+    const supplierExists = await Supplier.findById(id);
+    if (!supplierExists) {
+      return { success: false, error: "Supplier not found" };
+    }
+    const deletedSupplier = await Supplier.findByIdAndDelete(id);
+    if (!deletedSupplier) {
+      return { success: false, error: "Failed to delete supplier" };
+    }
+    revalidatePath("/dashboard/suppliers");
+    return { success: true, data: "Supplier deleted successfully" };
+  } catch (error) {
+    console.error("Error deleting supplier:", error);
+    return { success: false, error: "Failed to delete supplier" };
   }
 }
 
