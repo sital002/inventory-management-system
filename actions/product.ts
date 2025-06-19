@@ -1,10 +1,10 @@
 "use server";
 import Product, { IProduct } from "@/app/models/product";
+import Supplier from "@/app/models/supplier";
 import { connectToDatabase } from "@/utils/db";
 import mongoose from "mongoose";
 import { cookies } from "next/headers";
 import { z } from "zod";
-
 export type Response<T> =
   | { success: true; data: T }
   | { success: false; error: string };
@@ -94,9 +94,8 @@ export async function getPaginatedProducts(
 ): Promise<Response<{ products: IProduct[]; total: number; pages: number }>> {
   try {
     await connectToDatabase();
-
+    await Supplier.exists({});
     const skip = (page - 1) * limit;
-
     const products = await Product.find()
       .populate("supplier")
       .skip(skip)
