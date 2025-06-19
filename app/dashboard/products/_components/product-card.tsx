@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Edit, Eye, Package } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 
 interface ProductCardProps {
@@ -76,10 +77,16 @@ export function ProductCard({ product }: ProductCardProps) {
             <Button
               variant="outline"
               size="sm"
+              asChild
               className="flex-1 border-green-200 text-green-800 hover:bg-green-100 hover:text-green-900"
             >
-              <Eye className="mr-1 h-3 w-3" />
-              View
+              <Link
+                href={`/dashboard/products/${product._id}`}
+                className="no-underline"
+              >
+                <Eye className="mr-1 h-3 w-3" />
+                View
+              </Link>
             </Button>
             <Button
               variant="outline"
