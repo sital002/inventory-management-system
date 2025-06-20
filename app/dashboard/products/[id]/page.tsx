@@ -4,7 +4,6 @@ import {
   ArrowLeft,
   Calendar,
   Edit,
-  Eye,
   Package,
   Plus,
   Trash2,
@@ -162,10 +161,6 @@ export default function ViewProductPage({}: { params: { id: string } }) {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm">
-                <Eye className="h-4 w-4" />
-                <span>Preview</span>
-              </Button>
               <Button variant="outline" size="sm">
                 <Edit className="h-4 w-4" />
                 <span>Edit</span>

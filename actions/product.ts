@@ -24,7 +24,7 @@ const productSchema = z.object({
     .number()
     .int()
     .nonnegative("Minimum stock must be a non-negative integer"),
-  status: z.enum(["Active", "Inactive", "Draft"]),
+  status: z.enum(["Active", "Low Stock", "Out of Stock"]),
   supplier: z
     .string()
     .refine(
@@ -88,27 +88,43 @@ export async function addNewProduct(
   }
 }
 
+type Filters = {
+  searchTerm?: string;
+  category?: string;
+};
 export async function getPaginatedProducts(
   page: number = 1,
-  limit: number = 10
+  limit: number = 10,
+  options: Filters = {}
 ): Promise<Response<{ products: IProduct[]; total: number; pages: number }>> {
   try {
     await connectToDatabase();
     await Supplier.exists({});
     const skip = (page - 1) * limit;
-    const products = await Product.find()
+
+    if (page < 1 || limit < 1) {
+      return {
+        success: false,
+        error: "Page and limit must be greater than 0",
+      };
+    }
+    const searchTerm = options.searchTerm ? options.searchTerm.trim() : "";
+
+    const products = await Product.find({
+      name: { $regex: searchTerm, $options: "i" },
+      category: options.category ? options.category : { $exists: true },
+    })
       .populate("supplier")
       .skip(skip)
       .limit(limit)
       .lean();
 
-    const total = await Product.countDocuments();
+    const total = await Product.countDocuments({
+      name: { $regex: options.searchTerm || "", $options: "i" },
+      category: options.category ? options.category : { $exists: true },
+    });
 
     const pages = Math.ceil(total / limit);
-
-    if (!products || products.length === 0) {
-      throw new Error("No products found");
-    }
 
     return {
       success: true,

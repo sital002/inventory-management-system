@@ -36,8 +36,8 @@ export default function ProductForm({
 }) {
   enum ProductStatus {
     Active = "Active",
-    Inactive = "Inactive",
-    Draft = "Draft",
+    Inactive = "Low Stock",
+    Draft = "Out of Stock",
   }
 
   const [formData, setFormData] = useState({

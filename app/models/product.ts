@@ -1,5 +1,5 @@
 import { ISupplier } from "./supplier";
-import mongoose, { Schema, Document, models, Model } from "mongoose";
+import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface IProduct extends Document {
   name: string;
@@ -16,11 +16,12 @@ export interface IProduct extends Document {
   updatedAt: Date;
 }
 
-const ProductSchema: Schema = new Schema<IProduct>(
+const ProductSchema: Schema = new Schema(
   {
     name: { type: String, required: true, trim: true },
     description: { type: String, required: true },
     price: { type: Number, required: true, min: 0 },
+    category: { type: String, required: true },
     sku: { type: String, required: true, unique: true, trim: true },
     costPrice: { type: Number, required: true, min: 0 },
     initialStock: { type: Number, required: true, min: 0 },
@@ -31,16 +32,12 @@ const ProductSchema: Schema = new Schema<IProduct>(
       default: "Active",
       required: true,
     },
-
-    category: { type: String, required: true },
     supplier: { type: Schema.Types.ObjectId, ref: "Supplier", required: true },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 const Product: Model<IProduct> =
-  models.Product || mongoose.model<IProduct>("Product", ProductSchema);
+  mongoose.models.Product || mongoose.model<IProduct>("Product", ProductSchema);
 
 export default Product;

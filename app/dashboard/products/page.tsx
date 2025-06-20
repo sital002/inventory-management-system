@@ -1,12 +1,17 @@
 import { getPaginatedProducts } from "@/actions/product";
 import React from "react";
 import { ListProducts } from "./_components/list-products";
+import { isAuthenticated } from "@/actions/auth";
+import { redirect } from "next/navigation";
+
+const nitialPage = 1;
+const limit = 8;
 
 export default async function page() {
-  const page = 1;
-  const limit = 8;
+  const isLoggedIn = await isAuthenticated();
+  if (!isLoggedIn) redirect("/");
 
-  const result = await getPaginatedProducts(page, limit);
+  const result = await getPaginatedProducts(nitialPage, limit);
   if (!result.success) {
     return <p>{result.error}</p>;
   }
@@ -15,7 +20,7 @@ export default async function page() {
       <ListProducts
         initialProducts={result.data.products}
         totalPages={result.data.pages}
-        initialPage={page}
+        initialPage={nitialPage}
         itemsPerPage={limit}
       />
     </div>
