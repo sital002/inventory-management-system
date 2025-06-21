@@ -3,6 +3,7 @@ import Product, { IProduct } from "@/app/models/product";
 import Supplier from "@/app/models/supplier";
 import { connectToDatabase } from "@/utils/db";
 import mongoose from "mongoose";
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { z } from "zod";
 export type Response<T> =
@@ -161,6 +162,37 @@ export async function getPaginatedProducts(
     };
   } catch (error) {
     console.error("Error fetching paginated products:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "An unexpected error occurred",
+    };
+  }
+}
+
+export async function deleteProduct(id: string): Promise<Response<null>> {
+  if (!id) return { success: false, error: "Product ID is required" };
+  if (!mongoose.Types.ObjectId.isValid(id))
+    return { success: false, error: "Invalid product ID" };
+  try {
+    await connectToDatabase();
+    const data = (await cookies()).get("user");
+
+    if (!data) {
+      return { success: false, error: "User not authenticated" };
+    }
+    const user = JSON.parse(data.value);
+    if (user.role !== "admin") {
+      return { success: false, error: "Only admins can delete products" };
+    }
+    const result = await Product.findByIdAndDelete(id);
+    if (!result) {
+      return { success: false, error: "Product not found" };
+    }
+    revalidatePath("/dashboard/products");
+    return { success: true, data: null };
+  } catch (error) {
+    console.error("Error deleting product:", error);
     return {
       success: false,
       error:

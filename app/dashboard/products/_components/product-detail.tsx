@@ -34,6 +34,8 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { IProduct } from "@/app/models/product";
 import { getStatusColor, getStockStatus } from "@/utils/product";
+import { Response } from "@/actions/product";
+import { toast } from "@/components/ui/use-toast";
 
 const productData = {
   id: "PRD-001",
@@ -125,10 +127,24 @@ const salesData = [
 
 interface ProductDetailProps {
   product: IProduct;
+  deleteProduct: (id: string) => Promise<Response<null>>;
 }
 
-export function ProductDetail({ product }: ProductDetailProps) {
+export function ProductDetail({ product, deleteProduct }: ProductDetailProps) {
   const router = useRouter();
+
+  const handleDelete = async () => {
+    const result = await deleteProduct(product._id.toString());
+    if (result.success) {
+      router.push("/dashboard/products");
+    } else {
+      toast({
+        title: "Error",
+        description: result.error || "Failed to delete product",
+        variant: "destructive",
+      });
+    }
+  };
 
   const stockStatus = getStockStatus(product.stockLevel, product.minStockLevel);
   const stockPercentage = (product.stockLevel / product.maxStockLevel) * 100;
@@ -189,7 +205,10 @@ export function ProductDetail({ product }: ProductDetailProps) {
                     <span>Create Purchase Order</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-red-600">
+                  <DropdownMenuItem
+                    className="text-red-600"
+                    onClick={handleDelete}
+                  >
                     <Trash2 className="mr-2 h-4 w-4" />
                     <span>Delete Product</span>
                   </DropdownMenuItem>
@@ -596,7 +615,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                           <div>
                             <p className="font-medium">Product Created</p>
                             <p className="text-sm text-gray-500">
-                              {productData.createdAt}
+                              {product.createdAt}
                             </p>
                           </div>
                         </div>
@@ -607,7 +626,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                           <div>
                             <p className="font-medium">Last Updated</p>
                             <p className="text-sm text-gray-500">
-                              {productData.updatedAt}
+                              {product.updatedAt}
                             </p>
                           </div>
                         </div>
