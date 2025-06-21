@@ -2,6 +2,7 @@ import { IProduct } from "@/app/models/product";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getStatusColor, getStockStatus } from "@/utils/product";
 import { Edit, Eye, Package } from "lucide-react";
 import Link from "next/link";
 import React from "react";
@@ -9,24 +10,13 @@ import React from "react";
 interface ProductCardProps {
   product: IProduct;
 }
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case "Active":
-      return "bg-green-100 text-green-800 border-green-200";
-    case "Low Stock":
-      return "bg-amber-100 text-amber-800 border-amber-200";
-    case "Out of Stock":
-      return "bg-red-100 text-red-800 border-red-200";
-    default:
-      return "bg-gray-100 text-gray-800 border-gray-200";
-  }
-};
 
 export function ProductCard({ product }: ProductCardProps) {
+  const stockStatus = getStockStatus(product.stockLevel, product.minStockLevel);
   return (
     <Card className="border-green-200 bg-white shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between gap-2 ">
           <div className="flex items-center gap-3">
             <div className="h-12 w-12 rounded-lg bg-green-100 flex items-center justify-center">
               <Package className="h-6 w-6 text-green-600" />
@@ -38,9 +28,7 @@ export function ProductCard({ product }: ProductCardProps) {
               <p className="text-xs text-gray-500">SKU: {product.sku}</p>
             </div>
           </div>
-          <Badge className={getStatusColor(product.status)}>
-            {product.status}
-          </Badge>
+          <Badge className={getStatusColor(stockStatus)}>{stockStatus}</Badge>
         </div>
       </CardHeader>
       <CardContent className="pt-0">
@@ -57,14 +45,8 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-gray-500">Stock:</span>
-            <span
-              className={`font-medium ${
-                product.initialStock <= product.minStock
-                  ? "text-amber-600"
-                  : "text-green-900"
-              }`}
-            >
-              {product.initialStock} units
+            <span className={`font-medium ${getStatusColor(stockStatus)}`}>
+              {product.stockLevel} units
             </span>
           </div>
           <div className="flex justify-between text-sm">

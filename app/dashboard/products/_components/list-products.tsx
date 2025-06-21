@@ -1,11 +1,19 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { FormEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { getPaginatedProducts } from "@/actions/product";
 import { IProduct } from "@/app/models/product";
 import { ProductCard } from "./product-card";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import Link from "next/link";
 
 export function ListProducts({
   initialProducts,
@@ -58,7 +66,8 @@ export function ListProducts({
     }
   };
 
-  async function handleSearch(e: FormEvent) {
+  async function handleSearch(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     if (searchTerm.trim() === "") {
       setProducts(initialProducts);
       setCurrentPage(initialPage);
@@ -71,15 +80,30 @@ export function ListProducts({
 
   return (
     <div>
-      <form onSubmit={e} className="flex gap-2">
-        <Input
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search products..."
-          className="mb-4"
-        />
-        <Button>Search</Button>
-      </form>
+      <div className="flex gap-3">
+        <form onSubmit={handleSearch} className="flex gap-2 w-full">
+          <Input
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search products..."
+            className="mb-4"
+          />
+          <Button>Search</Button>
+        </form>
+        <Select>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Furniture">Furniture</SelectItem>
+            <SelectItem value="Electronics">Electronics</SelectItem>
+          </SelectContent>
+        </Select>
+        <Link href={"/dashboard/products/new"}>
+          <Button>Add New</Button>
+        </Link>
+      </div>
+
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {products.map((product, index) => (
           <ProductCard key={index} product={product} />

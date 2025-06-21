@@ -20,11 +20,14 @@ const productSchema = z.object({
     .number()
     .int()
     .nonnegative("Initial stock must be a non-negative integer"),
-  minStock: z
+  minStockLevel: z
     .number()
     .int()
     .nonnegative("Minimum stock must be a non-negative integer"),
-  status: z.enum(["Active", "Low Stock", "Out of Stock"]),
+  maxStockLevel: z
+    .number()
+    .int()
+    .nonnegative("Minimum stock must be a non-negative integer"),
   supplier: z
     .string()
     .refine(
@@ -55,13 +58,13 @@ export async function addNewProduct(
       name: result.data.name,
       description: result.data.description,
       price: result.data.price,
-      minStock: result.data.minStock,
-      initialStock: result.data.initialStock,
+      minStockLevel: result.data.minStockLevel,
+      stockLevel: result.data.initialStock,
       costPrice: result.data.costPrice,
       sku: result.data.sku,
-      productStatus: result.data.status,
       category: result.data.category,
       supplier: result.data.supplier,
+      maxStockLevel: result.data.maxStockLevel,
     });
     if (!newProduct) {
       throw new Error("Failed to create product");
@@ -84,6 +87,28 @@ export async function addNewProduct(
       success: false,
       error:
         error instanceof Error ? error.message : "An unexpected error occurred",
+    };
+  }
+}
+
+export async function getProductDetail(
+  id: string
+): Promise<Response<IProduct>> {
+  try {
+    await connectToDatabase();
+    const product = await Product.findOne({ _id: id }).populate("supplier");
+    if (!product) {
+      return {
+        success: false,
+        error: "Product not found",
+      };
+    }
+    return { success: true, data: JSON.parse(JSON.stringify(product)) };
+  } catch (e) {
+    console.error(e);
+    return {
+      success: false,
+      error: e instanceof Error ? e.message : "An unexpected error occurred",
     };
   }
 }
