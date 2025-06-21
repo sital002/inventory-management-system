@@ -615,7 +615,7 @@ export function ProductDetail({ product, deleteProduct }: ProductDetailProps) {
                           <div>
                             <p className="font-medium">Product Created</p>
                             <p className="text-sm text-gray-500">
-                              {product.createdAt}
+                              {new Date(product.createdAt).toLocaleDateString()}
                             </p>
                           </div>
                         </div>
@@ -626,7 +626,7 @@ export function ProductDetail({ product, deleteProduct }: ProductDetailProps) {
                           <div>
                             <p className="font-medium">Last Updated</p>
                             <p className="text-sm text-gray-500">
-                              {product.updatedAt}
+                              {new Date(product.updatedAt).toLocaleDateString()}
                             </p>
                           </div>
                         </div>

@@ -12,6 +12,8 @@ export type IProduct = {
   minStockLevel: number;
   maxStockLevel: number;
   supplier: mongoose.Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
 };
 const ProductSchema: Schema = new Schema<IProduct>(
   {
