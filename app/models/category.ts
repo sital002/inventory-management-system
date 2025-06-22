@@ -3,6 +3,16 @@ import { Schema, model, Document, models } from "mongoose";
 interface ICategory extends Document {
   name: string;
   description?: string;
+  color:
+    | "Gray"
+    | "Green"
+    | "Blue"
+    | "Red"
+    | "Yellow"
+    | "Purple"
+    | "Orange"
+    | "Pink"
+    | "Cyan";
   createdAt: Date;
   updatedAt: Date;
 }
@@ -18,6 +28,21 @@ const categorySchema = new Schema<ICategory>(
     description: {
       type: String,
       trim: true,
+    },
+    color: {
+      type: String,
+      enum: [
+        "Gray",
+        "Green",
+        "Blue",
+        "Red",
+        "Yellow",
+        "Purple",
+        "Orange",
+        "Pink",
+        "Cyan",
+      ],
+      default: "Green",
     },
   },
   {
