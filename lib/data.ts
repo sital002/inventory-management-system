@@ -1,3 +1,4 @@
+// Dummy data for inventory management system
 export const categories = [
   {
     id: 1,
@@ -218,6 +219,70 @@ export const purchaseOrders = [
     status: "overstocked",
     expectedDate: "2024-01-13",
     category: "Bakery",
+  },
+];
+
+// New inventory items data
+export const inventoryItems = [
+  {
+    id: 1,
+    categoryId: 1,
+    name: "Organic Bananas",
+    sku: "BAN-ORG-001",
+    price: 4.99,
+    stock: 45,
+    lowStockThreshold: 10,
+    supplier: "Fresh Farm Suppliers",
+    lastRestocked: "2024-01-15",
+    description: "Fresh organic bananas from local farms",
+  },
+  {
+    id: 2,
+    categoryId: 1,
+    name: "Red Apples",
+    sku: "APP-RED-001",
+    price: 3.49,
+    stock: 8,
+    lowStockThreshold: 15,
+    supplier: "Fresh Farm Suppliers",
+    lastRestocked: "2024-01-14",
+    description: "Crisp red apples",
+  },
+  {
+    id: 3,
+    categoryId: 1,
+    name: "Carrots",
+    sku: "CAR-ORG-001",
+    price: 2.99,
+    stock: 0,
+    lowStockThreshold: 20,
+    supplier: "Organic Growers Co.",
+    lastRestocked: "2024-01-10",
+    description: "Fresh organic carrots",
+  },
+  {
+    id: 4,
+    categoryId: 2,
+    name: "Whole Milk",
+    sku: "MLK-WHO-001",
+    price: 3.49,
+    stock: 25,
+    lowStockThreshold: 12,
+    supplier: "Dairy Direct Co.",
+    lastRestocked: "2024-01-16",
+    description: "Fresh whole milk",
+  },
+  {
+    id: 5,
+    categoryId: 2,
+    name: "Cheddar Cheese",
+    sku: "CHE-CHE-001",
+    price: 5.99,
+    stock: 5,
+    lowStockThreshold: 8,
+    supplier: "Dairy Direct Co.",
+    lastRestocked: "2024-01-12",
+    description: "Sharp cheddar cheese",
   },
 ];
 
