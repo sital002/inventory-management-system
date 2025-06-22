@@ -32,18 +32,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { colorOptions } from "@/utils/color-options";
+import { createCategory } from "@/actions/category";
 
+const initialFormData = {
+  name: "",
+  description: "",
+  color: "Green",
+};
 export function AddCategoryDialog() {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    color: "bg-green-50 border-green-200",
-  });
+  const [formData, setFormData] = useState(initialFormData);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -65,21 +67,21 @@ export function AddCategoryDialog() {
 
     setIsSubmitting(true);
     setError("");
-
+    console.log(formData.color);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
+      const result = await createCategory({
+        color: formData.color as any,
+        name: formData.name,
+        description: formData.description,
+      });
+      console.log(result);
+      if (!result.success) {
+        setError(result.error || "Failed to create category");
+        return;
+      }
       setSuccess(true);
-
-      setTimeout(() => {
-        setFormData({
-          name: "",
-          description: "",
-          color: "bg-green-50 border-green-200",
-        });
-        setSuccess(false);
-        setOpen(false);
-      }, 1500);
+      setOpen(false);
+      setFormData(initialFormData);
     } catch (err) {
       console.error("Error creating category:", err);
       setError("Failed to create category. Please try again.");
@@ -102,7 +104,7 @@ export function AddCategoryDialog() {
       }
     }
   };
-
+  console.log(formData.color);
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
@@ -172,14 +174,19 @@ export function AddCategoryDialog() {
             </Label>
             <Select
               value={formData.color}
-              onValueChange={(value) => handleInputChange("color", value)}
+              onValueChange={(value) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  color: value,
+                }));
+              }}
             >
               <SelectTrigger className="border-green-200 focus:border-green-400 focus:ring-green-400 w-full">
                 <SelectValue placeholder="Select a color theme" />
               </SelectTrigger>
               <SelectContent>
                 {colorOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
+                  <SelectItem key={option.value} value={option.label}>
                     <div className="flex items-center gap-2">
                       <div
                         className={`w-4 h-4 rounded ${option.preview} border`}
@@ -195,7 +202,12 @@ export function AddCategoryDialog() {
           {formData.name && (
             <div className="space-y-2">
               <Label className="text-green-800 font-medium">Preview</Label>
-              <Card className={`${formData.color} border-2`}>
+              <Card
+                className={`${
+                  colorOptions.find((option) => option.label === formData.color)
+                    ?.value
+                } border-2`}
+              >
                 <CardHeader className="pb-3">
                   <CardTitle className="text-green-900 text-lg">
                     {formData.name}

@@ -24,10 +24,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { colorOptions } from "@/utils/color-options";
 
 interface CategoryCardProps {
   category: {
-    id: number;
+    _id: string;
     name: string;
     description: string;
     itemCount: number;
@@ -48,7 +49,9 @@ export function CategoryCard({ category }: CategoryCardProps) {
 
   return (
     <Card
-      className={`${category.color} hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border-2 relative group w-full`}
+      className={`${
+        colorOptions.find((option) => option.label === category.color)?.value
+      } hover:shadow-lg transition-all duration-200 hover:scale-[1.02] border-2 relative group w-full`}
     >
       <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hidden sm:block">
         <DropdownMenu>
@@ -105,7 +108,10 @@ export function CategoryCard({ category }: CategoryCardProps) {
         </DropdownMenu>
       </div>
 
-      <Link href={`/dashboard/categories/${category.id}`} className="block">
+      <Link
+        href={`/dashboard/categories/${category._id.toString()}`}
+        className="block"
+      >
         <CardHeader className="pb-3 pr-12">
           <div className="flex items-center justify-between mb-2">
             <Package className="h-6 w-6 sm:h-8 sm:w-8 text-green-600 flex-shrink-0" />

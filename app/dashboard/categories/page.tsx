@@ -4,7 +4,7 @@ import { CategoryListAsync } from "@/components/category-list-async";
 import { StatsLoading } from "@/components/stats-loading";
 import { CategoriesLoading } from "@/components/categories-loading";
 
-export default function CategoriesPage() {
+export default async function CategoriesPage() {
   return (
     <div className="min-h-screen bg-green-50/30 p-6">
       <div className="mx-auto max-w-7xl">

@@ -6,7 +6,7 @@ import { CategorySearch } from "./category-search";
 import { AddCategoryDialog } from "./add-category-dialog";
 
 interface Category {
-  id: number;
+  _id: string;
   name: string;
   description: string;
   itemCount: number;
@@ -23,11 +23,13 @@ export function CategoryClient({ categories }: CategoryClientProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState("name");
-
+  console.log(categories);
   const filteredCategories = categories.filter(
     (category) =>
       category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      category.description.toLowerCase().includes(searchTerm.toLowerCase())
+      (category.description ?? "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
   );
 
   const sortedCategories = [...filteredCategories].sort((a, b) => {
@@ -68,7 +70,7 @@ export function CategoryClient({ categories }: CategoryClientProps) {
         }
       >
         {sortedCategories.map((category) => (
-          <CategoryCard key={category.id} category={category} />
+          <CategoryCard key={category._id.toString()} category={category} />
         ))}
       </div>
 

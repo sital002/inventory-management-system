@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { ObjectId, Schema } from "mongoose";
 
 export type IProduct = {
   name: string;
@@ -10,6 +10,7 @@ export type IProduct = {
   costPrice: number;
   stockLevel: number;
   minStockLevel: number;
+  categories: ObjectId;
   maxStockLevel: number;
   supplier: mongoose.Types.ObjectId;
   createdAt: Date;
@@ -23,6 +24,11 @@ const ProductSchema: Schema = new Schema<IProduct>(
     category: { type: String, required: true },
     sku: { type: String, required: true, unique: true, trim: true },
     costPrice: { type: Number, required: true, min: 0 },
+    categories: {
+      type: Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
+    },
     stockLevel: { type: Number, required: true, min: 0 },
     minStockLevel: { type: Number, required: true, min: 0 },
     maxStockLevel: { type: Number, min: 0, required: true },
