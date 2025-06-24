@@ -13,31 +13,76 @@ export type Response<T> =
   | { success: false; error: string };
 
 const productSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  description: z.string().min(1, "Description is required"),
-  price: z.number().positive("Price must be a positive number"),
-  category: z.string().min(1, "Category is required"),
-  sku: z.string().min(1, "SKU is required"),
-  costPrice: z.number().positive("Cost price must be a positive number"),
-  initialStock: z
-    .number()
-    .int()
-    .nonnegative("Initial stock must be a non-negative integer"),
-  minStockLevel: z
-    .number()
-    .int()
-    .nonnegative("Minimum stock must be a non-negative integer"),
-  maxStockLevel: z
-    .number()
-    .int()
-    .nonnegative("Minimum stock must be a non-negative integer"),
-  supplier: z
+  name: z
     .string()
+    .min(2, "Product name must be at least 2 characters")
+    .max(100, "Product name must be less than 100 characters"),
+  sku: z
+    .string()
+    .min(3, "SKU must be at least 3 characters")
+    .max(50, "SKU must be less than 50 characters"),
+  barcode: z.string().optional().or(z.literal("")),
+  categoryId: z.string().min(1, "Please select a category"),
+  supplierId: z.string().optional().or(z.literal("")),
+  brand: z.string().optional().or(z.literal("")),
+  description: z.string().optional().or(z.literal("")),
+  unit: z.string().min(1, "Unit is required"),
+
+  costPrice: z
+    .string()
+    .min(1, "Cost price is required")
     .refine(
-      (id) => mongoose.Types.ObjectId.isValid(id),
-      "Supplier ID must be a valid Mongoose ObjectId"
+      (val) => !isNaN(Number(val)) && Number(val) > 0,
+      "Cost price must be a positive number"
     ),
+  sellingPrice: z
+    .string()
+    .min(1, "Selling price is required")
+    .refine(
+      (val) => !isNaN(Number(val)) && Number(val) > 0,
+      "Selling price must be a positive number"
+    ),
+  discountPrice: z
+    .string()
+    .optional()
+    .or(z.literal(""))
+    .refine(
+      (val) => !val || (!isNaN(Number(val)) && Number(val) >= 0),
+      "Discount price must be a positive number"
+    ),
+
+  initialStock: z
+    .string()
+    .min(1, "Initial stock is required")
+    .refine(
+      (val) => !isNaN(Number(val)) && Number(val) >= 0,
+      "Initial stock must be a non-negative number"
+    ),
+  lowStockThreshold: z
+    .string()
+    .min(1, "Low stock threshold is required")
+    .refine(
+      (val) => !isNaN(Number(val)) && Number(val) >= 0,
+      "Low stock threshold must be a non-negative number"
+    ),
+
+  weight: z
+    .string()
+    .optional()
+    .or(z.literal(""))
+    .refine(
+      (val) => !val || (!isNaN(Number(val)) && Number(val) > 0),
+      "Weight must be a positive number"
+    ),
+  dimensions: z.string().optional().or(z.literal("")),
+
+  isPerishable: z.boolean(),
+  isActive: z.boolean(),
+  trackInventory: z.boolean(),
+  requiresRefrigeration: z.boolean(),
+  isOrganic: z.boolean(),
 });
+
 
 export async function addNewProduct(
   product: z.infer<typeof productSchema>
@@ -57,18 +102,7 @@ export async function addNewProduct(
     if (user.role !== "admin") {
       throw new Error("Only admins can add new products");
     }
-    const newProduct = await Product.create({
-      name: result.data.name,
-      description: result.data.description,
-      price: result.data.price,
-      minStockLevel: result.data.minStockLevel,
-      stockLevel: result.data.initialStock,
-      costPrice: result.data.costPrice,
-      sku: result.data.sku,
-      category: result.data.category,
-      supplier: result.data.supplier,
-      maxStockLevel: result.data.maxStockLevel,
-    });
+    const newProduct = await Product.create(result.data);
     if (!newProduct) {
       throw new Error("Failed to create product");
     }
@@ -105,7 +139,7 @@ export async function getProductDetail(
     await Category.exists({});
     const product = await Product.findOne({ _id: id })
       .populate<{ supplier: ISupplier }>("supplier")
-      .populate<{ categories: ICategory }>("categories");
+      .populate<{ categories: ICategory }>("category");
     if (!product) {
       return {
         success: false,

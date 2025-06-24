@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { IProduct } from "@/app/models/product";
 import { ISupplier } from "@/app/models/supplier";
+import Link from "next/link";
 
 interface ManageInventoryClientProps {
   products: (IProduct & { supplier: ISupplier })[];
@@ -63,11 +64,13 @@ export function ManageCategory({ products }: ManageInventoryClientProps) {
             setSortBy={setSortBy}
           />
         </div>
-        <Button className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto">
-          <Plus className="h-4 w-4 mr-2" />
-          <span className="hidden xs:inline">Add Item</span>
-          <span className="xs:hidden">Add</span>
-        </Button>
+        <Link href={`/dashboard/products/new`}>
+          <Button className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto">
+            <Plus className="h-4 w-4 mr-2" />
+            <span className="hidden xs:inline">Add Item</span>
+            <span className="xs:hidden">Add</span>
+          </Button>
+        </Link>
       </div>
 
       <CategoryTable items={sortedItems} />

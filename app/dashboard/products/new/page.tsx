@@ -1,6 +1,6 @@
-import { AddProductForm } from "./_components/add-new-product";
+import { ProductForm } from "./_components/product-form";
 
-export default function NewProductPage() {
+export default function page() {
   return (
     <div className="min-h-screen bg-green-50/30 p-4 sm:p-6">
       <div className="mx-auto max-w-4xl">
@@ -12,7 +12,7 @@ export default function NewProductPage() {
             Add a new product to your supermarket inventory
           </p>
         </div>
-        <AddProductForm />
+        <ProductForm />
       </div>
     </div>
   );

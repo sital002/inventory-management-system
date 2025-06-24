@@ -1,6 +1,7 @@
-import { model, models, Schema, Document, Types } from "mongoose";
+import { model, models, Schema, Types, Model } from "mongoose";
 
-interface IOrder extends Document {
+interface IOrder {
+  _id: Types.ObjectId;
   customerName: string;
   customerPhone?: string;
   products: {
@@ -47,21 +48,22 @@ const orderSchema = new Schema<IOrder>(
     },
     status: {
       type: String,
-      enum: ["pending", "completed", "cancelled"], // Restrict status to specific values
-      default: "pending", // Default status is "pending"
+      enum: ["pending", "completed", "cancelled"],
+      default: "pending",
       required: true,
     },
     paymentMethod: {
       type: String,
-      enum: ["cash", "card", "online"], // Restrict payment method to specific values
-      required: true, // Payment method is required
+      enum: ["cash", "card", "online"],
+      required: true,
     },
   },
   {
-    timestamps: true, // Automatically add createdAt and updatedAt fields
+    timestamps: true,
   }
 );
 
-const Order = models.Order || model<IOrder>("Order", orderSchema);
+const Order: Model<IOrder> =
+  models.Order || model<IOrder>("Order", orderSchema);
 
 export default Order;

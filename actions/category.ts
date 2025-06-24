@@ -31,13 +31,13 @@ const categorySchma = z.object({
 
 type Response<T> =
   | {
-      success: true;
-      data: T;
-    }
+    success: true;
+    data: T;
+  }
   | {
-      success: false;
-      error: string;
-    };
+    success: false;
+    error: string;
+  };
 
 export async function createCategory(
   category: z.infer<typeof categorySchma>
@@ -101,7 +101,18 @@ export async function getCategory(id: string): Promise<Response<ICategory>> {
   }
 }
 
-export async function getAllCategories(): Promise<Response<any[]>> {
+export async function getAllCategories(): Promise<
+  Response<
+    {
+      name: string;
+      description: string;
+      color: string;
+      itemCount: number;
+      lowStockItems: number;
+      totalValue: number;
+    }[]
+  >
+> {
   try {
     await connectToDatabase();
     const isLoggedIn = await isAuthenticated();
