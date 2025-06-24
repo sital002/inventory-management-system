@@ -5,6 +5,7 @@ import { connectToDatabase } from "@/utils/db";
 import { z } from "zod";
 import { isAuthenticated } from "./auth";
 import { revalidatePath } from "next/cache";
+import mongoose from "mongoose";
 
 const categorySchma = z.object({
   name: z.string({ message: "Name is missing" }).min(1, "Name is required"),
@@ -69,6 +70,33 @@ export async function createCategory(
     return {
       success: false,
       error: (error as Error).message || "Failed to create category",
+    };
+  }
+}
+
+export async function getCategory(id: string): Promise<Response<ICategory>> {
+  try {
+    await connectToDatabase();
+    const isLoggedIn = await isAuthenticated();
+    if (!isLoggedIn)
+      return {
+        success: false,
+        error: "User not authenticated",
+      };
+    const category = await Category.findById(id).populate("products");
+    if (!category)
+      return {
+        success: false,
+        error: "Category not found",
+      };
+    return {
+      success: true,
+      data: JSON.parse(JSON.stringify(category)),
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: (error as Error).message || "Failed to fetch category",
     };
   }
 }
@@ -212,6 +240,114 @@ export async function getCategoryStats(): Promise<
         totalItems: 0,
         lowStockItems: 0,
         totalValue: 0,
+      },
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: (error as Error).message || "Failed to fetch category stats",
+    };
+  }
+}
+
+export async function getSingleCategoryStats(id: string): Promise<
+  Response<{
+    name: string;
+    description: string;
+    color: string;
+    itemCount: number;
+    lowStock: number;
+    inStock: number;
+    outofStock: number;
+    totalValue: number;
+  }>
+> {
+  try {
+    await connectToDatabase();
+    const isLoggedIn = await isAuthenticated();
+    if (!isLoggedIn)
+      return {
+        success: false,
+        error: "User not authenticated",
+      };
+    const stats = await Category.aggregate([
+      { $match: { _id: new mongoose.Types.ObjectId(id) } },
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "categories",
+          as: "products",
+        },
+      },
+      {
+        $addFields: {
+          itemCount: { $size: "$products" },
+          lowStock: {
+            $size: {
+              $filter: {
+                input: "$products",
+                as: "product",
+                cond: {
+                  $lte: ["$$product.stockLevel", "$$product.minStockLevel"],
+                },
+              },
+            },
+          },
+          inStock: {
+            $size: {
+              $filter: {
+                input: "$products",
+                as: "product",
+                cond: { $gt: ["$$product.stockLevel", 0] },
+              },
+            },
+          },
+          outofStock: {
+            $size: {
+              $filter: {
+                input: "$products",
+                as: "product",
+                cond: { $eq: ["$$product.stockLevel", 0] },
+              },
+            },
+          },
+          totalValue: {
+            $sum: {
+              $map: {
+                input: "$products",
+                as: "product",
+                in: { $multiply: ["$$product.price", "$$product.stockLevel"] },
+              },
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          name: 1,
+          description: 1,
+          color: 1,
+          itemCount: 1,
+          lowStock: 1,
+          inStock: 1,
+          outofStock: 1,
+          totalValue: 1,
+        },
+      },
+    ]);
+
+    return {
+      success: true,
+      data: stats[0] || {
+        lowStock: 0,
+        inStock: 0,
+        outofStock: 0,
+        itemCount: 0,
+        totalValue: 0,
+        name: "",
+        description: "",
+        color: "",
       },
     };
   } catch (error) {

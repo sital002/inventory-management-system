@@ -30,31 +30,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-interface InventoryItem {
-  id: number;
-  name: string;
-  sku: string;
-  price: number;
-  stock: number;
-  lowStockThreshold: number;
-  supplier: string;
-  lastRestocked: string;
-}
+import { IProduct } from "@/app/models/product";
+import { ISupplier } from "@/app/models/supplier";
+import Link from "next/link";
 
 interface InventoryTableProps {
-  items: InventoryItem[];
+  items: (IProduct & { supplier: ISupplier })[];
 }
 
 export function CategoryTable({ items }: InventoryTableProps) {
-  const getStockStatus = (item: InventoryItem) => {
-    if (item.stock === 0) {
+  const getStockStatus = (item: IProduct & { supplier: ISupplier }) => {
+    if (item.stockLevel === 0) {
       return {
         status: "out-of-stock",
         color: "bg-red-100 text-red-800 border-red-200",
         icon: AlertTriangle,
       };
-    } else if (item.stock <= item.lowStockThreshold) {
+    } else if (item.stockLevel <= item.minStockLevel) {
       return {
         status: "low-stock",
         color: "bg-yellow-100 text-yellow-800 border-yellow-200",
@@ -69,7 +61,7 @@ export function CategoryTable({ items }: InventoryTableProps) {
     }
   };
 
-  const getStatusBadge = (item: InventoryItem) => {
+  const getStatusBadge = (item: IProduct & { supplier: ISupplier }) => {
     const { status, color, icon: Icon } = getStockStatus(item);
     return (
       <Badge className={`${color} border text-xs`}>
@@ -107,7 +99,7 @@ export function CategoryTable({ items }: InventoryTableProps) {
         <div className="block sm:hidden">
           {items.map((item) => (
             <div
-              key={item.id}
+              key={item._id.toString()}
               className="border-b border-green-100 p-4 last:border-b-0"
             >
               <div className="flex justify-between items-start mb-2">
@@ -148,8 +140,8 @@ export function CategoryTable({ items }: InventoryTableProps) {
               </div>
 
               <div className="flex justify-between text-xs text-green-600">
-                <span>Stock: {item.stock}</span>
-                <span>Supplier: {item.supplier}</span>
+                <span>Stock: {item.stockLevel}</span>
+                <span>Supplier: {item.supplier._id.toString()}</span>
               </div>
             </div>
           ))}
@@ -173,7 +165,7 @@ export function CategoryTable({ items }: InventoryTableProps) {
             <TableBody>
               {items.map((item) => (
                 <TableRow
-                  key={item.id}
+                  key={item._id.toString()}
                   className="border-green-100 hover:bg-green-50/50"
                 >
                   <TableCell className="font-medium text-green-900">
@@ -186,17 +178,17 @@ export function CategoryTable({ items }: InventoryTableProps) {
                     ${item.price.toFixed(2)}
                   </TableCell>
                   <TableCell className="text-green-700">
-                    <span className="font-medium">{item.stock}</span>
+                    <span className="font-medium">{item.stockLevel}</span>
                     <span className="text-xs text-green-600 ml-1">
-                      / {item.lowStockThreshold}
+                      / {item.minStockLevel}
                     </span>
                   </TableCell>
                   <TableCell>{getStatusBadge(item)}</TableCell>
                   <TableCell className="text-green-700">
-                    {item.supplier}
+                    {item.supplier.name}
                   </TableCell>
                   <TableCell className="text-green-700">
-                    {item.lastRestocked}
+                    {item?.lastRestocked}
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
@@ -210,10 +202,14 @@ export function CategoryTable({ items }: InventoryTableProps) {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
-                          <Eye className="h-4 w-4 mr-2" />
-                          View Details
-                        </DropdownMenuItem>
+                        <Link
+                          href={`/dashboard/products/${item._id.toString()}`}
+                        >
+                          <DropdownMenuItem>
+                            <Eye className="h-4 w-4 mr-2" />
+                            View Details
+                          </DropdownMenuItem>
+                        </Link>
                         <DropdownMenuItem>
                           <Edit className="h-4 w-4 mr-2" />
                           Edit Item

@@ -1,11 +1,13 @@
 "use server";
+import Category, { ICategory } from "@/app/models/category";
 import Product, { IProduct } from "@/app/models/product";
-import Supplier from "@/app/models/supplier";
+import Supplier, { ISupplier } from "@/app/models/supplier";
 import { connectToDatabase } from "@/utils/db";
-import mongoose from "mongoose";
+import mongoose, { isValidObjectId } from "mongoose";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { z } from "zod";
+import { isAuthenticated } from "./auth";
 export type Response<T> =
   | { success: true; data: T }
   | { success: false; error: string };
@@ -94,10 +96,16 @@ export async function addNewProduct(
 
 export async function getProductDetail(
   id: string
-): Promise<Response<IProduct>> {
+): Promise<
+  Response<IProduct & { supplier: ISupplier } & { categories: ICategory }>
+> {
   try {
     await connectToDatabase();
-    const product = await Product.findOne({ _id: id }).populate("supplier");
+    await Supplier.exists({});
+    await Category.exists({});
+    const product = await Product.findOne({ _id: id })
+      .populate<{ supplier: ISupplier }>("supplier")
+      .populate<{ categories: ICategory }>("categories");
     if (!product) {
       return {
         success: false,
@@ -122,7 +130,13 @@ export async function getPaginatedProducts(
   page: number = 1,
   limit: number = 10,
   options: Filters = {}
-): Promise<Response<{ products: IProduct[]; total: number; pages: number }>> {
+): Promise<
+  Response<{
+    products: (IProduct & { supplier: ISupplier })[];
+    total: number;
+    pages: number;
+  }>
+> {
   try {
     await connectToDatabase();
     await Supplier.exists({});
@@ -135,23 +149,19 @@ export async function getPaginatedProducts(
       };
     }
     const searchTerm = options.searchTerm ? options.searchTerm.trim() : "";
-
     const products = await Product.find({
       name: { $regex: searchTerm, $options: "i" },
-      category: options.category ? options.category : { $exists: true },
     })
-      .populate("supplier")
+      .populate<{ supplier: ISupplier }>("supplier")
       .skip(skip)
       .limit(limit)
       .lean();
 
     const total = await Product.countDocuments({
       name: { $regex: options.searchTerm || "", $options: "i" },
-      category: options.category ? options.category : { $exists: true },
     });
 
     const pages = Math.ceil(total / limit);
-
     return {
       success: true,
       data: {
@@ -199,4 +209,24 @@ export async function deleteProduct(id: string): Promise<Response<null>> {
         error instanceof Error ? error.message : "An unexpected error occurred",
     };
   }
+}
+
+export async function findProductsByCategory(
+  id: string
+): Promise<Response<(IProduct & { supplier: ISupplier })[]>> {
+  const isLoggedIn = await isAuthenticated();
+  if (!isLoggedIn) {
+    return { success: false, error: "User is not authenticated" };
+  }
+  if (!id) {
+    return { success: false, error: "Id is required" };
+  }
+  if (!isValidObjectId(id)) {
+    return { success: false, error: "Invalid mongoose id" };
+  }
+  await Supplier.exists({});
+  const products = await Product.find({ categories: id }).populate<{
+    supplier: ISupplier;
+  }>("supplier");
+  return { success: true, data: JSON.parse(JSON.stringify(products)) };
 }

@@ -68,6 +68,7 @@ export async function addNewSupplier(
     }
 
     const newSupplier = new Supplier(result.data);
+
     await newSupplier.save();
     if (!newSupplier) {
       return { success: false, error: "Failed to create supplier" };

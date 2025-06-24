@@ -18,7 +18,7 @@ The Inventory Management System is designed to simplify the management of superm
 - **Database**: MongoDB
 
 ## Screenshots
-
+![alt text](image-8.png)
 ![alt text](image-1.png)
 ![alt text](image-2.png)
 ![alt text](image-3.png)

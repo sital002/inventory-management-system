@@ -1,23 +1,16 @@
-import { Schema, model, Document, models } from "mongoose";
+import mongoose, { Schema, ObjectId, Model } from "mongoose";
 
-export interface ICategory extends Document {
+export interface ICategory {
+  _id: ObjectId;
   name: string;
   description?: string;
-  color:
-    | "Gray"
-    | "Green"
-    | "Blue"
-    | "Red"
-    | "Yellow"
-    | "Purple"
-    | "Orange"
-    | "Pink"
-    | "Cyan";
+  color: string;
+  products: mongoose.Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
 }
 
-const categorySchema = new Schema<ICategory>(
+const CategorySchema = new Schema<ICategory>(
   {
     name: {
       type: String,
@@ -32,7 +25,6 @@ const categorySchema = new Schema<ICategory>(
     color: {
       type: String,
       enum: [
-        "Gray",
         "Green",
         "Blue",
         "Red",
@@ -41,16 +33,24 @@ const categorySchema = new Schema<ICategory>(
         "Orange",
         "Pink",
         "Cyan",
+        "Gray",
       ],
-      default: "Green",
+      required: true,
     },
+    products: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Product",
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
 
-const Category =
-  models.Category || model<ICategory>("Category", categorySchema);
+const Category: Model<ICategory> =
+  mongoose.models.Category ||
+  mongoose.model<ICategory>("Category", CategorySchema);
 
 export default Category;

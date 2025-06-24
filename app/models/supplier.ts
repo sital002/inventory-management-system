@@ -1,6 +1,7 @@
-import mongoose, { Schema, Document, models, Model } from "mongoose";
+import mongoose, { Schema, models, Model, ObjectId } from "mongoose";
 
-export interface ISupplier extends Document {
+export interface ISupplier {
+  _id: ObjectId;
   name: string;
   email: string;
   phone: string;

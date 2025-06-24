@@ -1,11 +1,10 @@
-import mongoose, { ObjectId, Schema } from "mongoose";
+import mongoose, { Model, ObjectId, Schema } from "mongoose";
 
 export type IProduct = {
   name: string;
   _id: mongoose.Schema.Types.ObjectId;
   description: string;
   price: number;
-  category: string;
   sku: string;
   costPrice: number;
   stockLevel: number;
@@ -21,7 +20,6 @@ const ProductSchema: Schema = new Schema<IProduct>(
     name: { type: String, required: true, trim: true },
     description: { type: String, required: true },
     price: { type: Number, required: true, min: 0 },
-    category: { type: String, required: true },
     sku: { type: String, required: true, unique: true, trim: true },
     costPrice: { type: Number, required: true, min: 0 },
     categories: {
@@ -37,7 +35,7 @@ const ProductSchema: Schema = new Schema<IProduct>(
   { timestamps: true }
 );
 
-const Product =
-  mongoose.models.Product || mongoose.model("Product", ProductSchema);
+const Product: Model<IProduct> =
+  mongoose.models.Product || mongoose.model<IProduct>("Product", ProductSchema);
 
 export default Product;
