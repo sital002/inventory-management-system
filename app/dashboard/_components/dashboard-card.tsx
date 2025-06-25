@@ -1,48 +1,42 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, AlertTriangle, TrendingUp, DollarSign } from "lucide-react";
-import { inventoryItems } from "@/lib/data";
+import { getStats } from "@/actions/category";
 
 export async function DashboardStats() {
-  // Simulate data fetching delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  const totalItems = inventoryItems.length;
-  const lowStockItems = inventoryItems.filter(
-    (item) => item.stock <= item.lowStockThreshold && item.stock > 0
-  ).length;
-  const outOfStockItems = inventoryItems.filter(
-    (item) => item.stock === 0
-  ).length;
-  const totalValue = inventoryItems.reduce(
-    (sum, item) => sum + item.price * item.stock,
-    0
-  );
+  const result = await getStats();
+  if (!result.success) {
+    return (
+      <div className="text-red-500 text-center mt-4">
+        {result.error || "Failed to load inventory stats"}
+      </div>
+    );
+  }
 
   const stats = [
     {
       title: "Total Items",
-      value: totalItems.toString(),
+      value: result.data.totalItems.toString(),
       icon: Package,
       color: "bg-green-50 border-green-200 text-green-700",
       valueColor: "text-green-900",
     },
     {
       title: "Low Stock Alerts",
-      value: lowStockItems.toString(),
+      value: result.data.lowStockItems.toString(),
       icon: AlertTriangle,
       color: "bg-yellow-50 border-yellow-200 text-yellow-700",
       valueColor: "text-yellow-900",
     },
     {
       title: "Out of Stock",
-      value: outOfStockItems.toString(),
+      value: result.data.outofStock.toString(),
       icon: TrendingUp,
       color: "bg-red-50 border-red-200 text-red-700",
       valueColor: "text-red-900",
     },
     {
       title: "Total Value",
-      value: `$${totalValue.toLocaleString()}`,
+      value: `$${result.data.totalValue.toLocaleString()}`,
       icon: DollarSign,
       color: "bg-blue-50 border-blue-200 text-blue-700",
       valueColor: "text-blue-900",

@@ -104,6 +104,7 @@ export async function getCategory(id: string): Promise<Response<ICategory>> {
 export async function getAllCategories(): Promise<
   Response<
     {
+      _id: string;
       name: string;
       description: string;
       color: string;
@@ -126,7 +127,7 @@ export async function getAllCategories(): Promise<
         $lookup: {
           from: "products",
           localField: "_id",
-          foreignField: "categories",
+          foreignField: "category",
           as: "products",
         },
       },
@@ -139,7 +140,7 @@ export async function getAllCategories(): Promise<
                 input: "$products",
                 as: "product",
                 cond: {
-                  $lte: ["$$product.stockLevel", "$$product.minStockLevel"],
+                  $lte: ["$$product.currentStock", "$$product.lowStockThreshold"],
                 },
               },
             },
@@ -149,7 +150,7 @@ export async function getAllCategories(): Promise<
               $map: {
                 input: "$products",
                 as: "product",
-                in: { $multiply: ["$$product.price", "$$product.stockLevel"] },
+                in: { $multiply: ["$$product.sellingPrice", "$$product.currentStock"] },
               },
             },
           },
@@ -179,11 +180,12 @@ export async function getAllCategories(): Promise<
   }
 }
 
-export async function getCategoryStats(): Promise<
+export async function getStats(): Promise<
   Response<{
     totalCategories: number;
     totalItems: number;
     lowStockItems: number;
+    outofStock: number;
     totalValue: number;
   }>
 > {
@@ -200,7 +202,7 @@ export async function getCategoryStats(): Promise<
         $lookup: {
           from: "products",
           localField: "_id",
-          foreignField: "categories",
+          foreignField: "category",
           as: "products",
         },
       },
@@ -216,8 +218,22 @@ export async function getCategoryStats(): Promise<
                   input: "$products",
                   as: "product",
                   cond: {
-                    $lte: ["$$product.stockLevel", "$$product.minStockLevel"],
+                    $and: [
+                      { $lte: ["$$product.currentStock", "$$product.lowStockThreshold"] },
+                      { $gt: ["$$product.currentStock", 0] },
+                    ],
                   },
+                },
+              },
+            },
+          },
+          outofStock: {
+            $sum: {
+              $size: {
+                $filter: {
+                  input: "$products",
+                  as: "product",
+                  cond: { $eq: ["$$product.currentStock", 0] },
                 },
               },
             },
@@ -227,7 +243,7 @@ export async function getCategoryStats(): Promise<
               $map: {
                 input: "$products",
                 as: "product",
-                in: { $multiply: ["$$product.price", "$$product.stockLevel"] },
+                in: { $multiply: ["$$product.sellingPrice", "$$product.currentStock"] },
               },
             },
           },
@@ -239,6 +255,7 @@ export async function getCategoryStats(): Promise<
           totalCategories: 1,
           totalItems: 1,
           lowStockItems: 1,
+          outofStock: 1,
           totalValue: 1,
         },
       },
@@ -251,6 +268,7 @@ export async function getCategoryStats(): Promise<
         totalItems: 0,
         lowStockItems: 0,
         totalValue: 0,
+        outofStock: 0,
       },
     };
   } catch (error) {
@@ -287,7 +305,7 @@ export async function getSingleCategoryStats(id: string): Promise<
         $lookup: {
           from: "products",
           localField: "_id",
-          foreignField: "categories",
+          foreignField: "category",
           as: "products",
         },
       },
@@ -300,7 +318,7 @@ export async function getSingleCategoryStats(id: string): Promise<
                 input: "$products",
                 as: "product",
                 cond: {
-                  $lte: ["$$product.stockLevel", "$$product.minStockLevel"],
+                  $lte: ["$$product.currentStock", "$$product.lowStockThreshold"],
                 },
               },
             },
@@ -310,7 +328,7 @@ export async function getSingleCategoryStats(id: string): Promise<
               $filter: {
                 input: "$products",
                 as: "product",
-                cond: { $gt: ["$$product.stockLevel", 0] },
+                cond: { $gt: ["$$product.currentStock", "$$product.lowStockThreshold"] },
               },
             },
           },
@@ -319,7 +337,7 @@ export async function getSingleCategoryStats(id: string): Promise<
               $filter: {
                 input: "$products",
                 as: "product",
-                cond: { $eq: ["$$product.stockLevel", 0] },
+                cond: { $eq: ["$$product.currentStock", 0] },
               },
             },
           },
@@ -328,7 +346,7 @@ export async function getSingleCategoryStats(id: string): Promise<
               $map: {
                 input: "$products",
                 as: "product",
-                in: { $multiply: ["$$product.price", "$$product.stockLevel"] },
+                in: { $multiply: ["$$product.sellingPrice", "$$product.currentStock"] },
               },
             },
           },

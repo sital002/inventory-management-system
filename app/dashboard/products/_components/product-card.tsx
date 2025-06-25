@@ -1,4 +1,6 @@
+import { ICategory } from "@/app/models/category";
 import { IProduct } from "@/app/models/product";
+import { ISupplier } from "@/app/models/supplier";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,11 +10,14 @@ import Link from "next/link";
 import React from "react";
 
 interface ProductCardProps {
-  product: IProduct;
+  product: IProduct & { supplier: ISupplier } & { category: ICategory };
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const stockStatus = getStockStatus(product.stockLevel, product.minStockLevel);
+  const stockStatus = getStockStatus(
+    product.currentStock,
+    product.lowStockThreshold
+  );
   return (
     <Card className="border-green-200 bg-white shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className="pb-3">
@@ -36,17 +41,19 @@ export function ProductCard({ product }: ProductCardProps) {
           <div className="flex justify-between text-sm">
             <span className="text-gray-500">Category:</span>
             <span className="font-medium text-green-900">
-              {product.category}
+              {product.category?.name || "Uncategorized"}
             </span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-gray-500">Price:</span>
-            <span className="font-medium text-green-900">${product.price}</span>
+            <span className="font-medium text-green-900">
+              ${product.sellingPrice}
+            </span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-gray-500">Stock:</span>
             <span className={`font-medium ${getStatusColor(stockStatus)}`}>
-              {product.stockLevel} units
+              {product.currentStock} units
             </span>
           </div>
           <div className="flex justify-between text-sm">
@@ -63,7 +70,7 @@ export function ProductCard({ product }: ProductCardProps) {
               className="flex-1 border-green-200 text-green-800 hover:bg-green-100 hover:text-green-900"
             >
               <Link
-                href={`/dashboard/products/${product._id}`}
+                href={`/dashboard/products/${product._id.toString()}`}
                 className="no-underline"
               >
                 <Eye className="mr-1 h-3 w-3" />

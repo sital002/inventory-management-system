@@ -1,8 +1,8 @@
-import { getCategoryStats } from "@/actions/category";
+import { getStats } from "@/actions/category";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export async function CategoryStatsAsync() {
-  const result = await getCategoryStats();
+  const result = await getStats();
   if (!result.success) {
     console.error("Failed to fetch category stats:", result.error);
     return <div>Error loading category stats</div>;

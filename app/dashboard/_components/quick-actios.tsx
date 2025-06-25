@@ -24,14 +24,14 @@ export async function QuickActions() {
       title: "Add New Item",
       description: "Add items to inventory",
       icon: Plus,
-      href: "/inventory/add",
+      href: "/dashboard/products/new",
       color: "bg-green-600 hover:bg-green-700",
     },
     {
       title: "Manage Categories",
       description: "View and edit categories",
       icon: Package,
-      href: "/categories",
+      href: "/dashboard/categories",
       color: "bg-blue-600 hover:bg-blue-700",
     },
     {

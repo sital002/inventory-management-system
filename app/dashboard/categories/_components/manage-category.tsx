@@ -25,12 +25,12 @@ export function ManageCategory({ products }: ManageInventoryClientProps) {
 
     let matchesStatus = true;
     if (statusFilter === "in-stock") {
-      matchesStatus = item.stockLevel > item.minStockLevel;
+      matchesStatus = item.currentStock > item.lowStockThreshold;
     } else if (statusFilter === "low-stock") {
       matchesStatus =
-        item.stockLevel <= item.minStockLevel && item.stockLevel > 0;
+        item.currentStock <= item.lowStockThreshold && item.currentStock > 0;
     } else if (statusFilter === "out-of-stock") {
-      matchesStatus = item.stockLevel === 0;
+      matchesStatus = item.currentStock === 0;
     }
 
     return matchesSearch && matchesStatus;
@@ -41,9 +41,9 @@ export function ManageCategory({ products }: ManageInventoryClientProps) {
       case "name":
         return a.name.localeCompare(b.name);
       case "stock":
-        return b.stockLevel - a.stockLevel;
+        return b.currentStock - a.currentStock;
       case "price":
-        return b.price - a.price;
+        return b.sellingPrice - a.sellingPrice;
       case "sku":
         return a.sku.localeCompare(b.sku);
       default:

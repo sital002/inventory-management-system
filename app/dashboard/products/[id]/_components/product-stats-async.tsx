@@ -9,15 +9,15 @@ interface ProductStatsAsyncProps {
 export async function ProductStatsAsync({ product }: ProductStatsAsyncProps) {
   if (!product) return null;
 
-  const totalValue = product.price * product.stockLevel;
-  const profitPerUnit = product.price - product.costPrice;
-  const totalProfit = profitPerUnit * product.stockLevel;
+  const totalValue = product.sellingPrice * product.currentStock;
+  const profitPerUnit = product.sellingPrice - product.costPrice;
+  const totalProfit = profitPerUnit * product.currentStock;
   const daysInStock = Math.floor(Math.random() * 30) + 1;
 
   const stats = [
     {
       title: "Current Stock",
-      value: `${product.stockLevel} units`,
+      value: `${product.currentStock} units`,
       icon: Package,
       color: "bg-green-50 border-green-200 text-green-700",
       valueColor: "text-green-900",

@@ -20,20 +20,20 @@ import { ISupplier } from "@/app/models/supplier";
 import { ICategory } from "@/app/models/category";
 
 interface ProductDetailsAsyncProps {
-  product: IProduct & { supplier: ISupplier } & { categories: ICategory };
+  product: IProduct & { supplier: ISupplier } & { category: ICategory };
 }
 
 export async function ProductDetailsAsync({
   product,
 }: ProductDetailsAsyncProps) {
   const getStockStatus = () => {
-    if (product.stockLevel === 0) {
+    if (product.currentStock === 0) {
       return {
         label: "Out of Stock",
         color: "bg-red-100 text-red-800 border-red-200",
         icon: AlertTriangle,
       };
-    } else if (product.stockLevel <= product.minStockLevel) {
+    } else if (product.currentStock <= product.lowStockThreshold) {
       return {
         label: "Low Stock",
         color: "bg-yellow-100 text-yellow-800 border-yellow-200",
@@ -101,11 +101,11 @@ export async function ProductDetailsAsync({
                     <Badge
                       className={`${
                         colorOptions.find(
-                          (option) => option.label === product.categories?.name
+                          (option) => option.label === product.category?.name
                         )?.value
                       } border`}
                     >
-                      {product.categories?.name}
+                      {product.category?.name}
                     </Badge>
                   </div>
                   <div className="flex justify-between items-center">
@@ -124,7 +124,9 @@ export async function ProductDetailsAsync({
                   <div className="flex justify-between items-center">
                     <span className="text-green-700">Last Restocked:</span>
                     <span className="text-green-900">
-                      {product?.lastRestocked}
+                      {product.lastRestocked
+                        ? new Date(product.lastRestocked).toLocaleDateString()
+                        : "Not Restocked"}
                     </span>
                   </div>
                 </div>
@@ -140,25 +142,26 @@ export async function ProductDetailsAsync({
                   <div className="flex justify-between items-center">
                     <span className="text-green-700">Current Stock:</span>
                     <span className="font-medium text-green-900">
-                      {product.stockLevel} units
+                      {product.currentStock} units
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-green-700">Low Stock Alert:</span>
                     <span className="text-green-900">
-                      {product.minStockLevel} units
+                      {product.lowStockThreshold} units
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-green-700">Unit Price:</span>
                     <span className="font-medium text-green-900">
-                      ${product.price.toFixed(2)}
+                      ${product.sellingPrice.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-green-700">Total Value:</span>
                     <span className="font-medium text-green-900">
-                      ${(product.price * product.stockLevel).toFixed(2)}
+                      $
+                      {(product.sellingPrice * product.currentStock).toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
@@ -167,14 +170,14 @@ export async function ProductDetailsAsync({
                       <div className="w-20 bg-gray-200 rounded-full h-2">
                         <div
                           className={`h-2 rounded-full ${
-                            product.stockLevel <= product.minStockLevel
+                            product.currentStock <= product.lowStockThreshold
                               ? "bg-red-500"
                               : "bg-green-500"
                           }`}
                           style={{
                             width: `${Math.min(
-                              (product.stockLevel /
-                                (product.minStockLevel * 2)) *
+                              (product.currentStock /
+                                (product.lowStockThreshold * 2)) *
                                 100,
                               100
                             )}%`,
@@ -183,7 +186,8 @@ export async function ProductDetailsAsync({
                       </div>
                       <span className="text-xs text-green-600">
                         {Math.round(
-                          (product.stockLevel / (product.minStockLevel * 2)) *
+                          (product.currentStock /
+                            (product.lowStockThreshold * 2)) *
                             100
                         )}
                         %

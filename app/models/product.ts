@@ -1,7 +1,8 @@
-import mongoose from "mongoose";
+import mongoose, { Model, models } from "mongoose";
 import { Schema } from "mongoose";
 
 export interface IProduct {
+  _id: mongoose.Types.ObjectId;
   name: string;
   sku: string;
   barcode?: string;
@@ -23,8 +24,10 @@ export interface IProduct {
   trackInventory: boolean;
   requiresRefrigeration: boolean;
   isOrganic: boolean;
+  lastRestocked?: Date;
   createdAt: Date;
   updatedAt: Date;
+
 }
 
 const productSchema = new Schema<IProduct>({
@@ -125,11 +128,15 @@ const productSchema = new Schema<IProduct>({
     type: Boolean,
     required: true,
   },
+  lastRestocked: {
+    type: Date,
+    default: null
+  }
 
 }, {
   timestamps: true
 });
 
-const Product = mongoose.model("Product", productSchema);
+const Product: Model<IProduct> = models.Product || mongoose.model("Product", productSchema);
 
 export default Product;

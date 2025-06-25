@@ -131,7 +131,7 @@ export async function addNewProduct(
 export async function getProductDetail(
   id: string
 ): Promise<
-  Response<IProduct & { supplier: ISupplier } & { categories: ICategory }>
+  Response<IProduct & { supplier: ISupplier } & { category: ICategory }>
 > {
   try {
     await connectToDatabase();
@@ -166,7 +166,7 @@ export async function getPaginatedProducts(
   options: Filters = {}
 ): Promise<
   Response<{
-    products: (IProduct & { supplier: ISupplier })[];
+    products: (IProduct & { supplier: ISupplier } & { category: ICategory })[];
     total: number;
     pages: number;
   }>
@@ -187,6 +187,7 @@ export async function getPaginatedProducts(
       name: { $regex: searchTerm, $options: "i" },
     })
       .populate<{ supplier: ISupplier }>("supplier")
+      .populate<{ category: ICategory }>("category")
       .skip(skip)
       .limit(limit)
       .lean();
@@ -259,8 +260,9 @@ export async function findProductsByCategory(
     return { success: false, error: "Invalid mongoose id" };
   }
   await Supplier.exists({});
-  const products = await Product.find({ categories: id }).populate<{
+  const products = await Product.find({ category: id }).populate<{
     supplier: ISupplier;
   }>("supplier");
+  console.log(products)
   return { success: true, data: JSON.parse(JSON.stringify(products)) };
 }

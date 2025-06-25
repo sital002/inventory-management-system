@@ -40,13 +40,13 @@ interface InventoryTableProps {
 
 export function CategoryTable({ items }: InventoryTableProps) {
   const getStockStatus = (item: IProduct & { supplier: ISupplier }) => {
-    if (item.stockLevel === 0) {
+    if (item.currentStock === 0) {
       return {
         status: "out-of-stock",
         color: "bg-red-100 text-red-800 border-red-200",
         icon: AlertTriangle,
       };
-    } else if (item.stockLevel <= item.minStockLevel) {
+    } else if (item.currentStock <= item.lowStockThreshold) {
       return {
         status: "low-stock",
         color: "bg-yellow-100 text-yellow-800 border-yellow-200",
@@ -134,14 +134,14 @@ export function CategoryTable({ items }: InventoryTableProps) {
 
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium text-green-900">
-                  ${item.price.toFixed(2)}
+                  ${item.sellingPrice.toFixed(2)}
                 </span>
                 {getStatusBadge(item)}
               </div>
 
               <div className="flex justify-between text-xs text-green-600">
-                <span>Stock: {item.stockLevel}</span>
-                <span>Supplier: {item.supplier._id.toString()}</span>
+                <span>Stock: {item.currentStock}</span>
+                <span>Supplier: {item.supplier.name}</span>
               </div>
             </div>
           ))}
@@ -175,12 +175,12 @@ export function CategoryTable({ items }: InventoryTableProps) {
                     {item.sku}
                   </TableCell>
                   <TableCell className="text-green-700 font-medium">
-                    ${item.price.toFixed(2)}
+                    ${item.sellingPrice.toFixed(2)}
                   </TableCell>
                   <TableCell className="text-green-700">
-                    <span className="font-medium">{item.stockLevel}</span>
+                    <span className="font-medium">{item.currentStock}</span>
                     <span className="text-xs text-green-600 ml-1">
-                      / {item.minStockLevel}
+                      / {item.lowStockThreshold}
                     </span>
                   </TableCell>
                   <TableCell>{getStatusBadge(item)}</TableCell>
@@ -188,7 +188,9 @@ export function CategoryTable({ items }: InventoryTableProps) {
                     {item.supplier.name}
                   </TableCell>
                   <TableCell className="text-green-700">
-                    {item?.lastRestocked}
+                    {item.lastRestocked
+                      ? new Date(item.lastRestocked).toLocaleDateString()
+                      : "N/A"}
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
