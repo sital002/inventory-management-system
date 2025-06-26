@@ -1,6 +1,6 @@
 "use client";
 import { addNewSupplier, updateSupplier } from "@/actions/supplier";
-import { ISupplier } from "@/app/models/supplier";
+import { ISupplier } from "@/models/supplier";
 import { Button } from "@/components/ui/button";
 import {
   Form,

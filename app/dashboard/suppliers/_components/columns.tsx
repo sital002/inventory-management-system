@@ -2,7 +2,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { ISupplier } from "@/app/models/supplier";
+import { ISupplier } from "@/models/supplier";
 import SupplierForm from "./supplier-form";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { DialogTitle } from "@radix-ui/react-dialog";

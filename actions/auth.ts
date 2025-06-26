@@ -1,6 +1,6 @@
 "use server";
 
-import User from "@/app/models/user";
+import User from "@/models/user";
 import { connectToDatabase } from "@/utils/db";
 import { z } from "zod";
 import bcrypt from "bcrypt";
@@ -18,13 +18,13 @@ const loginSchema = z.object({
 
 type Response =
   | {
-      success: false;
-      error: string;
-    }
+    success: false;
+    error: string;
+  }
   | {
-      success: true;
-      data: unknown;
-    };
+    success: true;
+    data: unknown;
+  };
 
 export async function loginUser(
   email: string,

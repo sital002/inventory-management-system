@@ -15,9 +15,9 @@ import {
 } from "lucide-react";
 import { ProductActions } from "./product-actions";
 import { colorOptions } from "@/utils/color-options";
-import { IProduct } from "@/app/models/product";
-import { ISupplier } from "@/app/models/supplier";
-import { ICategory } from "@/app/models/category";
+import { IProduct } from "@/models/product";
+import { ISupplier } from "@/models/supplier";
+import { ICategory } from "@/models/category";
 
 interface ProductDetailsAsyncProps {
   product: IProduct & { supplier: ISupplier } & { category: ICategory };

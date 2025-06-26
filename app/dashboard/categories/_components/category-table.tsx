@@ -30,8 +30,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { IProduct } from "@/app/models/product";
-import { ISupplier } from "@/app/models/supplier";
+import { IProduct } from "@/models/product";
+import { ISupplier } from "@/models/supplier";
 import Link from "next/link";
 
 interface InventoryTableProps {
@@ -95,7 +95,6 @@ export function CategoryTable({ items }: InventoryTableProps) {
         </CardDescription>
       </CardHeader>
       <CardContent className="p-0">
-        {/* Mobile Card View */}
         <div className="block sm:hidden">
           {items.map((item) => (
             <div
@@ -147,7 +146,6 @@ export function CategoryTable({ items }: InventoryTableProps) {
           ))}
         </div>
 
-        {/* Desktop Table View */}
         <div className="hidden sm:block overflow-x-auto">
           <Table>
             <TableHeader>
@@ -212,9 +210,13 @@ export function CategoryTable({ items }: InventoryTableProps) {
                             View Details
                           </DropdownMenuItem>
                         </Link>
-                        <DropdownMenuItem>
-                          <Edit className="h-4 w-4 mr-2" />
-                          Edit Item
+                        <DropdownMenuItem asChild>
+                          <Link
+                            href={`/dashboard/products/edit/${item._id.toString()}`}
+                          >
+                            <Edit className="h-4 w-4 mr-2" />
+                            Edit Item
+                          </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem className="text-red-600">
                           <Trash2 className="h-4 w-4 mr-2" />
