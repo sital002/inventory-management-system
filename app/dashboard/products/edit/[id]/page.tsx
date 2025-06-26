@@ -4,12 +4,11 @@ import { ProductForm } from "../../_components/product-form";
 import { getProductDetail } from "@/actions/product";
 
 interface PageProps {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 }
 
 export default async function page({ params }: PageProps) {
+  const { id } = await params;
   const suppliers = await getAllSuppliers();
   if (!suppliers.success) {
     return (
@@ -40,7 +39,7 @@ export default async function page({ params }: PageProps) {
       </div>
     );
   }
-  const product = await getProductDetail(params.id);
+  const product = await getProductDetail(id);
   if (!product.success) {
     return (
       <div className="min-h-screen bg-red-50 p-4 sm:p-6">

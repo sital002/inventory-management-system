@@ -7,13 +7,13 @@ import { colorOptions } from "@/utils/color-options";
 import { findProductsByCategory } from "@/actions/product";
 
 interface PageProps {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 }
 
-export default async function ManageInventoryPage({ params }: PageProps) {
-  const result = await getCategory(params.id);
+export default async function page({ params }: PageProps) {
+  const { id } = await params;
+
+  const result = await getCategory(id);
 
   if (!result.success)
     return (
@@ -21,7 +21,7 @@ export default async function ManageInventoryPage({ params }: PageProps) {
         {result.error || "Failed to load category"}
       </div>
     );
-  const data = await findProductsByCategory(params.id);
+  const data = await findProductsByCategory(id);
   if (!data.success) {
     return (
       <div className="text-red-500 text-center mt-4">

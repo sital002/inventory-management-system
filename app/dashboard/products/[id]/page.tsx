@@ -9,19 +9,17 @@ import ProductActivityLoading from "./_components/product-activity-loading";
 import { getProductDetail } from "@/actions/product";
 
 interface PageProps {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 }
 
 export default async function ProductPage({ params }: PageProps) {
-  const result = await getProductDetail(params.id);
+  const { id } = await params;
+  const result = await getProductDetail(id);
   if (!result.success) {
     return <p>Error:{result.error}</p>;
   }
 
   const product = result.data;
-  console.log(product);
 
   return (
     <div className="min-h-screen bg-green-50/30 p-4 sm:p-6">
@@ -53,7 +51,7 @@ export default async function ProductPage({ params }: PageProps) {
 
           <div className="space-y-4 sm:space-y-6">
             <Suspense fallback={<ProductActivityLoading />}>
-              <ProductActivityAsync productId={params.id} />
+              <ProductActivityAsync productId={id} />
             </Suspense>
           </div>
         </div>
