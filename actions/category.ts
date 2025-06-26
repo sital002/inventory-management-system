@@ -197,6 +197,7 @@ export async function getStats(): Promise<
         success: false,
         error: "User not authenticated",
       };
+
     const stats = await Category.aggregate([
       {
         $lookup: {
@@ -207,34 +208,27 @@ export async function getStats(): Promise<
         },
       },
       {
-        $group: {
-          _id: null,
-          totalCategories: { $sum: 1 },
-          totalItems: { $sum: { $size: "$products" } },
+        $addFields: {
           lowStockItems: {
-            $sum: {
-              $size: {
-                $filter: {
-                  input: "$products",
-                  as: "product",
-                  cond: {
-                    $and: [
-                      { $lte: ["$$product.currentStock", "$$product.lowStockThreshold"] },
-                      { $gt: ["$$product.currentStock", 0] },
-                    ],
-                  },
+            $size: {
+              $filter: {
+                input: "$products",
+                as: "product",
+                cond: {
+                  $and: [
+                    { $lte: ["$$product.currentStock", "$$product.lowStockThreshold"] },
+                    { $gt: ["$$product.currentStock", 0] },
+                  ],
                 },
               },
             },
           },
           outofStock: {
-            $sum: {
-              $size: {
-                $filter: {
-                  input: "$products",
-                  as: "product",
-                  cond: { $eq: ["$$product.currentStock", 0] },
-                },
+            $size: {
+              $filter: {
+                input: "$products",
+                as: "product",
+                cond: { $eq: ["$$product.currentStock", 0] },
               },
             },
           },
@@ -247,6 +241,16 @@ export async function getStats(): Promise<
               },
             },
           },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalCategories: { $sum: 1 },
+          totalItems: { $sum: { $size: "$products" } },
+          lowStockItems: { $sum: "$lowStockItems" },
+          outofStock: { $sum: "$outofStock" },
+          totalValue: { $sum: "$totalValue" },
         },
       },
       {
