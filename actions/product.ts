@@ -8,80 +8,11 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { z } from "zod";
 import { isAuthenticated } from "./auth";
+import { productSchema } from "@/schema/product";
 export type Response<T> =
   | { success: true; data: T }
   | { success: false; error: string };
 
-const productSchema = z.object({
-  name: z
-    .string()
-    .min(2, "Product name must be at least 2 characters")
-    .max(100, "Product name must be less than 100 characters"),
-  sku: z
-    .string()
-    .min(3, "SKU must be at least 3 characters")
-    .max(50, "SKU must be less than 50 characters"),
-  barcode: z.string().optional().or(z.literal("")),
-  categoryId: z.string().min(1, "Please select a category"),
-  supplierId: z.string().optional().or(z.literal("")),
-  brand: z.string().optional().or(z.literal("")),
-  description: z.string().optional().or(z.literal("")),
-  unit: z.string().min(1, "Unit is required"),
-
-  costPrice: z
-    .string()
-    .min(1, "Cost price is required")
-    .refine(
-      (val) => !isNaN(Number(val)) && Number(val) > 0,
-      "Cost price must be a positive number"
-    ),
-  sellingPrice: z
-    .string()
-    .min(1, "Selling price is required")
-    .refine(
-      (val) => !isNaN(Number(val)) && Number(val) > 0,
-      "Selling price must be a positive number"
-    ),
-  discountPrice: z
-    .string()
-    .optional()
-    .or(z.literal(""))
-    .refine(
-      (val) => !val || (!isNaN(Number(val)) && Number(val) >= 0),
-      "Discount price must be a positive number"
-    ),
-
-  initialStock: z
-    .string()
-    .min(1, "Initial stock is required")
-    .refine(
-      (val) => !isNaN(Number(val)) && Number(val) >= 0,
-      "Initial stock must be a non-negative number"
-    ),
-  lowStockThreshold: z
-    .string()
-    .min(1, "Low stock threshold is required")
-    .refine(
-      (val) => !isNaN(Number(val)) && Number(val) >= 0,
-      "Low stock threshold must be a non-negative number"
-    ),
-
-  weight: z
-    .string()
-    .optional()
-    .or(z.literal(""))
-    .refine(
-      (val) => !val || (!isNaN(Number(val)) && Number(val) > 0),
-      "Weight must be a positive number"
-    ),
-  dimensions: z.string().optional().or(z.literal("")),
-
-  isPerishable: z.boolean(),
-  isActive: z.boolean(),
-  trackInventory: z.boolean(),
-  requiresRefrigeration: z.boolean(),
-  isOrganic: z.boolean(),
-});
 
 
 export async function addNewProduct(
@@ -90,8 +21,9 @@ export async function addNewProduct(
   try {
     await connectToDatabase();
     const result = productSchema.safeParse(product);
+    console.log("Product Schema Result:", result);
     if (!result.success) {
-      throw new Error(result.error.errors[0].path.toString());
+      throw new Error(result.error.errors[0].message.toString());
     }
     const data = (await cookies()).get("user");
 
@@ -102,10 +34,35 @@ export async function addNewProduct(
     if (user.role !== "admin") {
       throw new Error("Only admins can add new products");
     }
-    const newProduct = await Product.create(result.data);
+    const newProduct = await Product.create({
+      name: result.data.name,
+      description: result.data.description,
+      sku: result.data.sku,
+      barcode: result.data.barcode || "",
+      category: result.data.categoryId,
+      supplier: result.data.supplierId,
+      brand: result.data.brand || "",
+      unit: result.data.unit,
+      costPrice: parseFloat(result.data.costPrice),
+      sellingPrice: parseFloat(result.data.sellingPrice),
+      discountPrice: result.data.discountPrice
+        ? parseFloat(result.data.discountPrice)
+        : 0,
+      initialStock: parseFloat(result.data.initialStock),
+      lowStockThreshold: parseFloat(result.data.lowStockThreshold),
+      weight: result.data.weight ? parseFloat(result.data.weight) : 0,
+      dimensions: result.data.dimensions,
+      currentStock: parseFloat(result.data.initialStock),
+      isActive: result.data.isActive || true,
+      isOrganic: result.data.isOrganic || false,
+      isPerishable: result.data.isPerishable || false,
+      requiresRefrigeration: result.data.requiresRefrigeration || false,
+      trackInventory: result.data.trackInventory || true,
+    });
     if (!newProduct) {
       throw new Error("Failed to create product");
     }
+    revalidatePath("/dashboard/products");
     return { success: true, data: JSON.parse(JSON.stringify(newProduct)) };
   } catch (error) {
     console.log(error instanceof mongoose.mongo.MongoServerError);

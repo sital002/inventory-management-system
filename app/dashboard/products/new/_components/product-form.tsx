@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import {
   Card,
   CardContent,
@@ -48,226 +47,45 @@ import {
 import { Check, ChevronsUpDown, Save } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const categories = [
-  {
-    id: 1,
-    name: "Fresh Produce",
-    description: "Fruits and vegetables",
-    isActive: true,
-    taxRate: 0.05,
-    color: "bg-green-50 border-green-200",
-  },
-  {
-    id: 2,
-    name: "Dairy & Eggs",
-    description: "Milk, cheese, yogurt, eggs",
-    isActive: true,
-    taxRate: 0.08,
-    color: "bg-blue-50 border-blue-200",
-  },
-  {
-    id: 3,
-    name: "Meat & Seafood",
-    description: "Fresh and frozen meat, fish",
-    isActive: true,
-    taxRate: 0.1,
-    color: "bg-red-50 border-red-200",
-  },
-  {
-    id: 4,
-    name: "Bakery",
-    description: "Bread, pastries, cakes",
-    isActive: true,
-    taxRate: 0.08,
-    color: "bg-yellow-50 border-yellow-200",
-  },
-  {
-    id: 5,
-    name: "Frozen Foods",
-    description: "Frozen meals, ice cream",
-    isActive: true,
-    taxRate: 0.08,
-    color: "bg-cyan-50 border-cyan-200",
-  },
-  {
-    id: 6,
-    name: "Beverages",
-    description: "Soft drinks, juices, water",
-    isActive: true,
-    taxRate: 0.12,
-    color: "bg-purple-50 border-purple-200",
-  },
-  {
-    id: 7,
-    name: "Snacks & Candy",
-    description: "Chips, cookies, chocolate",
-    isActive: true,
-    taxRate: 0.15,
-    color: "bg-orange-50 border-orange-200",
-  },
-  {
-    id: 8,
-    name: "Household Items",
-    description: "Cleaning supplies, paper goods",
-    isActive: true,
-    taxRate: 0.1,
-    color: "bg-gray-50 border-gray-200",
-  },
-];
-
-const suppliers = [
-  {
-    id: 1,
-    name: "Fresh Farm Co.",
-    contactPerson: "John Smith",
-    email: "john@freshfarm.com",
-    phone: "(555) 123-4567",
-    paymentTerms: "Net 15",
-    isActive: true,
-  },
-  {
-    id: 2,
-    name: "Dairy Direct Ltd.",
-    contactPerson: "Sarah Johnson",
-    email: "sarah@dairydirect.com",
-    phone: "(555) 234-5678",
-    paymentTerms: "Net 30",
-    isActive: true,
-  },
-  {
-    id: 3,
-    name: "Ocean Fresh Seafood",
-    contactPerson: "Mike Wilson",
-    email: "mike@oceanfresh.com",
-    phone: "(555) 345-6789",
-    paymentTerms: "Net 7",
-    isActive: true,
-  },
-  {
-    id: 4,
-    name: "Golden Bakery Supply",
-    contactPerson: "Lisa Brown",
-    email: "lisa@goldenbakery.com",
-    phone: "(555) 456-7890",
-    paymentTerms: "Net 15",
-    isActive: true,
-  },
-  {
-    id: 5,
-    name: "Frozen Foods Inc.",
-    contactPerson: "David Lee",
-    email: "david@frozenfoods.com",
-    phone: "(555) 567-8901",
-    paymentTerms: "Net 30",
-    isActive: true,
-  },
-  {
-    id: 6,
-    name: "Beverage Distributors",
-    contactPerson: "Emma Davis",
-    email: "emma@bevdist.com",
-    phone: "(555) 678-9012",
-    paymentTerms: "Net 15",
-    isActive: true,
-  },
-];
-
-const productSchema = z.object({
-  name: z
-    .string()
-    .min(2, "Product name must be at least 2 characters")
-    .max(100, "Product name must be less than 100 characters"),
-  sku: z
-    .string()
-    .min(3, "SKU must be at least 3 characters")
-    .max(50, "SKU must be less than 50 characters"),
-  barcode: z.string().optional().or(z.literal("")),
-  categoryId: z.string().min(1, "Please select a category"),
-  supplierId: z.string().optional().or(z.literal("")),
-  brand: z.string().optional().or(z.literal("")),
-  description: z.string().optional().or(z.literal("")),
-  unit: z.string().min(1, "Unit is required"),
-
-  // Pricing
-  costPrice: z
-    .string()
-    .min(1, "Cost price is required")
-    .refine(
-      (val) => !isNaN(Number(val)) && Number(val) > 0,
-      "Cost price must be a positive number"
-    ),
-  sellingPrice: z
-    .string()
-    .min(1, "Selling price is required")
-    .refine(
-      (val) => !isNaN(Number(val)) && Number(val) > 0,
-      "Selling price must be a positive number"
-    ),
-  discountPrice: z
-    .string()
-    .optional()
-    .or(z.literal(""))
-    .refine(
-      (val) => !val || (!isNaN(Number(val)) && Number(val) >= 0),
-      "Discount price must be a positive number"
-    ),
-
-  initialStock: z
-    .string()
-    .min(1, "Initial stock is required")
-    .refine(
-      (val) => !isNaN(Number(val)) && Number(val) >= 0,
-      "Initial stock must be a non-negative number"
-    ),
-  lowStockThreshold: z
-    .string()
-    .min(1, "Low stock threshold is required")
-    .refine(
-      (val) => !isNaN(Number(val)) && Number(val) >= 0,
-      "Low stock threshold must be a non-negative number"
-    ),
-
-  weight: z
-    .string()
-    .optional()
-    .or(z.literal(""))
-    .refine(
-      (val) => !val || (!isNaN(Number(val)) && Number(val) > 0),
-      "Weight must be a positive number"
-    ),
-  dimensions: z.string().optional().or(z.literal("")),
-
-  isPerishable: z.boolean(),
-  isActive: z.boolean(),
-  trackInventory: z.boolean(),
-  requiresRefrigeration: z.boolean(),
-  isOrganic: z.boolean(),
-});
+import { productSchema } from "@/schema/product";
+import { z } from "zod";
+import { ISupplier } from "@/app/models/supplier";
+import { getAllCategories } from "@/actions/category";
+import { addNewProduct } from "@/actions/product";
 
 type ProductFormData = z.infer<typeof productSchema>;
 
-export function ProductForm() {
+interface ProductFormProps {
+  suppliers: ISupplier[];
+  categories: Extract<
+    Awaited<ReturnType<typeof getAllCategories>>,
+    { success: true }
+  >["data"];
+}
+export function ProductForm(props: ProductFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [supplierOpen, setSupplierOpen] = useState(false);
+  const { suppliers, categories } = props;
+  const [error, setError] = useState("");
 
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
     defaultValues: {
-      name: "",
-      sku: "",
+      name: "Test",
+      sku: "test55",
       barcode: "",
       categoryId: "",
       supplierId: "",
-      brand: "",
-      description: "",
+      brand: "Test",
+      description: "Test",
       unit: "pieces",
-      costPrice: "",
-      sellingPrice: "",
-      discountPrice: "",
-      initialStock: "",
-      lowStockThreshold: "",
+      costPrice: "3",
+      sellingPrice: "5",
+      discountPrice: "3",
+      initialStock: "300",
+      lowStockThreshold: "100",
       weight: "",
       dimensions: "",
       isPerishable: false,
@@ -280,9 +98,14 @@ export function ProductForm() {
 
   const onSubmit = async (data: ProductFormData) => {
     setIsSubmitting(true);
-
+    setError("");
     try {
       console.log(data);
+      const result = await addNewProduct(data);
+      if (!result.success) {
+        setError(result.error);
+      }
+      setError("");
       router.push("/dashboard/products?success=true");
     } catch (error) {
       console.error("Error creating product:", error);
@@ -295,17 +118,13 @@ export function ProductForm() {
     router.push("/dashboard/products");
   };
 
-  const selectedCategory = categories.find(
-    (cat) => cat.id.toString() === form.watch("categoryId")
-  );
   const selectedSupplier = suppliers.find(
-    (sup) => sup.id.toString() === form.watch("supplierId")
+    (sup) => sup._id.toString() === form.watch("supplierId")
   );
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        {/* Basic Information */}
         <Card className="border-green-200">
           <CardHeader className="pb-6">
             <CardTitle className="text-green-900">Basic Information</CardTitle>
@@ -397,7 +216,7 @@ export function ProductForm() {
                             {field.value
                               ? categories.find(
                                   (category) =>
-                                    category.id.toString() === field.value
+                                    category._id.toString() === field.value
                                 )?.name
                               : "Select category..."}
                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -412,12 +231,12 @@ export function ProductForm() {
                             <CommandGroup>
                               {categories.map((category) => (
                                 <CommandItem
-                                  key={category.id}
-                                  value={`${category.name} ${category.id}`}
+                                  key={category._id.toString()}
+                                  value={`${category.name} ${category._id}`}
                                   onSelect={() => {
                                     form.setValue(
                                       "categoryId",
-                                      category.id.toString()
+                                      category._id.toString()
                                     );
                                     setCategoryOpen(false);
                                   }}
@@ -425,7 +244,7 @@ export function ProductForm() {
                                   <Check
                                     className={cn(
                                       "mr-2 h-4 w-4",
-                                      category.id.toString() === field.value
+                                      category._id.toString() === field.value
                                         ? "opacity-100"
                                         : "opacity-0"
                                     )}
@@ -435,8 +254,7 @@ export function ProductForm() {
                                       {category.name}
                                     </div>
                                     <div className="text-sm text-gray-500">
-                                      ID: {category.id} • Tax:{" "}
-                                      {(category.taxRate * 100).toFixed(1)}%
+                                      ID: {category._id.toString()}
                                     </div>
                                   </div>
                                 </CommandItem>
@@ -470,7 +288,7 @@ export function ProductForm() {
                             {field.value
                               ? suppliers.find(
                                   (supplier) =>
-                                    supplier.id.toString() === field.value
+                                    supplier._id.toString() === field.value
                                 )?.name
                               : "Select supplier..."}
                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -485,12 +303,14 @@ export function ProductForm() {
                             <CommandGroup>
                               {suppliers.map((supplier) => (
                                 <CommandItem
-                                  key={supplier.id}
-                                  value={`${supplier.name} ${supplier.id}`}
+                                  key={supplier._id.toString()}
+                                  value={`${
+                                    supplier.name
+                                  } ${supplier._id.toString()}`}
                                   onSelect={() => {
                                     form.setValue(
                                       "supplierId",
-                                      supplier.id.toString()
+                                      supplier._id.toString()
                                     );
                                     setSupplierOpen(false);
                                   }}
@@ -498,7 +318,7 @@ export function ProductForm() {
                                   <Check
                                     className={cn(
                                       "mr-2 h-4 w-4",
-                                      supplier.id.toString() === field.value
+                                      supplier._id.toString() === field.value
                                         ? "opacity-100"
                                         : "opacity-0"
                                     )}
@@ -508,7 +328,7 @@ export function ProductForm() {
                                       {supplier.name}
                                     </div>
                                     <div className="text-sm text-gray-500">
-                                      ID: {supplier.id} •{" "}
+                                      ID: {supplier._id.toString()} •{" "}
                                       {supplier.contactPerson}
                                     </div>
                                   </div>
@@ -602,7 +422,6 @@ export function ProductForm() {
           </CardContent>
         </Card>
 
-        {/* Pricing */}
         <Card className="border-green-200">
           <CardHeader className="pb-6">
             <CardTitle className="text-green-900">Pricing</CardTitle>
@@ -688,7 +507,6 @@ export function ProductForm() {
               />
             </div>
 
-            {/* Profit Margin & Tax Display */}
             {form.watch("costPrice") && form.watch("sellingPrice") && (
               <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-green-800">
@@ -709,31 +527,12 @@ export function ProductForm() {
                       Number(form.watch("costPrice"))
                     ).toFixed(2)}
                   </div>
-                  {selectedCategory && (
-                    <>
-                      <div>
-                        <strong>Tax Amount:</strong> $
-                        {(
-                          Number(form.watch("sellingPrice")) *
-                          selectedCategory.taxRate
-                        ).toFixed(2)}
-                      </div>
-                      <div>
-                        <strong>Final Price (incl. tax):</strong> $
-                        {(
-                          Number(form.watch("sellingPrice")) *
-                          (1 + selectedCategory.taxRate)
-                        ).toFixed(2)}
-                      </div>
-                    </>
-                  )}
                 </div>
               </div>
             )}
           </CardContent>
         </Card>
 
-        {/* Inventory */}
         <Card className="border-green-200">
           <CardHeader className="pb-6">
             <CardTitle className="text-green-900">Inventory</CardTitle>
@@ -841,7 +640,6 @@ export function ProductForm() {
           </CardContent>
         </Card>
 
-        {/* Product Settings */}
         <Card className="border-green-200">
           <CardHeader className="pb-6">
             <CardTitle className="text-green-900">Product Settings</CardTitle>
@@ -969,7 +767,6 @@ export function ProductForm() {
           </CardContent>
         </Card>
 
-        {/* Display selected supplier info */}
         {selectedSupplier && (
           <Card className="border-blue-200 bg-blue-50">
             <CardHeader className="pb-4">
@@ -989,16 +786,11 @@ export function ProductForm() {
                 <div>
                   <strong>Phone:</strong> {selectedSupplier.phone}
                 </div>
-                <div>
-                  <strong>Payment Terms:</strong>{" "}
-                  {selectedSupplier.paymentTerms}
-                </div>
               </div>
             </CardContent>
           </Card>
         )}
-
-        {/* Submit Buttons */}
+        <div>{error}</div>
         <div className="flex justify-end space-x-4 pt-6">
           <Button
             type="button"
