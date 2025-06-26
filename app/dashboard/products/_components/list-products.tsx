@@ -3,7 +3,6 @@
 import React, { FormEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { getPaginatedProducts } from "@/actions/product";
-import { IProduct } from "@/models/product";
 import { ProductCard } from "./product-card";
 import { Input } from "@/components/ui/input";
 import {
@@ -14,6 +13,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Link from "next/link";
+import { IProduct } from "@/models/product";
+import { ISupplier } from "@/models/supplier";
+import { ICategory } from "@/models/category";
 
 export function ListProducts({
   initialProducts,
@@ -21,7 +23,9 @@ export function ListProducts({
   initialPage,
   itemsPerPage,
 }: {
-  initialProducts: IProduct[];
+  initialProducts: (IProduct & { supplier: ISupplier } & {
+    category: ICategory;
+  })[];
   totalPages: number;
   initialPage: number;
   itemsPerPage: number;

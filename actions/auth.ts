@@ -73,7 +73,7 @@ export async function loginUser(
         email: userExists.email,
       },
     };
-  } catch (_error) {
+  } catch (error) {
     console.error("Error connecting to database:", error);
     return {
       success: false,
