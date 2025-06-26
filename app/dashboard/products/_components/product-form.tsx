@@ -51,17 +51,44 @@ import { productSchema } from "@/schema/product";
 import { z } from "zod";
 import { ISupplier } from "@/models/supplier";
 import { getAllCategories } from "@/actions/category";
-import { addNewProduct } from "@/actions/product";
+import {
+  addNewProduct,
+  getProductDetail,
+  updateProduct,
+} from "@/actions/product";
+import type { ExtractData } from "@/utils/response-type";
+
+const inititalValues: ProductFormData = {
+  name: "Test",
+  sku: "test55",
+  barcode: "",
+  categoryId: "",
+  supplierId: "",
+  brand: "Test",
+  description: "Test",
+  unit: "pieces",
+  costPrice: "3",
+  sellingPrice: "5",
+  discountPrice: "3",
+  initialStock: "300",
+  lowStockThreshold: "100",
+  weight: "",
+  dimensions: "",
+  isPerishable: false,
+  isActive: true,
+  trackInventory: true,
+  requiresRefrigeration: false,
+  isOrganic: false,
+};
 
 type ProductFormData = z.infer<typeof productSchema>;
 
-interface ProductFormProps {
+type ProductFormProps = {
   suppliers: ISupplier[];
-  categories: Extract<
-    Awaited<ReturnType<typeof getAllCategories>>,
-    { success: true }
-  >["data"];
-}
+  categories: ExtractData<Awaited<ReturnType<typeof getAllCategories>>>;
+  product?: ExtractData<Awaited<ReturnType<typeof getProductDetail>>>;
+};
+
 export function ProductForm(props: ProductFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -72,38 +99,49 @@ export function ProductForm(props: ProductFormProps) {
 
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
-    defaultValues: {
-      name: "Test",
-      sku: "test55",
-      barcode: "",
-      categoryId: "",
-      supplierId: "",
-      brand: "Test",
-      description: "Test",
-      unit: "pieces",
-      costPrice: "3",
-      sellingPrice: "5",
-      discountPrice: "3",
-      initialStock: "300",
-      lowStockThreshold: "100",
-      weight: "",
-      dimensions: "",
-      isPerishable: false,
-      isActive: true,
-      trackInventory: true,
-      requiresRefrigeration: false,
-      isOrganic: false,
-    },
+    defaultValues: props.product
+      ? {
+          name: props.product.name,
+          sku: props.product.sku,
+          barcode: props.product.barcode || "",
+          brand: props.product.brand || "",
+          description: props.product.description || "",
+          unit: props.product.unit || "pieces",
+          costPrice: props.product.costPrice.toString(),
+          sellingPrice: props.product.sellingPrice.toString(),
+          discountPrice: props.product.discountPrice?.toString() || "",
+          initialStock: props.product.initialStock.toString(),
+          lowStockThreshold: props.product.lowStockThreshold.toString(),
+          weight: props.product.weight?.toString() || "",
+          dimensions: props.product.dimensions || "",
+          isPerishable: props.product.isPerishable || false,
+          isActive: props.product.isActive || true,
+          trackInventory: props.product.trackInventory || true,
+          requiresRefrigeration: props.product.requiresRefrigeration || false,
+          isOrganic: props.product.isOrganic || false,
+          supplierId: props.product.supplier._id.toString(),
+          categoryId: props.product.category._id.toString(),
+        }
+      : inititalValues,
   });
 
   const onSubmit = async (data: ProductFormData) => {
     setIsSubmitting(true);
     setError("");
     try {
-      console.log(data);
+      if (props.product) {
+        const result = await updateProduct(props.product._id.toString(), data);
+        if (!result.success) {
+          setError(result.error);
+          return;
+        }
+        setError("");
+        router.push("/dashboard/products?success=true");
+      }
       const result = await addNewProduct(data);
       if (!result.success) {
         setError(result.error);
+        return;
       }
       setError("");
       router.push("/dashboard/products?success=true");
@@ -809,12 +847,13 @@ export function ProductForm(props: ProductFormProps) {
             {isSubmitting ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Adding Product...
+
+                {props.product ? "Updating Product..." : "Adding Product..."}
               </>
             ) : (
               <>
                 <Save className="h-4 w-4 mr-2" />
-                Add Product
+                {props.product ? "Update Product" : "Add Product"}
               </>
             )}
           </Button>

@@ -80,10 +80,16 @@ export function ProductCard({ product }: ProductCardProps) {
             <Button
               variant="outline"
               size="sm"
+              asChild
               className="flex-1 border-green-200 text-green-800 hover:bg-green-100 hover:text-green-900"
             >
-              <Edit className="mr-1 h-3 w-3" />
-              Edit
+              <Link
+                href={`/dashboard/products/edit/${product._id.toString()}`}
+                className="no-underline"
+              >
+                <Edit className="mr-1 h-3 w-3" />
+                Edit
+              </Link>
             </Button>
           </div>
         </div>

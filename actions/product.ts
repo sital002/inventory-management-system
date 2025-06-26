@@ -21,7 +21,6 @@ export async function addNewProduct(
   try {
     await connectToDatabase();
     const result = productSchema.safeParse(product);
-    console.log("Product Schema Result:", result);
     if (!result.success) {
       throw new Error(result.error.errors[0].message.toString());
     }
@@ -64,6 +63,81 @@ export async function addNewProduct(
     }
     revalidatePath("/dashboard/products");
     return { success: true, data: JSON.parse(JSON.stringify(newProduct)) };
+  } catch (error) {
+    console.log(error instanceof mongoose.mongo.MongoServerError);
+    if (
+      error instanceof mongoose.mongo.MongoServerError &&
+      error.code === 11000
+    ) {
+      console.error("Duplicate key error:", error);
+      return {
+        success: false,
+        error: `Duplicate key error: A product with the same SKU (${error.keyValue.sku}) already exists. Please use a different SKU.`,
+      };
+    }
+    console.error("Error adding new product:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "An unexpected error occurred",
+    };
+  }
+}
+
+export async function updateProduct(
+  id: string,
+  product: z.infer<typeof productSchema>
+): Promise<Response<IProduct>> {
+  try {
+    await connectToDatabase();
+    const result = productSchema.safeParse(product);
+    if (!result.success) {
+      throw new Error(result.error.errors[0].message.toString());
+    }
+    const data = (await cookies()).get("user");
+
+    if (!data) {
+      throw new Error("User not authenticated");
+    }
+    const user = JSON.parse(data.value);
+    if (user.role !== "admin") {
+      throw new Error("Only admins can add new products");
+    }
+    const productExists = await Product.findById(id);
+    if (!productExists) {
+      return { success: false, error: "Product Not found" }
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(id, {
+      name: result.data.name,
+      description: result.data.description,
+      sku: result.data.sku,
+      barcode: result.data.barcode || "",
+      category: result.data.categoryId,
+      supplier: result.data.supplierId,
+      brand: result.data.brand || "",
+      unit: result.data.unit,
+      costPrice: parseFloat(result.data.costPrice),
+      sellingPrice: parseFloat(result.data.sellingPrice),
+      discountPrice: result.data.discountPrice
+        ? parseFloat(result.data.discountPrice)
+        : 0,
+      initialStock: parseFloat(result.data.initialStock),
+      lowStockThreshold: parseFloat(result.data.lowStockThreshold),
+      weight: result.data.weight ? parseFloat(result.data.weight) : 0,
+      dimensions: result.data.dimensions,
+      currentStock: parseFloat(result.data.initialStock),
+      isActive: result.data.isActive || true,
+      isOrganic: result.data.isOrganic || false,
+      isPerishable: result.data.isPerishable || false,
+      requiresRefrigeration: result.data.requiresRefrigeration || false,
+      trackInventory: result.data.trackInventory || true,
+    });
+    if (!updateProduct) {
+      throw new Error("Failed to create product");
+    }
+    revalidatePath("/dashboard/products");
+    return { success: true, data: JSON.parse(JSON.stringify(updatedProduct)) };
   } catch (error) {
     console.log(error instanceof mongoose.mongo.MongoServerError);
     if (
