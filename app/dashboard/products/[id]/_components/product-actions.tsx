@@ -14,6 +14,7 @@ import {
 import { EditProductDialog } from "./edit-product-dialog";
 import { DeleteProductDialog } from "./delete-product-dialog";
 import { AdjustStockDialog } from "./adjust-stock-dialog";
+import Link from "next/link";
 
 interface ProductActionsProps {
   product: any;
@@ -28,15 +29,16 @@ export function ProductActions({ product }: ProductActionsProps) {
     <>
       <div className="flex gap-2">
         <div className="hidden sm:flex gap-2">
-          <Button
-            onClick={() => setEditDialogOpen(true)}
-            variant="outline"
-            size="sm"
-            className="border-green-200 text-green-700 hover:bg-green-50"
-          >
-            <Edit className="h-4 w-4 mr-2" />
-            Edit
-          </Button>
+          <Link href={`/dashboard/products/edit/${product._id.toString()}`}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-green-200 text-green-700 hover:bg-green-50"
+            >
+              <Edit className="h-4 w-4 mr-2" />
+              Edit
+            </Button>
+          </Link>
           <Button
             onClick={() => setAdjustStockDialogOpen(true)}
             variant="outline"
@@ -60,9 +62,11 @@ export function ProductActions({ product }: ProductActionsProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem onClick={() => setEditDialogOpen(true)}>
-              <Edit className="h-4 w-4 mr-2" />
-              Edit Product
+            <DropdownMenuItem asChild>
+              <Link href={`/dashboard/products/edit/${product._id.toString()}`}>
+                <Edit className="h-4 w-4 mr-2" />
+                Edit Product
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setAdjustStockDialogOpen(true)}>
               <Package className="h-4 w-4 mr-2" />

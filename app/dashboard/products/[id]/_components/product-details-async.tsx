@@ -142,13 +142,13 @@ export async function ProductDetailsAsync({
                   <div className="flex justify-between items-center">
                     <span className="text-green-700">Current Stock:</span>
                     <span className="font-medium text-green-900">
-                      {product.currentStock} units
+                      {product.currentStock} {product.unit}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-green-700">Low Stock Alert:</span>
                     <span className="text-green-900">
-                      {product.lowStockThreshold} units
+                      {product.lowStockThreshold} {product.unit}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
@@ -199,7 +199,6 @@ export async function ProductDetailsAsync({
             </div>
           </div>
 
-          {/* Description */}
           {product.description && (
             <div className="mt-6 pt-6 border-t border-green-100">
               <h4 className="font-medium text-green-900 mb-2">Description</h4>
@@ -209,7 +208,6 @@ export async function ProductDetailsAsync({
         </CardContent>
       </Card>
 
-      {/* Sales Performance */}
       <Card className="bg-white border-green-200">
         <CardHeader>
           <CardTitle className="text-green-900 flex items-center gap-2">
