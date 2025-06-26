@@ -25,7 +25,7 @@ import { ArrowLeft, Save } from "lucide-react";
 import { categories, suppliers } from "@/lib/dummy-data";
 import Link from "next/link";
 import { toast } from "sonner";
-import { IProduct } from "@/app/models/product";
+import { IProduct } from "@/models/product";
 import { Response } from "@/actions/product";
 import { redirect } from "next/navigation";
 

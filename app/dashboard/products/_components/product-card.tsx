@@ -1,6 +1,6 @@
-import { ICategory } from "@/app/models/category";
-import { IProduct } from "@/app/models/product";
-import { ISupplier } from "@/app/models/supplier";
+import { ICategory } from "@/models/category";
+import { IProduct } from "@/models/product";
+import { ISupplier } from "@/models/supplier";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

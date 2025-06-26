@@ -3,7 +3,7 @@
 import React, { FormEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { getPaginatedProducts } from "@/actions/product";
-import { IProduct } from "@/app/models/product";
+import { IProduct } from "@/models/product";
 import { ProductCard } from "./product-card";
 import { Input } from "@/components/ui/input";
 import {

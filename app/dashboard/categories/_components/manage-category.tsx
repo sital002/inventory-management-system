@@ -5,8 +5,8 @@ import { InventorySearch } from "./inventory-search";
 import { CategoryTable } from "./category-table";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { IProduct } from "@/app/models/product";
-import { ISupplier } from "@/app/models/supplier";
+import { IProduct } from "@/models/product";
+import { ISupplier } from "@/models/supplier";
 import Link from "next/link";
 
 interface ManageInventoryClientProps {

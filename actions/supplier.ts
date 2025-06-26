@@ -1,7 +1,7 @@
 "use server";
 
-import Product from "@/app/models/product";
-import Supplier, { ISupplier } from "@/app/models/supplier";
+import Product from "@/models/product";
+import Supplier, { ISupplier } from "@/models/supplier";
 import { connectToDatabase } from "@/utils/db";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";

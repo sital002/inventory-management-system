@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, DollarSign, TrendingUp, Clock } from "lucide-react";
-import { IProduct } from "@/app/models/product";
+import { IProduct } from "@/models/product";
 
 interface ProductStatsAsyncProps {
   product: IProduct;

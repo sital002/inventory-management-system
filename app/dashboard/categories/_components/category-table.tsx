@@ -30,8 +30,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { IProduct } from "@/app/models/product";
-import { ISupplier } from "@/app/models/supplier";
+import { IProduct } from "@/models/product";
+import { ISupplier } from "@/models/supplier";
 import Link from "next/link";
 
 interface InventoryTableProps {

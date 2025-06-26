@@ -1,6 +1,6 @@
 "use server";
 
-import Category, { ICategory } from "@/app/models/category";
+import Category, { ICategory } from "@/models/category";
 import { connectToDatabase } from "@/utils/db";
 import { z } from "zod";
 import { isAuthenticated } from "./auth";

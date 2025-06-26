@@ -1,7 +1,7 @@
 "use server";
-import Category, { ICategory } from "@/app/models/category";
-import Product, { IProduct } from "@/app/models/product";
-import Supplier, { ISupplier } from "@/app/models/supplier";
+import Category, { ICategory } from "@/models/category";
+import Product, { IProduct } from "@/models/product";
+import Supplier, { ISupplier } from "@/models/supplier";
 import { connectToDatabase } from "@/utils/db";
 import mongoose, { isValidObjectId } from "mongoose";
 import { revalidatePath } from "next/cache";

@@ -49,7 +49,7 @@ import { cn } from "@/lib/utils";
 
 import { productSchema } from "@/schema/product";
 import { z } from "zod";
-import { ISupplier } from "@/app/models/supplier";
+import { ISupplier } from "@/models/supplier";
 import { getAllCategories } from "@/actions/category";
 import { addNewProduct } from "@/actions/product";
 

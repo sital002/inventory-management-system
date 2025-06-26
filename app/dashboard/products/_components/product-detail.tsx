@@ -32,7 +32,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { IProduct } from "@/app/models/product";
+import { IProduct } from "@/models/product";
 import { getStatusColor, getStockStatus } from "@/utils/product";
 import { Response } from "@/actions/product";
 import { toast } from "@/components/ui/use-toast";
