@@ -81,7 +81,7 @@ export const categories = [
     totalValue: 5670.25,
     color: "bg-gray-50 border-gray-200",
   },
-];
+]
 
 // Customer orders data
 export const customerOrders = [
@@ -157,7 +157,7 @@ export const customerOrders = [
     paymentMethod: "debit-card",
     orderType: "pickup",
   },
-];
+]
 
 export const purchaseOrders = [
   {
@@ -220,88 +220,167 @@ export const purchaseOrders = [
     expectedDate: "2024-01-13",
     category: "Bakery",
   },
-];
+]
 
-// New inventory items data
+// Update the inventoryItems array to match the mongoose schema
 export const inventoryItems = [
   {
     id: 1,
-    categoryId: 1,
     name: "Organic Bananas",
     sku: "BAN-ORG-001",
-    price: 4.99,
-    stock: 45,
-    lowStockThreshold: 10,
-    supplier: "Fresh Farm Suppliers",
-    lastRestocked: "2024-01-15",
+    barcode: "1234567890123",
+    categoryId: 1,
+    supplierId: 1,
+    brand: "Fresh Farms",
     description: "Fresh organic bananas from local farms",
+    unit: "kg",
+    costPrice: 2.5,
+    sellingPrice: 4.99,
+    discountPrice: 4.49,
+    initialStock: 45,
+    lowStockThreshold: 10,
+    weight: 0.15,
+    dimensions: "15cm x 3cm",
+    isPerishable: true,
+    isActive: true,
+    trackInventory: true,
+    requiresRefrigeration: false,
+    isOrganic: true,
   },
   {
     id: 2,
-    categoryId: 1,
     name: "Red Apples",
     sku: "APP-RED-001",
-    price: 3.49,
-    stock: 8,
-    lowStockThreshold: 15,
-    supplier: "Fresh Farm Suppliers",
-    lastRestocked: "2024-01-14",
+    barcode: "1234567890124",
+    categoryId: 1,
+    supplierId: 1,
+    brand: "Orchard Fresh",
     description: "Crisp red apples",
+    unit: "kg",
+    costPrice: 1.8,
+    sellingPrice: 3.49,
+    discountPrice: 0,
+    initialStock: 8,
+    lowStockThreshold: 15,
+    weight: 0.18,
+    dimensions: "8cm diameter",
+    isPerishable: true,
+    isActive: true,
+    trackInventory: true,
+    requiresRefrigeration: false,
+    isOrganic: false,
   },
   {
     id: 3,
-    categoryId: 1,
-    name: "Carrots",
+    name: "Organic Carrots",
     sku: "CAR-ORG-001",
-    price: 2.99,
-    stock: 0,
-    lowStockThreshold: 20,
-    supplier: "Organic Growers Co.",
-    lastRestocked: "2024-01-10",
+    barcode: "1234567890125",
+    categoryId: 1,
+    supplierId: 2,
+    brand: "Green Valley",
     description: "Fresh organic carrots",
+    unit: "kg",
+    costPrice: 1.2,
+    sellingPrice: 2.99,
+    discountPrice: 2.49,
+    initialStock: 0,
+    lowStockThreshold: 20,
+    weight: 0.12,
+    dimensions: "20cm x 2cm",
+    isPerishable: true,
+    isActive: true,
+    trackInventory: true,
+    requiresRefrigeration: false,
+    isOrganic: true,
   },
   {
     id: 4,
-    categoryId: 2,
     name: "Whole Milk",
     sku: "MLK-WHO-001",
-    price: 3.49,
-    stock: 25,
-    lowStockThreshold: 12,
-    supplier: "Dairy Direct Co.",
-    lastRestocked: "2024-01-16",
+    barcode: "1234567890126",
+    categoryId: 2,
+    supplierId: 3,
+    brand: "Dairy Fresh",
     description: "Fresh whole milk",
+    unit: "liter",
+    costPrice: 1.8,
+    sellingPrice: 3.49,
+    discountPrice: 0,
+    initialStock: 25,
+    lowStockThreshold: 12,
+    weight: 1.03,
+    dimensions: "25cm x 6cm x 6cm",
+    isPerishable: true,
+    isActive: true,
+    trackInventory: true,
+    requiresRefrigeration: true,
+    isOrganic: false,
   },
   {
     id: 5,
-    categoryId: 2,
     name: "Cheddar Cheese",
     sku: "CHE-CHE-001",
-    price: 5.99,
-    stock: 5,
-    lowStockThreshold: 8,
-    supplier: "Dairy Direct Co.",
-    lastRestocked: "2024-01-12",
+    barcode: "1234567890127",
+    categoryId: 2,
+    supplierId: 3,
+    brand: "Artisan Dairy",
     description: "Sharp cheddar cheese",
+    unit: "piece",
+    costPrice: 3.5,
+    sellingPrice: 5.99,
+    discountPrice: 5.49,
+    initialStock: 5,
+    lowStockThreshold: 8,
+    weight: 0.25,
+    dimensions: "10cm x 8cm x 3cm",
+    isPerishable: true,
+    isActive: true,
+    trackInventory: true,
+    requiresRefrigeration: true,
+    isOrganic: false,
   },
-];
+]
+
+// Add suppliers data to match the schema
+export const suppliers = [
+  {
+    id: 1,
+    name: "Fresh Farm Suppliers",
+    contactPerson: "John Smith",
+    email: "john@freshfarm.com",
+    phone: "+1-555-0101",
+  },
+  {
+    id: 2,
+    name: "Organic Growers Co.",
+    contactPerson: "Sarah Johnson",
+    email: "sarah@organicgrowers.com",
+    phone: "+1-555-0102",
+  },
+  {
+    id: 3,
+    name: "Dairy Direct Co.",
+    contactPerson: "Mike Wilson",
+    email: "mike@dairydirect.com",
+    phone: "+1-555-0103",
+  },
+]
 
 export const inventoryStats = {
   totalCategories: categories.length,
   totalItems: categories.reduce((sum, cat) => sum + cat.itemCount, 0),
   lowStockItems: categories.reduce((sum, cat) => sum + cat.lowStockItems, 0),
   totalValue: categories.reduce((sum, cat) => sum + cat.totalValue, 0),
-};
+}
 
 export const orderStats = {
   totalOrders: purchaseOrders.length,
   inStock: purchaseOrders.filter((o) => o.status === "in-stock").length,
   lowStock: purchaseOrders.filter((o) => o.status === "low-stock").length,
   outOfStock: purchaseOrders.filter((o) => o.status === "out-of-stock").length,
-  reorderNeeded: purchaseOrders.filter((o) => o.status === "reorder-needed")
-    .length,
+  reorderNeeded: purchaseOrders.filter((o) => o.status === "reorder-needed").length,
   overstocked: purchaseOrders.filter((o) => o.status === "overstocked").length,
-};
+}
 
 export const customerOrderStats = {
   totalOrders: customerOrders.length,
@@ -312,15 +391,127 @@ export const customerOrderStats = {
   totalRevenue: customerOrders
     .filter((o) => o.status === "completed")
     .reduce((sum, order) => sum + order.totalAmount, 0),
-};
+}
 
-// Async functions to simulate data fetching
+// Add reorder-specific data and functions
+export const reorderStats = {
+  totalProductsNeedingReorder: 15,
+  outOfStockItems: 3,
+  lowStockItems: 8,
+  estimatedReorderValue: 4250.75,
+  pendingOrders: 4,
+  suppliersInvolved: 5,
+}
+
+export const productsNeedingReorder = [
+  {
+    id: 3,
+    name: "Organic Carrots",
+    sku: "CAR-ORG-001",
+    categoryId: 1,
+    categoryName: "Fresh Produce",
+    supplierId: 2,
+    supplierName: "Organic Growers Co.",
+    supplierContact: "sarah@organicgrowers.com",
+    currentStock: 0,
+    lowStockThreshold: 20,
+    unit: "kg",
+    costPrice: 1.2,
+    sellingPrice: 2.99,
+    status: "out-of-stock" as const,
+    lastRestocked: "2024-01-10",
+    suggestedReorderQuantity: 50,
+  },
+  {
+    id: 2,
+    name: "Red Apples",
+    sku: "APP-RED-001",
+    categoryId: 1,
+    categoryName: "Fresh Produce",
+    supplierId: 1,
+    supplierName: "Fresh Farm Suppliers",
+    supplierContact: "john@freshfarm.com",
+    currentStock: 8,
+    lowStockThreshold: 15,
+    unit: "kg",
+    costPrice: 1.8,
+    sellingPrice: 3.49,
+    status: "low-stock" as const,
+    lastRestocked: "2024-01-14",
+    suggestedReorderQuantity: 30,
+  },
+  {
+    id: 5,
+    name: "Cheddar Cheese",
+    sku: "CHE-CHE-001",
+    categoryId: 2,
+    categoryName: "Dairy & Eggs",
+    supplierId: 3,
+    supplierName: "Dairy Direct Co.",
+    supplierContact: "mike@dairydirect.com",
+    currentStock: 5,
+    lowStockThreshold: 8,
+    unit: "piece",
+    costPrice: 3.5,
+    sellingPrice: 5.99,
+    status: "low-stock" as const,
+    lastRestocked: "2024-01-12",
+    suggestedReorderQuantity: 20,
+  },
+  {
+    id: 6,
+    name: "Chicken Breast",
+    sku: "CHI-BRE-001",
+    categoryId: 3,
+    categoryName: "Meat & Seafood",
+    supplierId: 4,
+    supplierName: "Premium Meats Ltd",
+    supplierContact: "contact@premiummeats.com",
+    currentStock: 2,
+    lowStockThreshold: 10,
+    unit: "kg",
+    costPrice: 8.5,
+    sellingPrice: 12.99,
+    status: "low-stock" as const,
+    lastRestocked: "2024-01-13",
+    suggestedReorderQuantity: 25,
+  },
+  {
+    id: 7,
+    name: "Frozen Pizza",
+    sku: "PIZ-FRO-001",
+    categoryId: 5,
+    categoryName: "Frozen Foods",
+    supplierId: 5,
+    supplierName: "Frozen Foods Express",
+    supplierContact: "orders@frozenexpress.com",
+    currentStock: 0,
+    lowStockThreshold: 12,
+    unit: "piece",
+    costPrice: 4.2,
+    sellingPrice: 8.99,
+    status: "out-of-stock" as const,
+    lastRestocked: "2024-01-08",
+    suggestedReorderQuantity: 40,
+  },
+]
+
+export async function getReorderStats() {
+  await new Promise((resolve) => setTimeout(resolve, 1500))
+  return reorderStats
+}
+
+export async function getProductsNeedingReorder() {
+  await new Promise((resolve) => setTimeout(resolve, 2000))
+  return productsNeedingReorder
+}
+
 export async function getCategoryStats() {
-  await new Promise((resolve) => setTimeout(resolve, 1500));
-  return inventoryStats;
+  await new Promise((resolve) => setTimeout(resolve, 1500))
+  return inventoryStats
 }
 
 export async function getCategories() {
-  await new Promise((resolve) => setTimeout(resolve, 2000));
-  return categories;
+  await new Promise((resolve) => setTimeout(resolve, 2000))
+  return categories
 }

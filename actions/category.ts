@@ -101,6 +101,19 @@ export async function getCategory(id: string): Promise<Response<ICategory>> {
   }
 }
 
+
+export async function getCategories() {
+  try {
+
+    const isLoggedIn = await isAuthenticated();
+    if (!isLoggedIn) return [];
+    const categories = await Category.find().lean();
+    return JSON.parse(JSON.stringify(categories));
+  } catch (error) {
+    console.log("Error fetching categories:", error);
+    return []
+  }
+}
 export async function getAllCategories(): Promise<
   Response<
     {

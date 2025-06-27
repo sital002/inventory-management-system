@@ -41,7 +41,6 @@ export function ListProducts({
   };
   const fetchProducts = async (page: number, options?: Options) => {
     const result = await getPaginatedProducts(page, itemsPerPage, options);
-    console.log(result);
     if (result.success) {
       setProducts(result.data.products);
       setTotalPage(result.data.pages);
@@ -49,7 +48,7 @@ export function ListProducts({
     } else {
       console.log(result.error);
       setProducts([]);
-      setTotalPage(0);
+      setTotalPage(1);
       setCurrentPage(1);
     }
   };
@@ -72,11 +71,6 @@ export function ListProducts({
 
   async function handleSearch(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (searchTerm.trim() === "") {
-      setProducts(initialProducts);
-      setCurrentPage(initialPage);
-      return;
-    }
     await fetchProducts(1, {
       searchTerm: searchTerm.trim(),
     });
