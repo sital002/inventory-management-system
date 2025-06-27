@@ -11,33 +11,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-
-interface Product {
-  id: number;
-  name: string;
-  sku: string;
-  barcode?: string;
-  categoryId: number;
-  supplierId: number;
-  brand?: string;
-  description?: string;
-  unit: string;
-  costPrice: number;
-  sellingPrice: number;
-  discountPrice?: number;
-  initialStock: number;
-  lowStockThreshold: number;
-  weight?: number;
-  dimensions?: string;
-  isPerishable: boolean;
-  isActive: boolean;
-  trackInventory: boolean;
-  requiresRefrigeration: boolean;
-  isOrganic: boolean;
-}
+import { ProductResponse } from "../page";
 
 interface CartItem {
-  product: Product;
+  product: ProductResponse;
   quantity: number;
   subtotal: number;
 }
@@ -51,8 +28,8 @@ interface CartTotals {
 interface ShoppingCartProps {
   cart: CartItem[];
   totals: CartTotals;
-  onUpdateQuantity: (productId: number, quantity: number) => void;
-  onRemoveItem: (productId: number) => void;
+  onUpdateQuantity: (productId: string, quantity: number) => void;
+  onRemoveItem: (productId: string) => void;
   onClearCart: () => void;
   onCheckout: () => void;
 }
@@ -107,7 +84,7 @@ export function ShoppingCart({
         <div className="space-y-3 max-h-64 overflow-y-auto">
           {cart.map((item) => (
             <div
-              key={item.product.id}
+              key={item.product._id.toString()}
               className="flex items-center gap-3 p-3 border border-green-100 rounded-lg"
             >
               <div className="flex-1">
@@ -128,7 +105,10 @@ export function ShoppingCart({
                   variant="outline"
                   size="sm"
                   onClick={() =>
-                    onUpdateQuantity(item.product.id, item.quantity - 1)
+                    onUpdateQuantity(
+                      item.product._id.toString(),
+                      item.quantity - 1
+                    )
                   }
                   className="h-8 w-8 p-0"
                 >
@@ -140,7 +120,7 @@ export function ShoppingCart({
                   value={item.quantity}
                   onChange={(e) =>
                     onUpdateQuantity(
-                      item.product.id,
+                      item.product._id.toString(),
                       Number.parseInt(e.target.value) || 0
                     )
                   }
@@ -153,7 +133,10 @@ export function ShoppingCart({
                   variant="outline"
                   size="sm"
                   onClick={() =>
-                    onUpdateQuantity(item.product.id, item.quantity + 1)
+                    onUpdateQuantity(
+                      item.product._id.toString(),
+                      item.quantity + 1
+                    )
                   }
                   disabled={item.quantity >= item.product.initialStock}
                   className="h-8 w-8 p-0"
@@ -164,7 +147,7 @@ export function ShoppingCart({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => onRemoveItem(item.product.id)}
+                  onClick={() => onRemoveItem(item.product._id.toString())}
                   className="h-8 w-8 p-0 text-red-600 border-red-200 hover:bg-red-50"
                 >
                   <Trash2 className="h-3 w-3" />

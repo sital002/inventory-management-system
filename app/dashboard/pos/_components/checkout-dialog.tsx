@@ -20,33 +20,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
-
-interface Product {
-  id: number;
-  name: string;
-  sku: string;
-  barcode?: string;
-  categoryId: number;
-  supplierId: number;
-  brand?: string;
-  description?: string;
-  unit: string;
-  costPrice: number;
-  sellingPrice: number;
-  discountPrice?: number;
-  initialStock: number;
-  lowStockThreshold: number;
-  weight?: number;
-  dimensions?: string;
-  isPerishable: boolean;
-  isActive: boolean;
-  trackInventory: boolean;
-  requiresRefrigeration: boolean;
-  isOrganic: boolean;
-}
+import { ProductResponse } from "../page";
 
 interface CartItem {
-  product: Product;
+  product: ProductResponse;
   quantity: number;
   subtotal: number;
 }
@@ -188,7 +165,7 @@ export function CheckoutDialog({
                 <div className="space-y-2 max-h-32 overflow-y-auto">
                   {cart.map((item) => (
                     <div
-                      key={item.product.id}
+                      key={item.product._id.toString()}
                       className="flex justify-between text-sm"
                     >
                       <span className="flex-1">

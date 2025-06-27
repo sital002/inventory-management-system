@@ -5,93 +5,37 @@ import { ProductSearch } from "./product-search";
 import { ProductList } from "./product-list";
 import { ShoppingCart } from "./shopping-cart";
 import { CheckoutDialog } from "./checkout-dialog";
-
-interface Product {
-  id: number;
-  name: string;
-  sku: string;
-  barcode?: string;
-  categoryId: number;
-  supplierId: number;
-  brand?: string;
-  description?: string;
-  unit: string;
-  costPrice: number;
-  sellingPrice: number;
-  discountPrice?: number;
-  initialStock: number;
-  lowStockThreshold: number;
-  weight?: number;
-  dimensions?: string;
-  isPerishable: boolean;
-  isActive: boolean;
-  trackInventory: boolean;
-  requiresRefrigeration: boolean;
-  isOrganic: boolean;
-}
-
-interface Category {
-  id: number;
-  name: string;
-  description: string;
-  itemCount: number;
-  lowStockItems: number;
-  totalValue: number;
-  color: string;
-}
-
-interface Supplier {
-  id: number;
-  name: string;
-  contactPerson: string;
-  email: string;
-  phone: string;
-}
+import { ProductResponse } from "../page";
+import { ICategory } from "@/models/category";
+import { getPaginatedProducts } from "@/actions/product";
 
 interface CartItem {
-  product: Product;
+  product: ProductResponse;
   quantity: number;
   subtotal: number;
 }
 
 interface POSClientProps {
-  products: Product[];
-  categories: Category[];
-  suppliers: Supplier[];
+  initialProducts: ProductResponse[];
+  categories: ICategory[];
 }
 
-export function POSClient({ products, categories, suppliers }: POSClientProps) {
+export function POSClient({ initialProducts, categories }: POSClientProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [products, setProducts] = useState<ProductResponse[]>(initialProducts);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
-  const filteredProducts = useMemo(() => {
-    return products.filter((product) => {
-      if (!product.isActive || product.initialStock <= 0) return false;
-
-      const matchesSearch =
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (product.barcode && product.barcode.includes(searchTerm));
-
-      const matchesCategory =
-        selectedCategory === "all" ||
-        product.categoryId.toString() === selectedCategory;
-
-      return matchesSearch && matchesCategory;
-    });
-  }, [products, searchTerm, selectedCategory]);
-
-  const addToCart = (product: Product, quantity = 1) => {
+  const addToCart = (product: ProductResponse, quantity = 1) => {
     setCart((prevCart) => {
       const existingItem = prevCart.find(
-        (item) => item.product.id === product.id
+        (item) => item.product._id.toString() === product._id.toString()
       );
 
       if (existingItem) {
         return prevCart.map((item) =>
-          item.product.id === product.id
+          item.product._id.toString() === product._id.toString()
             ? {
                 ...item,
                 quantity: item.quantity + quantity,
@@ -115,7 +59,7 @@ export function POSClient({ products, categories, suppliers }: POSClientProps) {
     });
   };
 
-  const updateCartItem = (productId: number, quantity: number) => {
+  const updateCartItem = (productId: string, quantity: number) => {
     if (quantity <= 0) {
       removeFromCart(productId);
       return;
@@ -123,7 +67,7 @@ export function POSClient({ products, categories, suppliers }: POSClientProps) {
 
     setCart((prevCart) =>
       prevCart.map((item) =>
-        item.product.id === productId
+        item.product._id.toString() === productId.toString()
           ? {
               ...item,
               quantity,
@@ -136,9 +80,11 @@ export function POSClient({ products, categories, suppliers }: POSClientProps) {
     );
   };
 
-  const removeFromCart = (productId: number) => {
+  const removeFromCart = (productId: string) => {
     setCart((prevCart) =>
-      prevCart.filter((item) => item.product.id !== productId)
+      prevCart.filter(
+        (item) => item.product._id.toString() !== productId.toString()
+      )
     );
   };
 
@@ -146,6 +92,16 @@ export function POSClient({ products, categories, suppliers }: POSClientProps) {
     setCart([]);
   };
 
+  const handleSearch = async (term: string) => {
+    const result = await getPaginatedProducts(1, 10, {
+      searchTerm: term,
+    });
+    if (!result.success) {
+      setProducts([]);
+      return;
+    }
+    setProducts(result.data.products);
+  };
   const cartTotals = useMemo(() => {
     const subtotal = cart.reduce((sum, item) => sum + item.subtotal, 0);
     const tax = subtotal * 0.13;
@@ -160,13 +116,14 @@ export function POSClient({ products, categories, suppliers }: POSClientProps) {
         <ProductSearch
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
+          handleSearch={handleSearch}
           selectedCategory={selectedCategory}
           onCategoryChange={setSelectedCategory}
           categories={categories}
         />
 
         <ProductList
-          products={filteredProducts}
+          products={products}
           onAddToCart={addToCart}
           categories={categories}
         />
