@@ -190,7 +190,7 @@ export function ShoppingCart({
             </span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-green-700">Tax (10%):</span>
+            <span className="text-green-700">VAT (13%):</span>
             <span className="text-green-900">${totals.tax.toFixed(2)}</span>
           </div>
           <Separator />

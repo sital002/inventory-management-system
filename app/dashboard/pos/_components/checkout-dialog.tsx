@@ -209,7 +209,7 @@ export function CheckoutDialog({
                     <span>${totals.subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Tax:</span>
+                    <span>VAT:</span>
                     <span>${totals.tax.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between font-bold text-lg text-green-900">
@@ -268,7 +268,7 @@ export function CheckoutDialog({
                     value={cashReceived}
                     onChange={(e) => setCashReceived(e.target.value)}
                     placeholder="0.00"
-                    className="border-green-200 focus:border-green-400 focus:ring-green-400"
+                    className="border-green-200 focus:border-green-400 focus:ring-green-400 mt-3"
                   />
                 </div>
 
