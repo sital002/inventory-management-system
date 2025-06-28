@@ -19,7 +19,6 @@ export default async function POSPage() {
   if (productResponse.success) {
     products = productResponse.data.products;
   }
-  console.log(products, "test");
   return (
     <div className="min-h-screen bg-green-50/30 p-4 sm:p-6">
       <div className="mx-auto max-w-7xl">

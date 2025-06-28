@@ -281,6 +281,7 @@ export async function deleteProduct(id: string): Promise<Response<null>> {
 export async function findProductsByCategory(
   id: string
 ): Promise<Response<(IProduct & { supplier: ISupplier })[]>> {
+  await connectToDatabase()
   const isLoggedIn = await isAuthenticated();
   if (!isLoggedIn) {
     return { success: false, error: "User is not authenticated" };
