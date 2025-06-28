@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { ProductSearch } from "./product-search";
 import { ProductList } from "./product-list";
 import { ShoppingCart } from "./shopping-cart";
@@ -26,7 +26,7 @@ export function POSClient({ initialProducts, categories }: POSClientProps) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [products, setProducts] = useState<ProductResponse[]>(initialProducts);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-
+  console.log(selectedCategory);
   const addToCart = (product: ProductResponse, quantity = 1) => {
     setCart((prevCart) => {
       const existingItem = prevCart.find(
@@ -58,6 +58,20 @@ export function POSClient({ initialProducts, categories }: POSClientProps) {
       }
     });
   };
+
+  useEffect(() => {
+    async function getProducts() {
+      const products = await getPaginatedProducts(1, 10, {
+        searchTerm: searchTerm.trim().toLowerCase(),
+        category: selectedCategory === "all" ? undefined : selectedCategory,
+      });
+      if (!products.success) {
+        return setProducts([]);
+      }
+      setProducts(products.data.products);
+    }
+    getProducts();
+  }, [selectedCategory]);
 
   const updateCartItem = (productId: string, quantity: number) => {
     if (quantity <= 0) {
@@ -95,6 +109,7 @@ export function POSClient({ initialProducts, categories }: POSClientProps) {
   const handleSearch = async (term: string) => {
     const result = await getPaginatedProducts(1, 10, {
       searchTerm: term,
+      category: selectedCategory === "all" ? undefined : selectedCategory,
     });
     if (!result.success) {
       setProducts([]);

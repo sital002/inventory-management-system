@@ -215,6 +215,7 @@ export async function getPaginatedProducts(
     }
     const searchTerm = options.searchTerm ? options.searchTerm.trim() : "";
     const products = await Product.find({
+      category: options.category ? options.category : { $exists: true },
       name: { $regex: searchTerm, $options: "i" },
     })
       .populate<{ supplier: ISupplier }>("supplier")
