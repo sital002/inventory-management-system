@@ -26,7 +26,7 @@ export function POSClient({ initialProducts, categories }: POSClientProps) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [products, setProducts] = useState<ProductResponse[]>(initialProducts);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  console.log(selectedCategory);
+
   const addToCart = (product: ProductResponse, quantity = 1) => {
     setCart((prevCart) => {
       const existingItem = prevCart.find(
