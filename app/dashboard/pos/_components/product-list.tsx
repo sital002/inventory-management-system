@@ -111,7 +111,7 @@ export function ProductList({
                       )}
                     </div>
                     <span className="text-sm text-green-600">
-                      Stock: {product.initialStock} {product.unit}
+                      Stock: {product.currentStock} {product.unit}
                     </span>
                   </div>
                 </div>

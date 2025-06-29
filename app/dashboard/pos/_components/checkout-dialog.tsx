@@ -21,6 +21,8 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
 import { ProductResponse } from "../page";
+import { createOrder } from "@/actions/order";
+import { useRouter } from "next/navigation";
 
 interface CartItem {
   product: ProductResponse;
@@ -42,7 +44,7 @@ interface CheckoutDialogProps {
   onCheckoutComplete: () => void;
 }
 
-type PaymentMethod = "cash" | "card" | "mobile";
+type PaymentMethod = "cash" | "card" | "online";
 
 export function CheckoutDialog({
   isOpen,
@@ -56,23 +58,43 @@ export function CheckoutDialog({
   const [isProcessing, setIsProcessing] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [transactionId, setTransactionId] = useState("");
-
+  const [error, setError] = useState<string | null>(null);
   const cashAmount = Number.parseFloat(cashReceived) || 0;
   const changeAmount = cashAmount - totals.total;
-
+  const router = useRouter();
   const handlePayment = async () => {
     setIsProcessing(true);
-
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    setError(null);
+    const cartItems = cart.map((item) => {
+      return {
+        productId: item.product._id.toString(),
+        quantity: item.quantity,
+        subtotal: item.subtotal,
+      };
+    });
+    const result = await createOrder({
+      products: cartItems,
+      paymentMethod: paymentMethod,
+      totalAmount: totals.total,
+    });
+    if (!result.success) {
+      setError(result.error);
+      setIsProcessing(false);
+      return;
+    }
 
     const txId = `TXN-${Date.now()}-${Math.random()
       .toString(36)
       .substr(2, 9)
       .toUpperCase()}`;
-    setTransactionId(txId);
-
+    console.log(result);
+    setTransactionId(result.data._id.toString());
+    setCashReceived("");
+    setPaymentMethod("card");
+    setError(null);
     setIsProcessing(false);
     setIsComplete(true);
+    router.refresh();
   };
 
   const handleClose = () => {
@@ -223,8 +245,8 @@ export function CheckoutDialog({
               </Button>
 
               <Button
-                variant={paymentMethod === "mobile" ? "black" : "outline"}
-                onClick={() => setPaymentMethod("mobile")}
+                variant={paymentMethod === "online" ? "black" : "outline"}
+                onClick={() => setPaymentMethod("online")}
                 className="w-full justify-start"
               >
                 <Smartphone className="h-4 w-4 mr-2" />
@@ -283,16 +305,16 @@ export function CheckoutDialog({
               </div>
             )}
 
-            {paymentMethod === "mobile" && (
+            {paymentMethod === "online" && (
               <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
                 <p className="text-sm text-purple-700">
                   Customer will scan QR code or tap to pay
                 </p>
               </div>
             )}
+            <p className="mt-3 text-destructive">{error}</p>
           </div>
         </div>
-
         <div className="flex gap-3 pt-4">
           <Button
             variant="outline"
