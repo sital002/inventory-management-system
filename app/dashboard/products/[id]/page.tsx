@@ -17,7 +17,7 @@ interface PageProps {
 export default async function ProductPage({ params }: PageProps) {
   const result = await getProductDetail(params.id);
   if (!result.success) {
-    return <p>Error:{result.error}</p>;
+    return <p>Error: {result.error}</p>;
   }
 
   const product = result.data;
