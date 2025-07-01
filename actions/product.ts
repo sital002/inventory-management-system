@@ -297,6 +297,34 @@ export async function findProductsByCategory(
   const products = await Product.find({ category: id }).populate<{
     supplier: ISupplier;
   }>("supplier");
-  console.log(products)
+
+
   return { success: true, data: JSON.parse(JSON.stringify(products)) };
+}
+
+export async function getLowStockProducts(): Promise<(IProduct & { supplier: ISupplier } & { category: ICategory })[]> {
+  try {
+    await connectToDatabase();
+    const lowStockProducts = await Product.find({
+      $or: [
+        { currentStock: 0 },
+        {
+          $expr: {
+            $and: [
+              { $gt: ["$currentStock", 0] },
+              { $lte: ["$currentStock", "$lowStockThreshold"] }
+            ]
+          }
+        }
+      ]
+    })
+      .populate<{ category: ICategory }>("category")
+      .populate("supplier").sort({ currentStock: 1 })
+      .lean();
+    console.log(lowStockProducts)
+    return JSON.parse(JSON.stringify(lowStockProducts));
+  } catch (error) {
+    console.log("Error fetching low stock products:", error);
+    return []
+  }
 }
