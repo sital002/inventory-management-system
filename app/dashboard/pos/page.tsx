@@ -14,10 +14,21 @@ export type ProductResponse = IProduct & {
 };
 export default async function POSPage() {
   const productResponse = await getPaginatedProducts(page, limit);
+  console.log("Fetching pos page");
   const categories = await getCategories();
-  let products: ProductResponse[] = [];
-  if (productResponse.success) {
-    products = productResponse.data.products;
+  if (!productResponse.success) {
+    return (
+      <div className="min-h-screen bg-red-50 p-4 sm:p-6">
+        <div className="mx-auto max-w-7xl">
+          <h1 className="text-2xl sm:text-3xl font-bold text-red-900">
+            Error Loading Products
+          </h1>
+          <p className="text-red-700 mt-1">
+            {productResponse.error || "Unable to fetch products at this time."}
+          </p>
+        </div>
+      </div>
+    );
   }
   return (
     <div className="min-h-screen bg-green-50/30 p-4 sm:p-6">
@@ -31,7 +42,10 @@ export default async function POSPage() {
           </p>
         </div>
 
-        <POSClient initialProducts={products} categories={categories} />
+        <POSClient
+          initialProducts={productResponse.data.products}
+          categories={categories}
+        />
       </div>
     </div>
   );

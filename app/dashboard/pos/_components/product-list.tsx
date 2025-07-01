@@ -19,9 +19,9 @@ export function ProductList({
   categories,
 }: ProductListProps) {
   const getStockStatus = (product: ProductResponse) => {
-    if (product.initialStock === 0)
+    if (product.currentStock === 0)
       return { status: "Out of Stock", color: "bg-red-100 text-red-800" };
-    if (product.initialStock <= product.lowStockThreshold)
+    if (product.currentStock <= product.lowStockThreshold)
       return { status: "Low Stock", color: "bg-yellow-100 text-yellow-800" };
     return { status: "In Stock", color: "bg-green-100 text-green-800" };
   };
@@ -119,7 +119,7 @@ export function ProductList({
                 <div className="ml-4">
                   <Button
                     onClick={() => onAddToCart(product, 1)}
-                    disabled={product.initialStock === 0}
+                    disabled={product.currentStock === 0}
                     className="bg-green-600 hover:bg-green-700 text-white"
                     size="sm"
                   >

@@ -43,7 +43,11 @@ export async function createOrder({
             paymentMethod,
         })
         if (!parsedData.success) return { success: false, error: parsedData.error.errors[0].message.toString() }
-        const listedProducts = await Product.find({ _id: { $in: products.map(p => p.productId) } });
+        const listedProducts = await Product.find(
+            {
+                _id: { $in: products.map(p => p.productId) },
+                currentStock: { $gt: 0 }
+            });
         if (listedProducts.length !== products.length) return { success: false, error: "Some products are not available" }
 
         const order = new Order({
@@ -56,7 +60,6 @@ export async function createOrder({
             const orderProduct = parsedData.data.products.find(p => p.productId === product._id.toString());
             if (orderProduct) {
                 product.currentStock -= orderProduct.quantity;
-                console.log("Reduced quantity for product:", product.name, "by", orderProduct.quantity);
                 if (product.currentStock < 0) {
                     return { success: false, error: `Insufficient stock for product ${product.name}` }
                 }

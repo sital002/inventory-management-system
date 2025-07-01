@@ -168,6 +168,7 @@ export async function getProductDetail(
     await connectToDatabase();
     await Supplier.exists({});
     await Category.exists({});
+    if (!mongoose.isValidObjectId(id)) return { success: false, error: "Invalid Product Id" }
     const product = await Product.findOne({ _id: id })
       .populate<{ supplier: ISupplier }>("supplier")
       .populate<{ categories: ICategory }>("category");
