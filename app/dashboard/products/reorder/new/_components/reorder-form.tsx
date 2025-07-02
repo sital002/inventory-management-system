@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useMemo, FormEvent } from "react";
-import { useSearchParams } from "next/navigation";
+import { useState, useEffect, FormEvent } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -27,18 +27,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+
 import {
   Select,
   SelectContent,
@@ -49,20 +40,7 @@ import {
 import { ExtractData } from "@/utils/response-type";
 import { getAllCategories } from "@/actions/category";
 import { getPaginatedProducts, getProductDetail } from "@/actions/product";
-
-const restockSchema = z.object({
-  notes: z.string().optional(),
-  items: z
-    .array(
-      z.object({
-        productId: z.string(),
-        quantity: z.number().min(1, "Quantity must be at least 1"),
-      })
-    )
-    .min(1, "At least one item is required"),
-});
-
-type RestockFormData = z.infer<typeof restockSchema>;
+import { reStockOrder } from "@/actions/reorder";
 
 interface RestockItem {
   productId: string;
@@ -84,14 +62,7 @@ export function ReOrderForm({ categories, initialProducts }: ReOrderFormProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [products, setProducts] = useState(initialProducts);
-  const form = useForm<RestockFormData>({
-    resolver: zodResolver(restockSchema),
-    defaultValues: {
-      notes: "",
-      items: [],
-    },
-  });
-
+  const router = useRouter();
   useEffect(() => {
     const getProduct = async () => {
       if (!productId) return null;
@@ -110,6 +81,28 @@ export function ReOrderForm({ categories, initialProducts }: ReOrderFormProps) {
     };
     getProduct();
   }, [productId]);
+
+  const handleReOrder = async () => {
+    setIsSubmitting(true);
+    try {
+      const result = await reStockOrder({
+        items: restockItems,
+      });
+      console.log(result);
+      if (!result.success) {
+        console.log(result.error);
+        return;
+      }
+      setRestockItems([]);
+      setSearchQuery("");
+      setSelectedCategory("all");
+      router.refresh();
+    } catch (error) {
+      console.log("Error restocking products:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   async function fetchProductById(productId: string) {
     const response = await getProductDetail(productId);
@@ -227,36 +220,6 @@ export function ReOrderForm({ categories, initialProducts }: ReOrderFormProps) {
     }
     fetchProducts();
   }, [selectedCategory]);
-
-  const onSubmit = async (data: RestockFormData) => {
-    setIsSubmitting(true);
-    console.log(data);
-    try {
-      const restockOrder = {
-        ...data,
-        items: restockItems,
-        totalAmount: calculateTotal(),
-        totalItems: restockItems.reduce((sum, item) => sum + item.quantity, 0),
-        status: "completed",
-        createdAt: new Date().toISOString(),
-        restockId: `RST-${Date.now()}`,
-      };
-
-      console.log("Restock Order Created:", restockOrder);
-
-      form.reset();
-      setRestockItems([]);
-      setSearchQuery("");
-      setSelectedCategory("all");
-
-      alert("Products restocked successfully!");
-    } catch (error) {
-      console.error("Error restocking products:", error);
-      alert("Error restocking products. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -447,50 +410,10 @@ export function ReOrderForm({ categories, initialProducts }: ReOrderFormProps) {
               )}
             </CardContent>
           </Card>
-
-          <Card className="border-green-200">
-            <CardHeader className="bg-green-50 border-b border-green-200">
-              <CardTitle className="text-green-900 flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                Additional Notes
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-6">
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-4"
-                >
-                  <FormField
-                    control={form.control}
-                    name="notes"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-green-900 font-medium">
-                          Notes (Optional)
-                        </FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Add any notes about this restock operation..."
-                            className="border-green-300 focus:border-green-500"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Any additional information about this restock
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
-
           <div className="flex justify-end">
             <Button
               type="submit"
+              onClick={handleReOrder}
               disabled={isSubmitting || restockItems.length === 0}
               className="bg-green-600 hover:bg-green-700"
             >

@@ -5,7 +5,6 @@ interface IReOrder {
     productId: ObjectId;
     quantity: number;
     subtotal: number;
-    notes?: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -27,14 +26,10 @@ const reOrderSchema = new Schema<IReOrder>({
         required: true,
         min: 0
     },
-    notes: {
-        type: String,
-        trim: true,
-        maxlength: 500
-    }
+
 }, {
     timestamps: true
 });
 
-const ReOrder: Model<IReOrder> = mongoose.models.ReOrderModel || mongoose.model<IReOrder>("ReOrder", reOrderSchema);
+const ReOrder: Model<IReOrder> = mongoose.models.ReOrder || mongoose.model<IReOrder>("ReOrder", reOrderSchema);
 export default ReOrder;
