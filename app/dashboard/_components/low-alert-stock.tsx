@@ -8,28 +8,19 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, Package, ExternalLink } from "lucide-react";
-import { inventoryItems, categories } from "@/lib/data";
 import Link from "next/link";
+import { getLowStockProducts } from "@/actions/product";
 
 export async function LowStockAlerts() {
-  await new Promise((resolve) => setTimeout(resolve, 1200));
+  const lowStockItems = await getLowStockProducts();
 
-  const lowStockItems = inventoryItems
-    .filter((item) => item.stock <= item.lowStockThreshold)
-    .sort((a, b) => a.stock - b.stock)
-    .slice(0, 6);
-
-  const getCategoryName = (categoryId: number) => {
-    return categories.find((cat) => cat.id === categoryId)?.name || "Unknown";
-  };
-
-  const getStockStatus = (item: any) => {
-    if (item.stock === 0) {
+  const getStockStatus = (item: (typeof lowStockItems)[0]) => {
+    if (item.currentStock === 0) {
       return {
         label: "Out of Stock",
         color: "bg-red-100 text-red-800 border-red-200",
       };
-    } else if (item.stock <= item.lowStockThreshold) {
+    } else if (item.currentStock <= item.lowStockThreshold) {
       return {
         label: "Low Stock",
         color: "bg-yellow-100 text-yellow-800 border-yellow-200",
@@ -73,7 +64,7 @@ export async function LowStockAlerts() {
               const status = getStockStatus(item);
               return (
                 <div
-                  key={item.id}
+                  key={item._id.toString()}
                   className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-gray-50 rounded-lg border hover:bg-gray-100 transition-colors"
                 >
                   <div className="flex items-start gap-3 mb-2 sm:mb-0">
@@ -83,10 +74,11 @@ export async function LowStockAlerts() {
                         {item.name}
                       </h4>
                       <p className="text-xs text-gray-600">
-                        {getCategoryName(item.categoryId)} • SKU: {item.sku}
+                        {item.category.name} • SKU: {item.sku}
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
-                        Stock: <span className="font-medium">{item.stock}</span>{" "}
+                        Stock:{" "}
+                        <span className="font-medium">{item.currentStock}</span>{" "}
                         / Threshold: {item.lowStockThreshold}
                       </p>
                     </div>
@@ -95,7 +87,7 @@ export async function LowStockAlerts() {
                     <Badge className={`${status.color} border text-xs`}>
                       {status.label}
                     </Badge>
-                    <Link href={`/categories/${item.categoryId}`}>
+                    <Link href={`/categories/${item.category._id.toString()}`}>
                       <Button
                         size="sm"
                         variant="outline"

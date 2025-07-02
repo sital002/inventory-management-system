@@ -45,7 +45,7 @@ const salesMenuItems = [
   {
     icon: RefreshCw,
     label: "Reorder Stock",
-    href: "/dashboard/products/reorder",
+    href: "/dashboard/products/reorder/new",
   },
 ];
 
