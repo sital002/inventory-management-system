@@ -2,7 +2,7 @@
 
 import Order, { type IOrder } from "@/models/order";
 import { isAuthenticated } from "./auth";
-import Product from "@/models/product";
+import Product, { IProduct } from "@/models/product";
 import { connectToDatabase } from "@/utils/db";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
@@ -18,7 +18,7 @@ type Response<T> = {
 
 const orderSchema = z.object({
     products: z.array(z.object({
-        productId: z.string(),
+        product: z.string(),
         quantity: z.number().min(1).positive("Quantity must be a positive number"),
         subtotal: z.number().min(1).positive("Subtotal must be a positive number"),
     })),
@@ -45,7 +45,7 @@ export async function createOrder({
         if (!parsedData.success) return { success: false, error: parsedData.error.errors[0].message.toString() }
         const listedProducts = await Product.find(
             {
-                _id: { $in: products.map(p => p.productId) },
+                _id: { $in: products.map(p => p.product) },
                 currentStock: { $gt: 0 }
             });
         if (listedProducts.length !== products.length) return { success: false, error: "Some products are not available" }
@@ -57,7 +57,7 @@ export async function createOrder({
             status: "completed"
         });
         listedProducts.forEach(async (product) => {
-            const orderProduct = parsedData.data.products.find(p => p.productId === product._id.toString());
+            const orderProduct = parsedData.data.products.find(p => p.product === product._id.toString());
             if (orderProduct) {
                 product.currentStock -= orderProduct.quantity;
                 if (product.currentStock < 0) {
@@ -77,4 +77,74 @@ export async function createOrder({
         return { success: false, error: error instanceof Error ? error.message : "An unexpected error occurred" }
     }
 
+}
+
+
+type Options = {
+    searchQuery: string;
+    status: "completed" | "refunded";
+    time: "all" | "1" | "7" | "30"
+}
+export async function getOrders(
+    page: number,
+    limit: number,
+    options?: Options
+): Promise<
+    Response<{
+        orders: (IOrder & { products: { product: IProduct; quantity: number; subtotal: number }[] })[];
+        page: number;
+        limit: number;
+        total: number;
+    }>
+> {
+    try {
+        await connectToDatabase();
+        const isLoggedIn = await isAuthenticated();
+        if (!isLoggedIn)
+            return { success: false, error: "User not authenticated" };
+
+        const query: Record<string, any> = {};
+        if (options?.searchQuery) {
+            query.$or = [
+                { "products.name": { $regex: options.searchQuery, $options: "i" } },
+                { paymentMethod: { $regex: options.searchQuery, $options: "i" } },
+            ];
+        }
+        if (options?.status) {
+            query.status = options.status;
+        }
+        if (options?.time && options.time !== "all") {
+            const daysAgo = new Date();
+            daysAgo.setDate(daysAgo.getDate() - parseInt(options.time));
+            query.createdAt = { $gte: daysAgo };
+        }
+
+        const orders = await Order.find(query)
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .sort({ createdAt: -1 })
+            .populate({
+                path: "products.product",
+                model: Product,
+            });
+
+        const totalOrders = await Order.countDocuments(query);
+
+        return {
+            success: true,
+            data: {
+                orders: JSON.parse(JSON.stringify(orders)),
+                total: totalOrders,
+                page,
+                limit,
+            },
+        };
+    } catch (error) {
+        console.log(error);
+        return {
+            success: false,
+            error:
+                error instanceof Error ? error.message : "An unexpected error occurred",
+        };
+    }
 }

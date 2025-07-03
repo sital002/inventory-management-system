@@ -67,7 +67,7 @@ export function CheckoutDialog({
     setError(null);
     const cartItems = cart.map((item) => {
       return {
-        productId: item.product._id.toString(),
+        product: item.product._id.toString(),
         quantity: item.quantity,
         subtotal: item.subtotal,
       };
