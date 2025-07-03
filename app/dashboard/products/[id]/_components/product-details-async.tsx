@@ -48,7 +48,6 @@ export async function ProductDetailsAsync({
     }
   };
 
-  console.log(product);
   const status = getStockStatus();
   const StatusIcon = status.icon;
 
@@ -199,7 +198,6 @@ export async function ProductDetailsAsync({
             </div>
           </div>
 
-          {/* Description */}
           {product.description && (
             <div className="mt-6 pt-6 border-t border-green-100">
               <h4 className="font-medium text-green-900 mb-2">Description</h4>
@@ -209,7 +207,6 @@ export async function ProductDetailsAsync({
         </CardContent>
       </Card>
 
-      {/* Sales Performance */}
       <Card className="bg-white border-green-200">
         <CardHeader>
           <CardTitle className="text-green-900 flex items-center gap-2">

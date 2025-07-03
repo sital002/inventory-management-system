@@ -40,7 +40,7 @@ export async function reStockOrder(data: z.infer<typeof reorderSchema>): Promise
         }
     }
 
-    revalidatePath("/dashboard/rproducts");
+    revalidatePath("/dashboard/products");
     return { success: true, data: null };
 
 }

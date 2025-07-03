@@ -62,12 +62,38 @@ export function ReOrderForm({ categories, initialProducts }: ReOrderFormProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [products, setProducts] = useState(initialProducts);
+
   const router = useRouter();
+
+  useEffect(() => {
+    async function fetchProducts() {
+      const response = await getPaginatedProducts(1, 10, {
+        searchTerm: searchQuery,
+        category: selectedCategory !== "all" ? selectedCategory : undefined,
+      });
+      if (!response.success) {
+        setProducts([]);
+        return;
+      }
+      const outOfStock = response.data.products.filter(
+        (p) => getStockStatus(p) === "out-of-stock"
+      );
+      const lowStock = response.data.products.filter(
+        (p) => getStockStatus(p) === "low-stock"
+      );
+      const inStock = response.data.products.filter(
+        (p) => getStockStatus(p) === "in-stock"
+      );
+      setProducts([...outOfStock, ...lowStock, ...inStock]);
+    }
+    fetchProducts();
+  }, [selectedCategory]);
+
   useEffect(() => {
     const getProduct = async () => {
-      if (!productId) return null;
+      if (!productId) return;
       const product = await fetchProductById(productId);
-      if (!product) return null;
+      if (!product) return;
       const suggestedQuantity = Math.max(
         product.lowStockThreshold - product.currentStock,
         10
@@ -78,6 +104,8 @@ export function ReOrderForm({ categories, initialProducts }: ReOrderFormProps) {
           quantity: suggestedQuantity,
         },
       ]);
+      console.log(product);
+      setProducts((prev) => [product, ...prev]);
     };
     getProduct();
   }, [productId]);
@@ -196,30 +224,6 @@ export function ReOrderForm({ categories, initialProducts }: ReOrderFormProps) {
     );
     setProducts([...outOfStock, ...lowStock, ...inStock]);
   };
-
-  useEffect(() => {
-    async function fetchProducts() {
-      const response = await getPaginatedProducts(1, 10, {
-        searchTerm: searchQuery,
-        category: selectedCategory !== "all" ? selectedCategory : undefined,
-      });
-      if (!response.success) {
-        setProducts([]);
-        return;
-      }
-      const outOfStock = response.data.products.filter(
-        (p) => getStockStatus(p) === "out-of-stock"
-      );
-      const lowStock = response.data.products.filter(
-        (p) => getStockStatus(p) === "low-stock"
-      );
-      const inStock = response.data.products.filter(
-        (p) => getStockStatus(p) === "in-stock"
-      );
-      setProducts([...outOfStock, ...lowStock, ...inStock]);
-    }
-    fetchProducts();
-  }, [selectedCategory]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
