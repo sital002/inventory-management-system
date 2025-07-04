@@ -1,32 +1,24 @@
-import { model, models, Schema, Types, Model } from "mongoose";
+import mongoose from "mongoose";
+import { Schema, Types, Model } from "mongoose";
 
-interface IOrder {
+export interface IOrder {
   _id: Types.ObjectId;
-  customerName: string;
-  customerPhone?: string;
   products: {
     product: Types.ObjectId;
     quantity: number;
+    subtotal: number;
   }[];
   totalAmount: number;
-  status: "pending" | "completed" | "cancelled";
+  status: "returned" | "completed";
+  reason?: string;
   paymentMethod: "cash" | "card" | "online";
   createdAt: Date;
+  refundReason?: string;
   updatedAt: Date;
 }
 
 const orderSchema = new Schema<IOrder>(
   {
-    customerName: {
-      type: String,
-      trim: true,
-      required: false,
-    },
-    customerPhone: {
-      type: String,
-      trim: true,
-      required: false,
-    },
     products: [
       {
         product: {
@@ -39,6 +31,11 @@ const orderSchema = new Schema<IOrder>(
           required: true,
           min: 1,
         },
+        subtotal: {
+          type: Number,
+          required: true,
+          min: 1,
+        }
       },
     ],
     totalAmount: {
@@ -46,10 +43,16 @@ const orderSchema = new Schema<IOrder>(
       required: true,
       min: 0,
     },
+    reason: {
+      type: String,
+    },
+    refundReason: {
+      type: String,
+      trim: true
+    },
     status: {
       type: String,
-      enum: ["pending", "completed", "cancelled"],
-      default: "pending",
+      enum: ["returned", "completed"],
       required: true,
     },
     paymentMethod: {
@@ -63,7 +66,11 @@ const orderSchema = new Schema<IOrder>(
   }
 );
 
-const Order: Model<IOrder> =
-  models.Order || model<IOrder>("Order", orderSchema);
+
+const Order: Model<IOrder> = mongoose.models.Order
+  ? mongoose.model<IOrder>("Order")
+  : mongoose.model<IOrder>("Order", orderSchema);
+
+
 
 export default Order;

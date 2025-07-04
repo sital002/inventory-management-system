@@ -103,7 +103,7 @@ export async function ProductActivityAsync({
       title: "Reorder Stock",
       description: "Create purchase order",
       icon: Package,
-      href: `/dashboard/purchase-orders/new?product=${productId}`,
+      href: `/dashboard/products/reorder/new?product=${productId}`,
       color: "bg-green-600 hover:bg-green-700",
     },
     {

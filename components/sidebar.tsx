@@ -12,6 +12,9 @@ import {
   ShoppingCart,
   Truck,
   Users,
+  CreditCard,
+  RefreshCw,
+  Activity,
 } from "lucide-react";
 import {
   Sidebar,
@@ -36,6 +39,16 @@ const mainMenuItems = [
   { icon: Truck, label: "Suppliers", href: "/dashboard/suppliers" },
 ];
 
+const salesMenuItems = [
+  { icon: CreditCard, label: "Point of Sale", href: "/dashboard/pos" },
+  { icon: Activity, label: "Sales History", href: "/dashboard/sales" },
+  {
+    icon: RefreshCw,
+    label: "Reorder Stock",
+    href: "/dashboard/products/reorder/new",
+  },
+];
+
 const reportMenuItems = [
   { icon: BarChart3, label: "Sales Report", href: "/reports/sales" },
   { icon: Package, label: "Inventory Report", href: "/reports/inventory" },
@@ -54,7 +67,7 @@ export function InventorySidebar() {
       <SidebarMenuItem key={label}>
         <SidebarMenuButton
           className="text-green-900 hover:bg-green-200 hover:text-green-900 data-[active=true]:bg-green-200 data-[active=true]:text-green-900"
-          data-active={pathname === href}
+          data-active={pathname === href || pathname.startsWith(href + "/")}
           asChild
         >
           <Link href={href} className="flex items-center gap-2">
@@ -78,8 +91,20 @@ export function InventorySidebar() {
 
       <SidebarContent>
         <SidebarGroup>
+          <SidebarGroupLabel className="text-green-800">
+            Inventory
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>{renderMenuItems(mainMenuItems)}</SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-green-800">
+            Sales & Operations
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>{renderMenuItems(salesMenuItems)}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 

@@ -16,10 +16,11 @@ export default async function ProductPage({ params }: PageProps) {
   const { id } = await params;
   const result = await getProductDetail(id);
   if (!result.success) {
-    return <p>Error:{result.error}</p>;
+    return <p>Error: {result.error}</p>;
   }
 
   const product = result.data;
+  console.log(product);
 
   return (
     <div className="min-h-screen bg-green-50/30 p-4 sm:p-6">

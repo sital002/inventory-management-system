@@ -48,7 +48,6 @@ export async function ProductDetailsAsync({
     }
   };
 
-  console.log(product);
   const status = getStockStatus();
   const StatusIcon = status.icon;
 
