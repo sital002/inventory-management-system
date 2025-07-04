@@ -125,7 +125,6 @@ export async function getOrders(
             .sort({ createdAt: -1 })
             .populate({
                 path: "products.product",
-                model: Product,
             });
 
         const totalOrders = await Order.countDocuments(query);
