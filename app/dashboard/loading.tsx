@@ -4,13 +4,11 @@ export default function Loading() {
   return (
     <div className="min-h-screen bg-green-50/30 p-4 sm:p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header Loading */}
         <div className="mb-6 sm:mb-8">
           <div className="h-6 sm:h-8 bg-green-200 rounded animate-pulse mb-2 w-48 sm:w-64"></div>
           <div className="h-4 bg-green-100 rounded animate-pulse w-64 sm:w-96"></div>
         </div>
 
-        {/* Stats Loading */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6">
           {[...Array(4)].map((_, i) => (
             <div
@@ -23,7 +21,6 @@ export default function Loading() {
           ))}
         </div>
 
-        {/* Dashboard Grid Loading */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             {[...Array(2)].map((_, i) => (

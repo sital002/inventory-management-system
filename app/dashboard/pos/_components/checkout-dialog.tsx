@@ -59,9 +59,12 @@ export function CheckoutDialog({
   const [isComplete, setIsComplete] = useState(false);
   const [transactionId, setTransactionId] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  const router = useRouter();
+
   const cashAmount = Number.parseFloat(cashReceived) || 0;
   const changeAmount = cashAmount - totals.total;
-  const router = useRouter();
+
   const handlePayment = async () => {
     setIsProcessing(true);
     setError(null);
@@ -90,7 +93,6 @@ export function CheckoutDialog({
     setError(null);
     setIsProcessing(false);
     setIsComplete(true);
-    router.refresh();
   };
 
   const handleClose = () => {

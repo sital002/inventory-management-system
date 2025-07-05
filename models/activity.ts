@@ -1,15 +1,17 @@
 import mongoose, { Model, models, ObjectId } from "mongoose";
-interface IProductActivity {
-    id: string;
+export interface IActivity {
+    _id: ObjectId;
     product: ObjectId;
-    type: "Sale" | "Restock" | "Return";
-    quantity: number;
+    type: "sale" | "stock_in" | "low_stock" | "price_change" | "stock_out" | "refund";
+    user: ObjectId;
+    quantity?: number;
+    amount?: number;
     note: string;
     createdAt: Date;
     updatedAt: Date;
 }
 
-const productActivitySchema = new mongoose.Schema<IProductActivity>({
+const activitySchema = new mongoose.Schema<IActivity>({
     product: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Product",
@@ -17,10 +19,19 @@ const productActivitySchema = new mongoose.Schema<IProductActivity>({
     },
     type: {
         type: String,
-        enum: ["Sale", "Restock", "Return"],
+        enum: ["sale", "stock_in", "low_stock", "price_change", "stock_out", "refund"],
+        required: true,
+    },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
         required: true,
     },
     quantity: {
+        type: Number,
+        default: 0,
+    },
+    amount: {
         type: Number,
         default: 0,
     },
@@ -31,5 +42,5 @@ const productActivitySchema = new mongoose.Schema<IProductActivity>({
 
 }, { timestamps: true });
 
-const ProductActivity: Model<IProductActivity> = models.ProductActivity || mongoose.model("ProductActivity", productActivitySchema);
-export default ProductActivity;
+const Activity: Model<IActivity> = models.Activity || mongoose.model("Activity", activitySchema);
+export default Activity;

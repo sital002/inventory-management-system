@@ -23,7 +23,7 @@ export default async function RootLayout({
         <InventorySidebar />
         <SidebarInset>
           <Navbar />
-          {children}
+          <div className="bg-green-50/30">{children}</div>
         </SidebarInset>
       </SidebarProvider>
     </div>

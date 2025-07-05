@@ -138,3 +138,25 @@ export async function isAuthenticated() {
     return false;
   }
 }
+
+export async function getUserData() {
+  try {
+    const userCookie = (await cookies()).get("user");
+    if (!userCookie) {
+      return null;
+    }
+    const userData = JSON.parse(userCookie.value);
+    if (!userData || !userData.id) {
+      return null;
+    }
+    await connectToDatabase();
+    const user = await User.findById(userData.id).select("-password").lean();
+    if (!user) {
+      return null;
+    }
+    return user;
+
+  } catch {
+    return null
+  }
+}

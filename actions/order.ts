@@ -6,6 +6,7 @@ import Product, { IProduct } from "@/models/product";
 import { connectToDatabase } from "@/utils/db";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import { createActivity } from "./activity";
 
 type Response<T> = {
     success: true;
@@ -64,6 +65,13 @@ export async function createOrder({
                     return { success: false, error: `Insufficient stock for product ${product.name}` }
                 }
                 await product.save();
+                await createActivity({
+                    product: product._id.toString(),
+                    type: "sale",
+                    amount: orderProduct.subtotal,
+                    quantity: orderProduct.quantity,
+                    note: `Sold ${orderProduct.quantity} ${product.unit} of ${product.name} to customer`,
+                })
             }
         }
         )
