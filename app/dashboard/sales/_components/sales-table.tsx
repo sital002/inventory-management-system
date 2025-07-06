@@ -138,7 +138,7 @@ export function SalesTable({ transactions, onRefund }: SalesTableProps) {
                       {transaction.status.charAt(0).toUpperCase() +
                         transaction.status.slice(1)}
                     </Badge>
-                    {transaction.status === "returned" &&
+                    {transaction.status === "refunded" &&
                       transaction.refundReason && (
                         <div className="text-xs text-red-600 mt-1">
                           {transaction.refundReason}
@@ -147,14 +147,6 @@ export function SalesTable({ transactions, onRefund }: SalesTableProps) {
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="border-green-200 text-green-700 hover:bg-green-50 bg-transparent"
-                      >
-                        <Eye className="h-4 w-4 mr-1" />
-                        View
-                      </Button>
                       {transaction.status === "completed" && (
                         <Button
                           variant="outline"

@@ -9,8 +9,7 @@ export interface IOrder {
     subtotal: number;
   }[];
   totalAmount: number;
-  status: "returned" | "completed";
-  reason?: string;
+  status: "refunded" | "completed";
   paymentMethod: "cash" | "card" | "online";
   createdAt: Date;
   refundReason?: string;
@@ -43,16 +42,14 @@ const orderSchema = new Schema<IOrder>(
       required: true,
       min: 0,
     },
-    reason: {
-      type: String,
-    },
     refundReason: {
       type: String,
       trim: true
     },
+
     status: {
       type: String,
-      enum: ["returned", "completed"],
+      enum: ["refunded", "completed"],
       required: true,
     },
     paymentMethod: {

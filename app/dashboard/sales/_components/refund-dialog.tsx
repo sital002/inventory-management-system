@@ -22,10 +22,11 @@ import {
 import { SalesTransaction } from "./sales-client";
 
 interface RefundDialogProps {
+  error: string;
   transaction: SalesTransaction | null;
   isOpen: boolean;
   onClose: () => void;
-  onRefund: (transactionId: string, reason: string) => void;
+  onRefund: (transactionId: string, reason: string) => Promise<void>;
 }
 
 const refundReasons = [
@@ -40,6 +41,7 @@ const refundReasons = [
 
 export function RefundDialog({
   transaction,
+  error,
   isOpen,
   onClose,
   onRefund,
@@ -75,6 +77,8 @@ export function RefundDialog({
         </DialogHeader>
 
         <div className="space-y-6">
+          {error && <p className="text-destructive">Error: {error}</p>}
+
           <div className="bg-green-50 p-4 rounded-lg border border-green-200">
             <h3 className="font-semibold text-green-900 mb-3">
               Transaction Details

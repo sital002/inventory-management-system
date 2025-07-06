@@ -16,11 +16,13 @@ export function ActivityClient() {
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
     totalActivities: 0,
   });
+
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {

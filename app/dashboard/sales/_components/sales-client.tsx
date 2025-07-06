@@ -5,7 +5,7 @@ import { SalesTable } from "./sales-table";
 import { SalesSearch } from "./sales-search";
 import { RefundDialog } from "./refund-dialog";
 import { ExtractData } from "@/utils/response-type";
-import { getOrders } from "@/actions/order";
+import { getOrders, refund } from "@/actions/order";
 
 export type SalesTransaction = ExtractData<
   Awaited<ReturnType<typeof getOrders>>
@@ -20,6 +20,7 @@ export function SalesClient({ transactions }: SalesClientProps) {
   const [selectedTransaction, setSelectedTransaction] =
     useState<SalesTransaction | null>(null);
   const [isRefundDialogOpen, setIsRefundDialogOpen] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSearch = (
     searchTerm: string,
@@ -70,10 +71,14 @@ export function SalesClient({ transactions }: SalesClientProps) {
     setIsRefundDialogOpen(true);
   };
 
-  const processRefund = (transactionId: string, reason: string) => {
-    console.log(`Processing refund for ${transactionId}: ${reason}`);
+  const processRefund = async (transactionId: string, reason: string) => {
     setIsRefundDialogOpen(false);
     setSelectedTransaction(null);
+    const result = await refund(transactionId, reason);
+    if (!result.success) {
+      setError(result.error || "Failed to process refund");
+      return;
+    }
 
     const updatedTransactions = transactions.map((txn) =>
       txn._id.toString() === transactionId
@@ -94,6 +99,7 @@ export function SalesClient({ transactions }: SalesClientProps) {
       <SalesSearch onSearch={handleSearch} />
       <SalesTable transactions={filteredTransactions} onRefund={handleRefund} />
       <RefundDialog
+        error={error}
         transaction={selectedTransaction}
         isOpen={isRefundDialogOpen}
         onClose={() => setIsRefundDialogOpen(false)}
