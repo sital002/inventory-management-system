@@ -17,7 +17,7 @@ export async function ProductStatsAsync({ product }: ProductStatsAsyncProps) {
   const stats = [
     {
       title: "Current Stock",
-      value: `${product.currentStock} units`,
+      value: `${product.currentStock} ${product.unit}`,
       icon: Package,
       color: "bg-green-50 border-green-200 text-green-700",
       valueColor: "text-green-900",

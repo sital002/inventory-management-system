@@ -6,6 +6,8 @@ import Product, { IProduct } from "@/models/product";
 import { connectToDatabase } from "@/utils/db";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
+import { createActivity } from "./activity";
+import mongoose from "mongoose";
 
 type Response<T> = {
     success: true;
@@ -64,6 +66,13 @@ export async function createOrder({
                     return { success: false, error: `Insufficient stock for product ${product.name}` }
                 }
                 await product.save();
+                await createActivity({
+                    product: product._id.toString(),
+                    type: "sale",
+                    amount: orderProduct.subtotal,
+                    quantity: orderProduct.quantity,
+                    note: `Sold ${orderProduct.quantity} ${product.unit} of ${product.name} to customer`,
+                })
             }
         }
         )
@@ -146,4 +155,43 @@ export async function getOrders(
                 error instanceof Error ? error.message : "An unexpected error occurred",
         };
     }
+}
+
+export async function refund(orderId: string, reason: string) {
+    const isOrderId = mongoose.isValidObjectId(orderId);
+    if (!isOrderId) return { success: false, error: "Invalid order ID" }
+    try {
+        await connectToDatabase()
+        const order = await Order.findById(orderId);
+        if (!order) return { success: false, error: "Order not found" }
+        if (order.status !== "completed") return { success: false, error: "Order is not completed" }
+        order.status = "refunded";
+        order.refundReason = reason;
+        await order.save();
+        const products = await Product.find({
+            _id: { $in: order.products.map(p => p.product) }
+        });
+        for (const product of products) {
+            const orderProduct = order.products.find(p => p.product.toString() === product._id.toString());
+            if (orderProduct) {
+                product.currentStock += orderProduct.quantity;
+                await product.save();
+                await createActivity({
+                    product: product._id.toString(),
+                    type: "refund",
+                    amount: orderProduct.subtotal,
+                    quantity: orderProduct.quantity,
+                    note: `Refunded ${orderProduct.quantity} ${product.unit} of ${product.name} from customer`,
+                })
+            }
+        }
+        revalidatePath("/dashboard/sales");
+        console.log(order)
+        return { success: true, data: JSON.parse(JSON.stringify(order)) }
+
+    }
+    catch (error) {
+        return { success: false, error: error instanceof Error ? error.message : "An unexpected error occurred" }
+    }
+
 }

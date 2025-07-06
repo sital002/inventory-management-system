@@ -141,13 +141,13 @@ export async function ProductDetailsAsync({
                   <div className="flex justify-between items-center">
                     <span className="text-green-700">Current Stock:</span>
                     <span className="font-medium text-green-900">
-                      {product.currentStock} units
+                      {product.currentStock} {product.unit}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-green-700">Low Stock Alert:</span>
                     <span className="text-green-900">
-                      {product.lowStockThreshold} units
+                      {product.lowStockThreshold} {product.unit}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">

@@ -53,7 +53,7 @@ export function ProductCard({ product }: ProductCardProps) {
           <div className="flex justify-between text-sm">
             <span className="text-gray-500">Stock:</span>
             <span className={`font-medium ${getStatusColor(stockStatus)}`}>
-              {product.currentStock} units
+              {product.currentStock} {product.unit}
             </span>
           </div>
           <div className="flex justify-between text-sm">

@@ -496,6 +496,246 @@ export const productsNeedingReorder = [
   },
 ]
 
+export const activityData = [
+  {
+    id: "ACT-001",
+    type: "sale",
+    description: "Sold 3 kg of Organic Bananas to customer",
+    user: "John Cashier",
+    timestamp: "2024-01-15 14:30:25",
+    productName: "Organic Bananas",
+    amount: 14.97,
+    quantity: 3,
+  },
+  {
+    id: "ACT-002",
+    type: "refund",
+    description: "Refunded 1 piece of Cheddar Cheese - customer complaint",
+    user: "Sarah Manager",
+    timestamp: "2024-01-15 13:45:12",
+    productName: "Cheddar Cheese",
+    amount: 5.99,
+    quantity: 1,
+  },
+  {
+    id: "ACT-003",
+    type: "stock_in",
+    description: "Received 50 kg of Organic Carrots from supplier",
+    user: "Mike Warehouse",
+    timestamp: "2024-01-15 10:15:30",
+    productName: "Organic Carrots",
+    quantity: 50,
+  },
+  {
+    id: "ACT-004",
+    type: "low_stock",
+    description: "Low stock alert triggered for Red Apples",
+    user: "System",
+    timestamp: "2024-01-15 09:00:00",
+    productName: "Red Apples",
+  },
+  {
+    id: "ACT-005",
+    type: "price_change",
+    description: "Updated selling price for Whole Milk from $3.29 to $3.49",
+    user: "Admin User",
+    timestamp: "2024-01-15 08:30:15",
+    productName: "Whole Milk",
+  },
+  {
+    id: "ACT-006",
+    type: "sale",
+    description: "Sold 2 liters of Whole Milk to customer",
+    user: "Emma Cashier",
+    timestamp: "2024-01-14 16:20:45",
+    productName: "Whole Milk",
+    amount: 6.98,
+    quantity: 2,
+  },
+  {
+    id: "ACT-007",
+    type: "stock_out",
+    description: "Stock depleted for Frozen Pizza - marked as out of stock",
+    user: "System",
+    timestamp: "2024-01-14 15:45:30",
+    productName: "Frozen Pizza",
+  },
+  {
+    id: "ACT-008",
+    type: "sale",
+    description: "Sold 1 kg of Red Apples to customer",
+    user: "John Cashier",
+    timestamp: "2024-01-14 14:15:20",
+    productName: "Red Apples",
+    amount: 3.49,
+    quantity: 1,
+  },
+  {
+    id: "ACT-009",
+    type: "refund",
+    description: "Refunded 2 kg of Organic Bananas - quality issue",
+    user: "Sarah Manager",
+    timestamp: "2024-01-14 12:30:10",
+    productName: "Organic Bananas",
+    amount: 9.98,
+    quantity: 2,
+  },
+  {
+    id: "ACT-010",
+    type: "stock_in",
+    description: "Received 30 pieces of Cheddar Cheese from supplier",
+    user: "Mike Warehouse",
+    timestamp: "2024-01-14 11:00:00",
+    productName: "Cheddar Cheese",
+    quantity: 30,
+  },
+  {
+    id: "ACT-011",
+    type: "sale",
+    description: "Sold 5 kg of Organic Bananas to customer",
+    user: "Emma Cashier",
+    timestamp: "2024-01-13 17:45:30",
+    productName: "Organic Bananas",
+    amount: 24.95,
+    quantity: 5,
+  },
+  {
+    id: "ACT-012",
+    type: "low_stock",
+    description: "Low stock alert triggered for Cheddar Cheese",
+    user: "System",
+    timestamp: "2024-01-13 16:30:00",
+    productName: "Cheddar Cheese",
+  },
+  {
+    id: "ACT-013",
+    type: "sale",
+    description: "Sold 3 liters of Whole Milk to customer",
+    user: "John Cashier",
+    timestamp: "2024-01-13 15:20:15",
+    productName: "Whole Milk",
+    amount: 10.47,
+    quantity: 3,
+  },
+  {
+    id: "ACT-014",
+    type: "stock_in",
+    description: "Received 25 kg of Red Apples from supplier",
+    user: "Mike Warehouse",
+    timestamp: "2024-01-13 10:30:45",
+    productName: "Red Apples",
+    quantity: 25,
+  },
+  {
+    id: "ACT-015",
+    type: "price_change",
+    description: "Updated discount price for Organic Bananas from $4.99 to $4.49",
+    user: "Admin User",
+    timestamp: "2024-01-13 09:15:30",
+    productName: "Organic Bananas",
+  },
+  {
+    id: "ACT-016",
+    type: "sale",
+    description: "Sold 2 pieces of Cheddar Cheese to customer",
+    user: "Emma Cashier",
+    timestamp: "2024-01-12 18:30:20",
+    productName: "Cheddar Cheese",
+    amount: 11.98,
+    quantity: 2,
+  },
+  {
+    id: "ACT-017",
+    type: "refund",
+    description: "Refunded 1 liter of Whole Milk - expired product",
+    user: "Sarah Manager",
+    timestamp: "2024-01-12 16:45:10",
+    productName: "Whole Milk",
+    amount: 3.49,
+    quantity: 1,
+  },
+  {
+    id: "ACT-018",
+    type: "stock_out",
+    description: "Stock depleted for Organic Carrots - marked as out of stock",
+    user: "System",
+    timestamp: "2024-01-12 14:20:00",
+    productName: "Organic Carrots",
+  },
+  {
+    id: "ACT-019",
+    type: "sale",
+    description: "Sold 4 kg of Organic Bananas to customer",
+    user: "John Cashier",
+    timestamp: "2024-01-12 13:15:45",
+    productName: "Organic Bananas",
+    amount: 19.96,
+    quantity: 4,
+  },
+  {
+    id: "ACT-020",
+    type: "low_stock",
+    description: "Low stock alert triggered for Whole Milk",
+    user: "System",
+    timestamp: "2024-01-12 11:00:00",
+    productName: "Whole Milk",
+  },
+  {
+    id: "ACT-021",
+    type: "stock_in",
+    description: "Received 40 liters of Whole Milk from supplier",
+    user: "Mike Warehouse",
+    timestamp: "2024-01-11 15:30:20",
+    productName: "Whole Milk",
+    quantity: 40,
+  },
+  {
+    id: "ACT-022",
+    type: "sale",
+    description: "Sold 2 kg of Red Apples to customer",
+    user: "Emma Cashier",
+    timestamp: "2024-01-11 14:45:30",
+    productName: "Red Apples",
+    amount: 6.98,
+    quantity: 2,
+  },
+  {
+    id: "ACT-023",
+    type: "price_change",
+    description: "Updated cost price for Cheddar Cheese from $3.25 to $3.50",
+    user: "Admin User",
+    timestamp: "2024-01-11 12:20:15",
+    productName: "Cheddar Cheese",
+  },
+  {
+    id: "ACT-024",
+    type: "sale",
+    description: "Sold 6 kg of Organic Bananas to customer",
+    user: "John Cashier",
+    timestamp: "2024-01-11 11:30:45",
+    productName: "Organic Bananas",
+    amount: 29.94,
+    quantity: 6,
+  },
+  {
+    id: "ACT-025",
+    type: "refund",
+    description: "Refunded 3 kg of Red Apples - customer dissatisfaction",
+    user: "Sarah Manager",
+    timestamp: "2024-01-10 17:15:20",
+    productName: "Red Apples",
+    amount: 10.47,
+    quantity: 3,
+  },
+]
+
+export const activityStats = {
+  totalActivities: activityData.length,
+  todayActivities: activityData.filter((a) => a.timestamp.startsWith("2024-01-15")).length,
+  salesActivities: activityData.filter((a) => a.type === "sale").length,
+  stockActivities: activityData.filter((a) => a.type === "stock_in" || a.type === "stock_out").length,
+}
+
 export async function getReorderStats() {
   await new Promise((resolve) => setTimeout(resolve, 1500))
   return reorderStats
@@ -504,6 +744,16 @@ export async function getReorderStats() {
 export async function getProductsNeedingReorder() {
   await new Promise((resolve) => setTimeout(resolve, 2000))
   return productsNeedingReorder
+}
+
+export async function getActivityData() {
+  await new Promise((resolve) => setTimeout(resolve, 1500))
+  return activityData
+}
+
+export async function getActivityStats() {
+  await new Promise((resolve) => setTimeout(resolve, 1000))
+  return activityStats
 }
 
 export async function getCategoryStats() {
