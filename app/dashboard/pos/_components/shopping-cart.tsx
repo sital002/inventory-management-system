@@ -126,7 +126,7 @@ export function ShoppingCart({
                   }
                   className="w-16 h-8 text-center text-sm"
                   min="0"
-                  max={item.product.initialStock}
+                  max={item.product.currentStock}
                 />
 
                 <Button
@@ -138,7 +138,7 @@ export function ShoppingCart({
                       item.quantity + 1
                     )
                   }
-                  disabled={item.quantity >= item.product.initialStock}
+                  disabled={item.quantity >= item.product.currentStock}
                   className="h-8 w-8 p-0"
                 >
                   <Plus className="h-3 w-3" />
