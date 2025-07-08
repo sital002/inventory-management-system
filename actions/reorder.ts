@@ -3,6 +3,7 @@ import Product from "@/models/product";
 import ReOrder from "@/models/reorder";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { createActivity } from "./activity";
 
 type Response<T> = {
     success: true,
@@ -31,6 +32,14 @@ export async function reStockOrder(data: z.infer<typeof reorderSchema>): Promise
         const item = items.find(i => i.productId === product._id.toString());
         if (item) {
             product.currentStock += item.quantity;
+            await createActivity({
+                product: product._id.toString(),
+                type: "stock_in",
+                amount: item.quantity * product.costPrice,
+                note: `Restocked ${item.quantity} ${product.unit} of ${product.name}`,
+                quantity: item.quantity
+
+            })
             await ReOrder.create({
                 productId: product._id,
                 quantity: item.quantity,

@@ -73,6 +73,13 @@ export async function createOrder({
                     quantity: orderProduct.quantity,
                     note: `Sold ${orderProduct.quantity} ${product.unit} of ${product.name} to customer`,
                 })
+                if (product.currentStock < product.lowStockThreshold) {
+                    await createActivity({
+                        product: product._id.toString(),
+                        type: "low_stock",
+                        note: `Low stock alert for ${product.name}`
+                    })
+                }
             }
         }
         )

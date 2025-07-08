@@ -134,7 +134,7 @@ export function ActivityTable({ activities }: ActivityTableProps) {
               </div>
 
               <div className="flex items-center space-x-3">
-                {activity.amount && (
+                {activity.amount ? (
                   <div className="text-right">
                     <div
                       className={`text-sm font-medium ${
@@ -148,13 +148,13 @@ export function ActivityTable({ activities }: ActivityTableProps) {
                       {activity.type === "refund" ? "-" : "+"}$
                       {activity.amount.toFixed(2)}
                     </div>
-                    {activity.quantity && (
+                    {activity.quantity ? (
                       <div className="text-xs text-green-600">
                         Qty: {activity.quantity}
                       </div>
-                    )}
+                    ) : null}
                   </div>
-                )}
+                ) : null}
                 {getActivityBadge(activity.type)}
               </div>
             </div>

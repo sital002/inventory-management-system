@@ -34,17 +34,21 @@ export function POSClient({ initialProducts, categories }: POSClientProps) {
       );
 
       if (existingItem) {
-        return prevCart.map((item) =>
-          item.product._id.toString() === product._id.toString()
+        return prevCart.map((item) => {
+          const finalQuantity =
+            item.quantity + quantity > item.product.currentStock
+              ? item.quantity
+              : item.quantity + quantity;
+          return item.product._id.toString() === product._id.toString()
             ? {
                 ...item,
-                quantity: item.quantity + quantity,
+                quantity: finalQuantity,
                 subtotal:
-                  (item.quantity + quantity) *
+                  (item.quantity + finalQuantity) *
                   (product.discountPrice || product.sellingPrice),
               }
-            : item
-        );
+            : item;
+        });
       } else {
         return [
           ...prevCart,

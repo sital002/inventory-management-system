@@ -101,7 +101,6 @@ export function ReOrderForm({ categories, initialProducts }: ReOrderFormProps) {
           quantity: suggestedQuantity,
         },
       ]);
-      console.log(product);
       setProducts((prev) => [product, ...prev]);
     };
     getProduct();
