@@ -107,7 +107,7 @@ export async function getActivitiesStats() {
                     },
                     stockActivities: {
                         $sum: {
-                            $cond: [{ $in: ["$type", ["stock_in", "stock_out"]] }, 1, 0]
+                            $cond: [{ $in: ["$type", ["stock_in", "sale"]] }, 1, 0]
                         }
                     }
                 }
