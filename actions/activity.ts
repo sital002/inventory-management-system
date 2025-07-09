@@ -45,27 +45,64 @@ export async function createActivity(data: z.infer<typeof activitySchema>) {
 
 }
 
-export async function getActivity(page: number = 1, limit: number = 10): Promise<{
-    success: boolean, data?: {
+type Options = {
+    product?: string,
+    type?: "sale" | "stock_in" | "low_stock" | "price_change" | "stock_out" | "refund",
+    user?: string
+    search?: string
+
+}
+export async function getActivity(
+    page: number = 1,
+    limit: number = 10,
+    options: Options = {},
+): Promise<{
+    success: boolean,
+    data?: {
         activities: (IActivity & { product: IProduct } & { user: UserType })[],
         pagination: {
             currentPage: number,
             totalPages: number,
             totalActivities: number
         }
-    }, error?: string
+    },
+    error?: string
 }> {
     try {
-        await connectToDatabase()
+        await connectToDatabase();
         const skip = (page - 1) * limit;
-        const activities = await Activity.find()
-            .sort({ createdAt: -1 }).populate("product").populate("user", "name email")
+
+        const query: any = {};
+
+        if (options.product) {
+            query.product = options.product;
+        }
+
+        if (options.type) {
+            query.type = options.type;
+        }
+
+        if (options.user) {
+            query.user = options.user;
+        }
+
+        if (options.search) {
+            query.$or = [
+                { note: { $regex: options.search, $options: "i" } },
+                { type: { $regex: options.search, $options: "i" } }
+            ];
+        }
+
+        const activities = await Activity.find(query)
+            .sort({ createdAt: -1 })
+            .populate("product")
+            .populate("user", "name email")
             .skip(skip)
             .limit(limit)
             .lean()
             .exec();
 
-        const totalActivities = await Activity.countDocuments().exec();
+        const totalActivities = await Activity.countDocuments(query).exec();
         const totalPages = Math.ceil(totalActivities / limit);
 
         return {
