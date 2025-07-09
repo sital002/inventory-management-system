@@ -59,7 +59,6 @@ export function ActivityClient() {
 
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
-    console.log("tes");
     fetchData(1, searchTerm);
   };
   return (
