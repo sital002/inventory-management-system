@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, FormEvent } from "react";
 import { ActivityTable } from "./activity-table";
-import { ActivitySearch } from "./activity-search";
+import { ActivitySearch, filters } from "./activity-search";
 import { ActivityPagination } from "./activity-pagination";
 import { ActivityLoading } from "./activity-loading";
 import { getActivity } from "@/actions/activity";
 import { IActivity } from "@/models/activity";
+import { useSearchParams } from "next/navigation";
 
 const itemsPerPage = 10;
 
@@ -14,51 +15,57 @@ export function ActivityClient() {
   const [activities, setActivities] = useState<IActivity[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [typeFilter, setTypeFilter] = useState("all");
+  const [typeFilter, setTypeFilter] =
+    useState<(typeof filters)[0]["value"]>("all");
   const [currentPage, setCurrentPage] = useState(1);
 
+  const params = useSearchParams();
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
     totalActivities: 0,
   });
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    try {
-      console.log("current page ", currentPage);
-      const result = await getActivity(currentPage, itemsPerPage);
-      console.log("Activity result:", result);
-      if (result.data) {
-        setActivities(result.data.activities);
-        setPagination(result.data.pagination);
+  const fetchData = useCallback(
+    async (page: number = 1, search: string = searchTerm) => {
+      setLoading(true);
+      try {
+        const result = await getActivity(
+          page ? page : currentPage,
+          itemsPerPage,
+          {
+            search: search,
+            type: typeFilter === "all" ? undefined : typeFilter,
+          }
+        );
+        if (result.data) {
+          setActivities(result.data.activities);
+          setPagination(result.data.pagination);
+        }
+      } catch (error) {
+        console.error("Failed to fetch activity data:", error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Failed to fetch activity data:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [currentPage]);
+    },
+    [typeFilter, currentPage]
+  );
 
   useEffect(() => {
     fetchData();
-  }, []);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, typeFilter]);
-
-  useEffect(() => {
-    console.log("page changed to", currentPage);
-    fetchData();
-  }, [currentPage]);
+  }, [fetchData]);
 
   if (loading) return <ActivityLoading />;
 
+  const handleSearch = (e: FormEvent) => {
+    e.preventDefault();
+    fetchData(1, searchTerm);
+  };
   return (
     <div className="space-y-6">
       <div className="space-y-4">
         <ActivitySearch
+          handleSearch={handleSearch}
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
           typeFilter={typeFilter}
