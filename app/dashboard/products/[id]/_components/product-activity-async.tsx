@@ -5,17 +5,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Clock,
-  Package,
-  ShoppingCart,
-  TrendingUp,
-  AlertTriangle,
-  ExternalLink,
-} from "lucide-react";
+import { Clock, ExternalLink, Package, TrendingUp } from "lucide-react";
 import Link from "next/link";
+import { getActivity } from "@/actions/activity";
+import { getActivityBadge } from "@/utils/activity";
 
 interface ProductActivityAsyncProps {
   productId: string;
@@ -24,80 +18,6 @@ interface ProductActivityAsyncProps {
 export async function ProductActivityAsync({
   productId,
 }: ProductActivityAsyncProps) {
-  const recentActivity = [
-    {
-      id: 1,
-      type: "sale",
-      title: "Product sold",
-      description: "2 units sold to customer",
-      time: "5 minutes ago",
-      icon: ShoppingCart,
-      color: "text-green-600",
-    },
-    {
-      id: 2,
-      type: "restock",
-      title: "Stock updated",
-      description: "Added 20 units to inventory",
-      time: "2 hours ago",
-      icon: Package,
-      color: "text-blue-600",
-    },
-    {
-      id: 3,
-      type: "alert",
-      title: "Low stock alert",
-      description: "Stock below threshold",
-      time: "1 day ago",
-      icon: AlertTriangle,
-      color: "text-yellow-600",
-    },
-    {
-      id: 4,
-      type: "price",
-      title: "Price updated",
-      description: "Price changed to $4.99",
-      time: "3 days ago",
-      icon: TrendingUp,
-      color: "text-purple-600",
-    },
-  ];
-
-  const getActivityBadge = (type: string) => {
-    switch (type) {
-      case "sale":
-        return (
-          <Badge className="bg-green-100 text-green-800 border-green-200">
-            Sale
-          </Badge>
-        );
-      case "restock":
-        return (
-          <Badge className="bg-blue-100 text-blue-800 border-blue-200">
-            Restock
-          </Badge>
-        );
-      case "alert":
-        return (
-          <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
-            Alert
-          </Badge>
-        );
-      case "price":
-        return (
-          <Badge className="bg-purple-100 text-purple-800 border-purple-200">
-            Price
-          </Badge>
-        );
-      default:
-        return (
-          <Badge className="bg-gray-100 text-gray-800 border-gray-200">
-            Activity
-          </Badge>
-        );
-    }
-  };
-
   const quickActions = [
     {
       title: "Reorder Stock",
@@ -121,6 +41,10 @@ export async function ProductActivityAsync({
       color: "bg-purple-600 hover:bg-purple-700",
     },
   ];
+  const result = await getActivity(1, 5, {
+    product: productId,
+  });
+  const recentActivities = result.data?.activities || [];
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -167,7 +91,7 @@ export async function ProductActivityAsync({
                 Latest updates for this product
               </CardDescription>
             </div>
-            <Link href={`/dashboard/products/${productId}/activity`}>
+            <Link href={`/dashboard//activity?product=${productId}`}>
               <Button
                 variant="outline"
                 size="sm"
@@ -181,27 +105,31 @@ export async function ProductActivityAsync({
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {recentActivity.map((activity) => (
+            {recentActivities.map((activity) => (
               <div
-                key={activity.id}
+                key={activity._id.toString()}
                 className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border hover:bg-gray-100 transition-colors"
               >
-                <activity.icon
-                  className={`h-4 w-4 mt-0.5 flex-shrink-0 ${activity.color}`}
-                />
+                <div className={`h-4 w-4 mt-0.5 flex-shrink-0 `} />
+
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center justify-between">
                       <h4 className="font-medium text-gray-900 text-sm">
-                        {activity.title}
+                        {activity.note}
                       </h4>
                       {getActivityBadge(activity.type)}
                     </div>
-                    <p className="text-xs text-gray-600">
-                      {activity.description}
-                    </p>
+                    <p className="text-xs text-gray-600">{activity.note}</p>
                     <span className="text-xs text-gray-500">
-                      {activity.time}
+                      {new Date(activity.createdAt).toLocaleDateString(
+                        "en-US",
+                        {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        }
+                      )}
                     </span>
                   </div>
                 </div>

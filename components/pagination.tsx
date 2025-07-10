@@ -1,66 +1,70 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface ActivityPaginationProps {
-  currentPage: number
-  totalPages: number
-  onPageChange: (page: number) => void
-  totalItems: number
-  itemsPerPage: number
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  totalItems: number;
+  itemsPerPage: number;
 }
 
-export function ActivityPagination({
+export function Pagination({
   currentPage,
   totalPages,
   onPageChange,
   totalItems,
   itemsPerPage,
 }: ActivityPaginationProps) {
-  const startItem = (currentPage - 1) * itemsPerPage + 1
-  const endItem = Math.min(currentPage * itemsPerPage, totalItems)
+  const startItem = (currentPage - 1) * itemsPerPage + 1;
+  const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
   const getVisiblePages = () => {
-    const delta = 2
-    const range = []
-    const rangeWithDots = []
+    const delta = 2;
+    const range = [];
+    const rangeWithDots = [];
 
-    for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
-      range.push(i)
+    for (
+      let i = Math.max(2, currentPage - delta);
+      i <= Math.min(totalPages - 1, currentPage + delta);
+      i++
+    ) {
+      range.push(i);
     }
 
     if (currentPage - delta > 2) {
-      rangeWithDots.push(1, "...")
+      rangeWithDots.push(1, "...");
     } else {
-      rangeWithDots.push(1)
+      rangeWithDots.push(1);
     }
 
-    rangeWithDots.push(...range)
+    rangeWithDots.push(...range);
 
     if (currentPage + delta < totalPages - 1) {
-      rangeWithDots.push("...", totalPages)
+      rangeWithDots.push("...", totalPages);
     } else if (totalPages > 1) {
-      rangeWithDots.push(totalPages)
+      rangeWithDots.push(totalPages);
     }
 
-    return rangeWithDots
-  }
+    return rangeWithDots;
+  };
 
   if (totalPages <= 1) {
     return (
       <div className="flex items-center justify-between">
         <p className="text-sm text-green-600">
-          Showing {totalItems} of {totalItems} activities
+          Showing {totalItems} of {totalItems} data
         </p>
       </div>
-    )
+    );
   }
 
   return (
     <div className="flex items-center justify-between">
       <p className="text-sm text-green-600">
-        Showing {startItem} to {endItem} of {totalItems} activities
+        Showing {startItem} to {endItem} of {totalItems} data
       </p>
 
       <div className="flex items-center space-x-2">
@@ -104,5 +108,5 @@ export function ActivityPagination({
         </Button>
       </div>
     </div>
-  )
+  );
 }

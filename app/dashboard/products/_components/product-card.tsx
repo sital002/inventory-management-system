@@ -13,6 +13,7 @@ interface ProductCardProps {
   product: IProduct & { supplier: ISupplier } & { category: ICategory };
 }
 
+const sliceThreshold = 15;
 export function ProductCard({ product }: ProductCardProps) {
   const stockStatus = getStockStatus(
     product.currentStock,
@@ -28,7 +29,9 @@ export function ProductCard({ product }: ProductCardProps) {
             </div>
             <div className="flex-1 min-w-0">
               <CardTitle className="text-sm font-medium text-green-900 truncate">
-                {product.name}
+                {product.name.length > sliceThreshold
+                  ? product.name.slice(0, sliceThreshold) + "..."
+                  : product.name}
               </CardTitle>
               <p className="text-xs text-gray-500">SKU: {product.sku}</p>
             </div>

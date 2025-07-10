@@ -12,18 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Filter, Search } from "lucide-react";
 import { FormEvent } from "react";
-
-type FilterType = {
-  value:
-    | "all"
-    | "sale"
-    | "refund"
-    | "stock_in"
-    | "stock_out"
-    | "price_change"
-    | "low_stock";
-  label: string;
-};
+import { FilterType } from "./activity-client";
 
 export const filters: FilterType[] = [
   {

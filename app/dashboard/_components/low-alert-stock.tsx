@@ -45,7 +45,7 @@ export async function LowStockAlerts() {
               Items that need immediate attention
             </CardDescription>
           </div>
-          <Link href="/inventory/alerts">
+          <Link href="/dashboard/activity?filter=low_stock">
             <Button
               variant="outline"
               size="sm"
