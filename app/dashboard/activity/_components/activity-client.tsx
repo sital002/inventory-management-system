@@ -77,12 +77,12 @@ export function ActivityClient() {
         setLoading(false);
       }
     },
-    [typeFilter, currentPage]
+    [typeFilter, currentPage, searchTerm]
   );
 
   useEffect(() => {
     fetchData(currentPage);
-  }, [fetchData]);
+  }, [typeFilter, currentPage]);
 
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
