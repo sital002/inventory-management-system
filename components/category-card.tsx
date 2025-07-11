@@ -25,6 +25,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { colorOptions } from "@/utils/color-options";
+import { deleteCategory } from "@/actions/category";
 
 interface CategoryCardProps {
   category: {
@@ -43,8 +44,14 @@ export function CategoryCard({ category }: CategoryCardProps) {
     console.log("Edit category:", category.name);
   };
 
-  const handleDelete = () => {
-    console.log("Delete category:", category.name);
+  const handleDelete = async () => {
+    // console.log("Delete category:", category.name);
+    const result = await deleteCategory(category._id.toString());
+    // console.log(result);
+    if (!result.success) {
+      console.log("Failed to delete category:", result?.error);
+      return;
+    }
   };
 
   return (

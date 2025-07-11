@@ -3,9 +3,10 @@
 import Category, { ICategory } from "@/models/category";
 import { connectToDatabase } from "@/utils/db";
 import { z } from "zod";
-import { isAuthenticated } from "./auth";
+import { getUserData, isAuthenticated } from "./auth";
 import { revalidatePath } from "next/cache";
 import mongoose from "mongoose";
+import Product from "@/models/product";
 
 const categorySchma = z.object({
   name: z.string({ message: "Name is missing" }).min(1, "Name is required"),
@@ -113,6 +114,58 @@ export async function getCategories() {
     console.log("Error fetching categories:", error);
     return []
   }
+}
+
+
+export async function deleteCategory(id: string) {
+  if (!id) {
+    return {
+      success: false,
+      error: "Category ID is required",
+    };
+  }
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return {
+      success: false,
+      error: "Invalid category ID",
+    };
+  }
+  try {
+    await connectToDatabase();
+    const user = await getUserData();
+    if (!user) {
+      return {
+        success: false,
+        error: "User not authenticated",
+      };
+    }
+    if (user.role !== "admin") {
+      return {
+        success: false,
+        error: "You do not have permission to delete categories",
+      }
+    }
+    const category = await Category.findByIdAndDelete(id);
+    if (!category) {
+      return {
+        success: false,
+        error: "Category not found",
+      };
+    }
+    await Product.deleteMany({ category: id });
+    revalidatePath("/dashboard/categories");
+    return {
+      success: true,
+      data: "Category deleted successfully",
+    }
+
+  } catch (error) {
+    return {
+      success: false,
+      error: (error as Error).message || "Failed to delete category",
+    };
+  }
+
 }
 export async function getAllCategories(): Promise<
   Response<
