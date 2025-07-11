@@ -1,7 +1,7 @@
 import mongoose, { Model, models, ObjectId } from "mongoose";
 export interface IActivity {
     _id: ObjectId;
-    product: ObjectId;
+    product: mongoose.Types.ObjectId;
     type: "sale" | "stock_in" | "low_stock" | "price_change" | "stock_out" | "refund";
     user: ObjectId;
     quantity?: number;
