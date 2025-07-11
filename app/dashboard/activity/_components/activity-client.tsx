@@ -48,6 +48,9 @@ export function ActivityClient() {
   const fetchData = useCallback(
     async (page: number, search: string = searchTerm) => {
       setLoading(true);
+      router.push(
+        `/dashboard/activity?search=${searchTerm}&filter=${typeFilter}`
+      );
       try {
         const result = await getActivity(
           page ? page : currentPage,
