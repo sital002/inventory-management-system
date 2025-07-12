@@ -118,7 +118,7 @@ export async function deleteSupplier(id: string): Promise<Response<string>> {
       return { success: false, error: "Supplier not found" };
     }
     const deletedSupplier = await Supplier.findByIdAndDelete(id);
-    await Product.deleteMany({ supplierId: id });
+    await Product.deleteMany({ supplier: id });
 
     if (!deletedSupplier) {
       return { success: false, error: "Failed to delete supplier" };

@@ -48,7 +48,7 @@ export function ActivityClient() {
   const fetchData = useCallback(
     async (page: number, search: string = searchTerm) => {
       setLoading(true);
-      router.push(
+      router.replace(
         `/dashboard/activity?search=${searchTerm}&filter=${typeFilter}`
       );
       try {
