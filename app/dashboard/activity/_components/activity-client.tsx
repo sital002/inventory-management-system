@@ -107,7 +107,6 @@ export function ActivityClient() {
 
             <Pagination
               currentPage={currentPage}
-              totalPages={pagination.totalPages}
               onPageChange={setCurrentPage}
               totalItems={pagination.totalActivities}
               itemsPerPage={itemsPerPage}

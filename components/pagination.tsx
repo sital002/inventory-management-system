@@ -2,10 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useMemo } from "react";
 
 interface ActivityPaginationProps {
   currentPage: number;
-  totalPages: number;
   onPageChange: (page: number) => void;
   totalItems: number;
   itemsPerPage: number;
@@ -13,7 +13,6 @@ interface ActivityPaginationProps {
 
 export function Pagination({
   currentPage,
-  totalPages,
   onPageChange,
   totalItems,
   itemsPerPage,
@@ -21,6 +20,10 @@ export function Pagination({
   const startItem = (currentPage - 1) * itemsPerPage + 1;
   const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
+  const totalPages = useMemo(
+    () => Math.ceil(totalItems / itemsPerPage),
+    [totalItems, itemsPerPage]
+  );
   const getVisiblePages = () => {
     const delta = 2;
     const range = [];
