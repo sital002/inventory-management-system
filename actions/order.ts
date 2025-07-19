@@ -98,7 +98,7 @@ export async function createOrder({
 
 type Options = {
     searchQuery: string;
-    status: "completed" | "refunded";
+    status: "completed" | "refunded" | "all";
     time: "all" | "1" | "7" | "30"
 }
 export async function getOrders(
@@ -126,7 +126,7 @@ export async function getOrders(
                 { paymentMethod: { $regex: options.searchQuery, $options: "i" } },
             ];
         }
-        if (options?.status) {
+        if (options?.status && options.status !== 'all') {
             query.status = options.status;
         }
         if (options?.time && options.time !== "all") {
