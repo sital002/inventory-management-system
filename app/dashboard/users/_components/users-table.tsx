@@ -3,15 +3,14 @@
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { MoreHorizontal, Edit, Trash2, Shield, User } from "lucide-react"
+import { MoreHorizontal, Edit, Trash2, User } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { EditUserDialog } from "./edit-user-dialog"
 import { DeleteUserDialog } from "./delete-user-dialog"
 
 interface UsersTableProps {
-  users: { _id: string; name: string; email: string; role: "admin" | "user"; createdAt: string; updatedAt: string }[]
+  users: { _id: string; name: string; email: string; createdAt: string; updatedAt: string }[]
   onDeleteUser: (userId: string) => void
   onUpdateUser: (
     userId: string,
@@ -19,7 +18,6 @@ interface UsersTableProps {
       _id: string
       name: string
       email: string
-      role: "admin" | "user"
       createdAt: string
       updatedAt: string
     }>,
@@ -31,7 +29,6 @@ export function UsersTable({ users, onDeleteUser, onUpdateUser }: UsersTableProp
     _id: string
     name: string
     email: string
-    role: "admin" | "user"
     createdAt: string
     updatedAt: string
   } | null>(null)
@@ -39,7 +36,6 @@ export function UsersTable({ users, onDeleteUser, onUpdateUser }: UsersTableProp
     _id: string
     name: string
     email: string
-    role: "admin" | "user"
     createdAt: string
     updatedAt: string
   } | null>(null)
@@ -69,7 +65,7 @@ export function UsersTable({ users, onDeleteUser, onUpdateUser }: UsersTableProp
           <User className="h-12 w-12 text-green-400 mb-4" />
           <h3 className="text-lg font-semibold text-green-900 mb-2">No users found</h3>
           <p className="text-green-600 text-center">
-            No users match your current search criteria. Try adjusting your filters.
+            No users match your current search criteria. Try adjusting your search.
           </p>
         </CardContent>
       </Card>
@@ -97,21 +93,6 @@ export function UsersTable({ users, onDeleteUser, onUpdateUser }: UsersTableProp
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <h3 className="font-medium text-green-900">{user.name}</h3>
-                      <Badge
-                        variant={user.role === "admin" ? "destructive" : "secondary"}
-                        className={
-                          user.role === "admin"
-                            ? "bg-red-100 text-red-800 hover:bg-red-200"
-                            : "bg-green-100 text-green-800 hover:bg-green-200"
-                        }
-                      >
-                        {user.role === "admin" ? (
-                          <Shield className="h-3 w-3 mr-1" />
-                        ) : (
-                          <User className="h-3 w-3 mr-1" />
-                        )}
-                        {user.role}
-                      </Badge>
                     </div>
                     <p className="text-sm text-green-600">{user.email}</p>
                     <p className="text-xs text-green-500">Created: {formatDate(user.createdAt)}</p>

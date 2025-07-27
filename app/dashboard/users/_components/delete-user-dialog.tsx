@@ -9,14 +9,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, Loader2, Trash2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader2, Trash2, AlertTriangle } from "lucide-react";
 
 interface User {
   _id: string;
   name: string;
   email: string;
-  role: "admin" | "user";
   createdAt: string;
   updatedAt: string;
 }
@@ -52,25 +51,46 @@ export function DeleteUserDialog({
             Delete User
           </DialogTitle>
           <DialogDescription>
-            This action cannot be undone. This will permanently delete the user
-            account.
+            Are you sure you want to delete this user? This action cannot be
+            undone.
           </DialogDescription>
         </DialogHeader>
 
         <Alert className="border-red-200 bg-red-50">
           <AlertTriangle className="h-4 w-4 text-red-600" />
           <AlertDescription className="text-red-800">
-            You are about to delete <strong>{user.name}</strong> ({user.email}).
-            This will remove all their access to the system.
+            <strong>Warning:</strong> This will permanently delete the user
+            account and all associated data.
           </AlertDescription>
         </Alert>
+
+        <div className="space-y-2 p-4 bg-gray-50 rounded-lg">
+          <div className="flex justify-between">
+            <span className="font-medium text-gray-700">Name:</span>
+            <span className="text-gray-900">{user.name}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="font-medium text-gray-700">Email:</span>
+            <span className="text-gray-900">{user.email}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="font-medium text-gray-700">Created:</span>
+            <span className="text-gray-900">
+              {new Date(user.createdAt).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}
+            </span>
+          </div>
+        </div>
 
         <div className="flex justify-end gap-3 pt-4">
           <Button
             type="button"
             variant="outline"
             onClick={() => onOpenChange(false)}
-            className="border-green-200 text-green-700 hover:bg-green-50"
+            className="border-gray-200 text-gray-700 hover:bg-gray-50"
           >
             Cancel
           </Button>

@@ -1,5 +1,5 @@
-import { UsersLoading } from "./_components/users-loading"
+import { UsersLoading } from "./_components/users-loading";
 
 export default function Loading() {
-  return <UsersLoading />
+  return <UsersLoading />;
 }

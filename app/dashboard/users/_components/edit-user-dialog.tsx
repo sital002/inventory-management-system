@@ -21,19 +21,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Loader2, Edit } from "lucide-react";
 
 const editUserSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
-  role: z.enum(["admin", "user"]),
 });
 
 type EditUserFormData = z.infer<typeof editUserSchema>;
@@ -42,7 +34,6 @@ interface User {
   _id: string;
   name: string;
   email: string;
-  role: "admin" | "user";
   createdAt: string;
   updatedAt: string;
 }
@@ -67,7 +58,6 @@ export function EditUserDialog({
     defaultValues: {
       name: user.name,
       email: user.email,
-      role: user.role,
     },
   });
 
@@ -86,9 +76,7 @@ export function EditUserDialog({
             <Edit className="h-5 w-5" />
             Edit User
           </DialogTitle>
-          <DialogDescription>
-            Update user information and permissions.
-          </DialogDescription>
+          <DialogDescription>Update user information.</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -127,33 +115,6 @@ export function EditUserDialog({
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="role"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-green-900">User Role</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="border-green-200 focus:border-green-500 focus:ring-green-500">
-                        <SelectValue placeholder="Select user role" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="user">
-                        User - Standard Access
-                      </SelectItem>
-                      <SelectItem value="admin">Admin - Full Access</SelectItem>
-                    </SelectContent>
-                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
