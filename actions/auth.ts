@@ -1,6 +1,6 @@
 "use server";
 
-import User from "@/models/user";
+import User, { UserType } from "@/models/user";
 import { connectToDatabase } from "@/utils/db";
 import { z } from "zod";
 import bcrypt from "bcrypt";
@@ -117,7 +117,7 @@ export async function registerUser(
 
     await newUser.save();
 
-    return { success: true, data: newUser };
+    return { success: true, data: JSON.parse(JSON.stringify(newUser)) };
   } catch (error) {
     console.error("Error connecting to database:", error);
     return {
@@ -159,4 +159,18 @@ export async function getUserData() {
   } catch {
     return null
   }
+}
+
+export async function getUsers() {
+  try {
+    await connectToDatabase();
+    const isLoggedIn = await isAuthenticated();
+    if (!isLoggedIn) return [];
+    const users = await User.find().select("-password");
+    return JSON.parse(JSON.stringify(users)) as UserType[]
+
+  } catch {
+    return []
+  }
+
 }

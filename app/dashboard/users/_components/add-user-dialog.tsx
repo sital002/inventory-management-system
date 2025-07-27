@@ -39,13 +39,17 @@ type AddUserFormData = z.infer<typeof addUserSchema>;
 
 interface AddUserDialogProps {
   open: boolean;
+  error: string;
   onOpenChange: (open: boolean) => void;
+  handleClose: () => void;
   onAddUser: (user: { name: string; email: string }) => void;
 }
 
 export function AddUserDialog({
   open,
+  error,
   onOpenChange,
+  handleClose,
   onAddUser,
 }: AddUserDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -53,10 +57,10 @@ export function AddUserDialog({
   const form = useForm<AddUserFormData>({
     resolver: zodResolver(addUserSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
+      name: "Admin",
+      email: `test@gmail${Math.round(Math.random() * 10)}.com`,
+      password: "Test1234",
+      confirmPassword: "Test1234",
     },
   });
 
@@ -165,12 +169,12 @@ export function AddUserDialog({
                 </FormItem>
               )}
             />
-
+            <p className="text-destructive">{error}</p>
             <div className="flex justify-end gap-3 pt-4">
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => onOpenChange(false)}
+                onClick={() => handleClose()}
                 className="border-green-200 text-green-700 hover:bg-green-50"
               >
                 Cancel

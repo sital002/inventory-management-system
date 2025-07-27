@@ -1,10 +1,9 @@
-import mongoose, { HydratedDocumentFromSchema, Model } from "mongoose";
+import mongoose, { Model } from "mongoose";
 import { Schema, model, models } from "mongoose";
 
 const userSchema = new Schema(
   {
-    _id: mongoose.Schema.Types.ObjectId,
-    name: String,
+    name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: {
@@ -13,10 +12,20 @@ const userSchema = new Schema(
       default: "user",
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true
+  }
 );
 
-export type UserType = HydratedDocumentFromSchema<typeof userSchema>;
+export type UserType = {
+  _id: string;
+  name: string;
+  email: string;
+  createdAt: string;
+  updatedAt: string;
+  role: "admin" | "user"
+  password: string
+}
 
 const User: Model<UserType> =
   models.User || model<UserType>("User", userSchema);
