@@ -45,7 +45,9 @@ const salesMenuItems = [
   },
 ];
 
-const footerMenuItems = [{ icon: Users, label: "Users", href: "/users" }];
+const footerMenuItems = [
+  { icon: Users, label: "Users", href: "/dashboard/users" },
+];
 
 export function InventorySidebar() {
   const pathname = usePathname();
