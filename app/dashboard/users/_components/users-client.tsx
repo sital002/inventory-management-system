@@ -8,7 +8,6 @@ import { AddUserDialog } from "./add-user-dialog";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 
-// Dummy users data based on the mongoose schema
 const usersData = [
   {
     _id: "507f1f77bcf86cd799439011",
