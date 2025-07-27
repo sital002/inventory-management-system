@@ -16,8 +16,6 @@ export type Response<T> =
   | { success: true; data: T }
   | { success: false; error: string };
 
-
-
 export async function addNewProduct(
   product: z.infer<typeof productSchema>
 ): Promise<Response<IProduct>> {
@@ -108,7 +106,7 @@ export async function updateProduct(
     }
     const productExists = await Product.findById(id);
     if (!productExists) {
-      return { success: false, error: "Product Not found" }
+      return { success: false, error: "Product Not found" };
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(id, {
@@ -171,7 +169,8 @@ export async function getProductDetail(
     await connectToDatabase();
     await Supplier.exists({});
     await Category.exists({});
-    if (!mongoose.isValidObjectId(id)) return { success: false, error: "Invalid Product Id" }
+    if (!mongoose.isValidObjectId(id))
+      return { success: false, error: "Invalid Product Id" };
     const product = await Product.findOne({ _id: id })
       .populate<{ supplier: ISupplier }>("supplier")
       .populate<{ categories: ICategory }>("category");
@@ -286,7 +285,7 @@ export async function deleteProduct(id: string): Promise<Response<null>> {
 export async function findProductsByCategory(
   id: string
 ): Promise<Response<(IProduct & { supplier: ISupplier })[]>> {
-  await connectToDatabase()
+  await connectToDatabase();
   const isLoggedIn = await isAuthenticated();
   if (!isLoggedIn) {
     return { success: false, error: "User is not authenticated" };
@@ -302,11 +301,12 @@ export async function findProductsByCategory(
     supplier: ISupplier;
   }>("supplier");
 
-
   return { success: true, data: JSON.parse(JSON.stringify(products)) };
 }
 
-export async function getLowStockProducts(): Promise<(IProduct & { supplier: ISupplier } & { category: ICategory })[]> {
+export async function getLowStockProducts(): Promise<
+  (IProduct & { supplier: ISupplier } & { category: ICategory })[]
+> {
   try {
     await connectToDatabase();
     const lowStockProducts = await Product.find({
@@ -316,20 +316,21 @@ export async function getLowStockProducts(): Promise<(IProduct & { supplier: ISu
           $expr: {
             $and: [
               { $gt: ["$currentStock", 0] },
-              { $lte: ["$currentStock", "$lowStockThreshold"] }
-            ]
-          }
-        }
-      ]
+              { $lte: ["$currentStock", "$lowStockThreshold"] },
+            ],
+          },
+        },
+      ],
     })
       .populate<{ category: ICategory }>("category")
-      .populate("supplier").sort({ currentStock: 1 })
+      .populate("supplier")
+      .sort({ currentStock: 1 })
       .lean();
-    console.log(lowStockProducts)
+    console.log(lowStockProducts);
     return JSON.parse(JSON.stringify(lowStockProducts));
   } catch (error) {
     console.log("Error fetching low stock products:", error);
-    return []
+    return [];
   }
 }
 
@@ -351,3 +352,40 @@ export async function deleteAllProductData(products: IProduct[] | string) {
   console.log(`Deleted ${productIds.length} product(s) and related data.`);
 }
 
+export const updateSellingUnit = async (id: string, unit: number) => {
+  try {
+    await connectToDatabase();
+    const product = await Product.findById(id);
+    if (!product) {
+      return { success: false, error: "Product not found" };
+    }
+    const last5Days = Array.from({ length: 5 }, (_, index) => {
+      const date = new Date();
+      date.setDate(date.getDate() - (4 - index));
+      return date;
+    });
+    console.log(last5Days);
+
+    const updatedUnit = Array(5)
+      .fill(null)
+      .map((_, index) => {
+        const findInfo = product.last5DaySelling.find(
+          (item) => item.date.getDate() == new Date().getDate()
+        );
+        console.log(findInfo);
+        const baseUnit = findInfo?.unit ?? 0;
+        return {
+          date: last5Days[index],
+          unit:
+            index == 4 ? baseUnit + unit : product.last5DaySelling[index].unit,
+        };
+      });
+    console.log(updatedUnit);
+    product.last5DaySelling = updatedUnit;
+    await product.save();
+    console.log(product);
+  } catch (error) {
+    console.log("Error:", error);
+    return [];
+  }
+};
