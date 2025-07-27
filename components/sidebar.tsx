@@ -3,13 +3,10 @@
 import { usePathname } from "next/navigation";
 
 import {
-  BarChart3,
   Box,
   ClipboardList,
   Home,
   Package,
-  Settings,
-  ShoppingCart,
   Truck,
   Users,
   CreditCard,
@@ -35,7 +32,6 @@ const mainMenuItems = [
   { icon: Home, label: "Dashboard", href: "/dashboard" },
   { icon: Package, label: "Products", href: "/dashboard/products" },
   { icon: ClipboardList, label: "Categories", href: "/dashboard/categories" },
-  { icon: ShoppingCart, label: "Orders", href: "/dashboard/orders" },
   { icon: Truck, label: "Suppliers", href: "/dashboard/suppliers" },
 ];
 
@@ -49,14 +45,8 @@ const salesMenuItems = [
   },
 ];
 
-const reportMenuItems = [
-  { icon: BarChart3, label: "Sales Report", href: "/reports/sales" },
-  { icon: Package, label: "Inventory Report", href: "/reports/inventory" },
-];
-
 const footerMenuItems = [
-  { icon: Users, label: "Users", href: "/users" },
-  { icon: Settings, label: "Settings", href: "/settings" },
+  { icon: Users, label: "Users", href: "/dashboard/users" },
 ];
 
 export function InventorySidebar() {
@@ -105,15 +95,6 @@ export function InventorySidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>{renderMenuItems(salesMenuItems)}</SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-green-800">
-            Reports
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>{renderMenuItems(reportMenuItems)}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
