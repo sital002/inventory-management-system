@@ -61,7 +61,7 @@ export function UsersClient({ users }: UserClientProps) {
     router.refresh();
   };
 
-  const handleUpdateUser = (
+  const handleUpdateUser = async (
     userId: string,
     updates: Partial<{
       _id: string;
@@ -98,11 +98,7 @@ export function UsersClient({ users }: UserClientProps) {
         </Button>
       </div>
 
-      <UsersTable
-        users={paginatedUsers}
-        onDeleteUser={handleDeleteUser}
-        onUpdateUser={handleUpdateUser}
-      />
+      <UsersTable users={paginatedUsers} onDeleteUser={handleDeleteUser} />
 
       <Pagination
         currentPage={currentPage}
