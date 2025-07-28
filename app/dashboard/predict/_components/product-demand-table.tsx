@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -10,7 +11,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, Package } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { TrendingUp, Package, ChevronLeft, ChevronRight } from "lucide-react";
 
 export interface Product {
   productName: string;
@@ -26,11 +28,33 @@ type SellingUnit = {
 export default function ProductDemandTable({
   productSellingUnit,
 }: SellingUnit) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10; // You can adjust this number
+
   console.log(productSellingUnit);
+
   const totalPrediction = productSellingUnit.reduce(
     (sum, product) => sum + product.predicted,
     0
   );
+
+  // Calculate pagination
+  const totalPages = Math.ceil(productSellingUnit.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentProducts = productSellingUnit.slice(startIndex, endIndex);
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const goToPrevious = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const goToNext = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 p-4">
@@ -64,6 +88,11 @@ export default function ProductDemandTable({
               <TrendingUp className="h-5 w-5" />
               Product Demand Predictions
             </CardTitle>
+            <div className="text-sm text-green-600">
+              Showing {startIndex + 1}-
+              {Math.min(endIndex, productSellingUnit.length)} of{" "}
+              {productSellingUnit.length} products
+            </div>
           </CardHeader>
           <CardContent className="p-0">
             <div className="overflow-x-auto">
@@ -94,7 +123,7 @@ export default function ProductDemandTable({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {productSellingUnit.map((product, idx) => (
+                  {currentProducts.map((product, idx) => (
                     <TableRow
                       key={product.productName + idx}
                       className="hover:bg-green-25"
@@ -119,6 +148,83 @@ export default function ProductDemandTable({
                   ))}
                 </TableBody>
               </Table>
+            </div>
+
+            {/* Pagination Controls - Always visible but disabled if less than 10 products */}
+            <div className="flex items-center justify-between px-6 py-4 border-t border-green-100 bg-green-25">
+              <div className="text-sm text-green-600">
+                Page {currentPage} of {totalPages}{" "}
+                {productSellingUnit.length < itemsPerPage &&
+                  "(Pagination disabled - less than 10 products)"}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={goToPrevious}
+                  disabled={
+                    currentPage === 1 ||
+                    productSellingUnit.length < itemsPerPage
+                  }
+                  className="border-green-300 text-green-700 hover:bg-green-100 bg-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Previous
+                </Button>
+
+                {/* Page Numbers */}
+                <div className="flex gap-1">
+                  {Array.from(
+                    { length: Math.min(5, Math.max(1, totalPages)) },
+                    (_, i) => {
+                      let pageNum;
+                      if (totalPages <= 5) {
+                        pageNum = i + 1;
+                      } else if (currentPage <= 3) {
+                        pageNum = i + 1;
+                      } else if (currentPage >= totalPages - 2) {
+                        pageNum = totalPages - 4 + i;
+                      } else {
+                        pageNum = currentPage - 2 + i;
+                      }
+
+                      return (
+                        <Button
+                          key={pageNum}
+                          variant={
+                            currentPage === pageNum ? "default" : "outline"
+                          }
+                          size="sm"
+                          onClick={() => goToPage(pageNum)}
+                          disabled={productSellingUnit.length < itemsPerPage}
+                          className={
+                            currentPage === pageNum
+                              ? "bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                              : "border-green-300 text-green-700 hover:bg-green-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                          }
+                        >
+                          {pageNum}
+                        </Button>
+                      );
+                    }
+                  )}
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={goToNext}
+                  disabled={
+                    currentPage === totalPages ||
+                    productSellingUnit.length < itemsPerPage
+                  }
+                  className="border-green-300 text-green-700 hover:bg-green-100 bg-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
