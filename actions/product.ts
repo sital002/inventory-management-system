@@ -12,6 +12,7 @@ import { productSchema } from "@/schema/product";
 import Order from "@/models/order";
 import ReOrder from "@/models/reorder";
 import Activity from "@/models/activity";
+import { predictNextDayDemand } from "@/utils/predict-next-demand";
 export type Response<T> =
   | { success: true; data: T }
   | { success: false; error: string };
@@ -364,7 +365,6 @@ export const updateSellingUnit = async (id: string, unit: number) => {
       date.setDate(date.getDate() - (4 - index));
       return date;
     });
-    console.log(last5Days);
 
     const updatedUnit = Array(5)
       .fill(null)
@@ -372,20 +372,32 @@ export const updateSellingUnit = async (id: string, unit: number) => {
         const findInfo = product.last5DaySelling.find(
           (item) => item.date.getDate() == new Date().getDate()
         );
-        console.log(findInfo);
         const baseUnit = findInfo?.unit ?? 0;
         return {
           date: last5Days[index],
           unit:
-            index == 4 ? baseUnit + unit : product.last5DaySelling[index].unit,
+            index == 4
+              ? baseUnit + unit
+              : product.last5DaySelling[index]?.unit || 0,
         };
       });
-    console.log(updatedUnit);
     product.last5DaySelling = updatedUnit;
     await product.save();
-    console.log(product);
   } catch (error) {
     console.log("Error:", error);
     return [];
   }
+};
+
+export const forcastSellingUnit = async () => {
+  const product = await Product.find();
+  const productSales: Record<string, number[]> = {};
+  product.forEach((item) => {
+    productSales[item.name] = item.last5DaySelling.map(
+      (entry: { unit: number }) => entry.unit
+    );
+  });
+  console.log("he>>", product);
+
+  return predictNextDayDemand(productSales);
 };
