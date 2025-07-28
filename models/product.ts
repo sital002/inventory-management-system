@@ -1,6 +1,5 @@
 import mongoose, { Model, models } from "mongoose";
 import { Schema } from "mongoose";
-import { date } from "zod";
 
 export interface IProduct {
   _id: mongoose.Types.ObjectId;

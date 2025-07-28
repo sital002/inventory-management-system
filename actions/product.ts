@@ -13,6 +13,7 @@ import Order from "@/models/order";
 import ReOrder from "@/models/reorder";
 import Activity from "@/models/activity";
 import { predictNextDayDemand } from "@/utils/predict-next-demand";
+import { calculateUnitsForTodayTarget } from "@/utils/target";
 export type Response<T> =
   | { success: true; data: T }
   | { success: false; error: string };
@@ -400,4 +401,9 @@ export const forcastSellingUnit = async () => {
   console.log("he>>", product);
 
   return predictNextDayDemand(productSales);
+};
+
+export const targetProduct = async (targetRevenue: number) => {
+  const product = await Product.find();
+  return await calculateUnitsForTodayTarget(product, targetRevenue);
 };
