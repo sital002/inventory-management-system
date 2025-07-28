@@ -12,6 +12,8 @@ import {
   CreditCard,
   RefreshCw,
   Activity,
+  BubblesIcon,
+  Calculator,
 } from "lucide-react";
 import {
   Sidebar,
@@ -42,6 +44,16 @@ const salesMenuItems = [
     icon: RefreshCw,
     label: "Reorder Stock",
     href: "/dashboard/products/reorder/new",
+  },
+  {
+    icon: BubblesIcon,
+    label: "Predictor",
+    href: "/dashboard/predict",
+  },
+  {
+    icon: Calculator,
+    label: "Target Calculator",
+    href: "/dashboard/calculator",
   },
 ];
 

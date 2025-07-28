@@ -29,20 +29,23 @@ export default function ProductDemandTable({
   productSellingUnit,
 }: SellingUnit) {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10; // You can adjust this number
+  const itemsPerPage = 8;
 
   console.log(productSellingUnit);
 
-  const totalPrediction = productSellingUnit.reduce(
+  const sortedProducts = [...productSellingUnit].sort(
+    (a, b) => b.predicted - a.predicted
+  );
+
+  const totalPrediction = sortedProducts.reduce(
     (sum, product) => sum + product.predicted,
     0
   );
 
-  // Calculate pagination
-  const totalPages = Math.ceil(productSellingUnit.length / itemsPerPage);
+  const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentProducts = productSellingUnit.slice(startIndex, endIndex);
+  const currentProducts = sortedProducts.slice(startIndex, endIndex);
 
   const goToPage = (page: number) => {
     setCurrentPage(page);
@@ -59,7 +62,6 @@ export default function ProductDemandTable({
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 p-4">
       <div className="container mx-auto max-w-7xl">
-        {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="p-3 bg-green-100 rounded-full">
@@ -74,14 +76,12 @@ export default function ProductDemandTable({
           </p>
         </div>
 
-        {/* Total Summary */}
         <div className="mb-6 flex justify-center">
           <Badge className="bg-green-100 text-green-800 border-green-300 text-lg px-4 py-2">
             Total Tomorrow: {totalPrediction} units
           </Badge>
         </div>
 
-        {/* Products Table */}
         <Card className="border-green-200 shadow-lg">
           <CardHeader className="bg-green-50 border-b border-green-100">
             <CardTitle className="text-green-800 flex items-center gap-2">
@@ -90,8 +90,8 @@ export default function ProductDemandTable({
             </CardTitle>
             <div className="text-sm text-green-600">
               Showing {startIndex + 1}-
-              {Math.min(endIndex, productSellingUnit.length)} of{" "}
-              {productSellingUnit.length} products
+              {Math.min(endIndex, sortedProducts.length)} of{" "}
+              {sortedProducts.length} products
             </div>
           </CardHeader>
           <CardContent className="p-0">
@@ -150,11 +150,10 @@ export default function ProductDemandTable({
               </Table>
             </div>
 
-            {/* Pagination Controls - Always visible but disabled if less than 10 products */}
             <div className="flex items-center justify-between px-6 py-4 border-t border-green-100 bg-green-25">
               <div className="text-sm text-green-600">
                 Page {currentPage} of {totalPages}{" "}
-                {productSellingUnit.length < itemsPerPage &&
+                {sortedProducts.length < itemsPerPage &&
                   "(Pagination disabled - less than 10 products)"}
               </div>
 
@@ -164,8 +163,7 @@ export default function ProductDemandTable({
                   size="sm"
                   onClick={goToPrevious}
                   disabled={
-                    currentPage === 1 ||
-                    productSellingUnit.length < itemsPerPage
+                    currentPage === 1 || sortedProducts.length < itemsPerPage
                   }
                   className="border-green-300 text-green-700 hover:bg-green-100 bg-transparent disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -197,7 +195,7 @@ export default function ProductDemandTable({
                           }
                           size="sm"
                           onClick={() => goToPage(pageNum)}
-                          disabled={productSellingUnit.length < itemsPerPage}
+                          disabled={sortedProducts.length < itemsPerPage}
                           className={
                             currentPage === pageNum
                               ? "bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -217,7 +215,7 @@ export default function ProductDemandTable({
                   onClick={goToNext}
                   disabled={
                     currentPage === totalPages ||
-                    productSellingUnit.length < itemsPerPage
+                    sortedProducts.length < itemsPerPage
                   }
                   className="border-green-300 text-green-700 hover:bg-green-100 bg-transparent disabled:opacity-50 disabled:cursor-not-allowed"
                 >
