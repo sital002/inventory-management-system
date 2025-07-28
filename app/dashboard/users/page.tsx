@@ -1,8 +1,10 @@
 import { Suspense } from "react";
 import { UsersClient } from "./_components/users-client";
 import { UsersLoading } from "./_components/users-loading";
+import { getUsers } from "@/actions/auth";
 
-export default function UsersPage() {
+export default async function UsersPage() {
+  const users = await getUsers();
   return (
     <div className="flex-1 space-y-6 p-6">
       <div className="flex items-center justify-between">
@@ -15,7 +17,7 @@ export default function UsersPage() {
       </div>
 
       <Suspense fallback={<UsersLoading />}>
-        <UsersClient />
+        <UsersClient users={users} />
       </Suspense>
     </div>
   );

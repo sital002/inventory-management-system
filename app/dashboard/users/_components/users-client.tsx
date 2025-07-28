@@ -1,135 +1,118 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { UsersStats } from "./users-stats";
 import { UsersSearch } from "./users-search";
 import { UsersTable } from "./users-table";
 import { AddUserDialog } from "./add-user-dialog";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { UserPlus } from "lucide-react";
+import { Pagination } from "../../../../components/pagination";
+import { getUsers, registerUser } from "@/actions/auth";
+import { useRouter } from "next/navigation";
 
-const usersData = [
-  {
-    _id: "507f1f77bcf86cd799439011",
-    name: "John Smith",
-    email: "john.smith@inventorypro.com",
-    role: "admin",
-    createdAt: "2024-01-10T08:30:00Z",
-    updatedAt: "2024-01-15T14:20:00Z",
-  },
-  {
-    _id: "507f1f77bcf86cd799439012",
-    name: "Sarah Johnson",
-    email: "sarah.johnson@inventorypro.com",
-    role: "user",
-    createdAt: "2024-01-12T10:15:00Z",
-    updatedAt: "2024-01-14T16:45:00Z",
-  },
-  {
-    _id: "507f1f77bcf86cd799439013",
-    name: "Mike Wilson",
-    email: "mike.wilson@inventorypro.com",
-    role: "user",
-    createdAt: "2024-01-08T09:20:00Z",
-    updatedAt: "2024-01-13T11:30:00Z",
-  },
-  {
-    _id: "507f1f77bcf86cd799439014",
-    name: "Emma Davis",
-    email: "emma.davis@inventorypro.com",
-    role: "admin",
-    createdAt: "2024-01-05T14:45:00Z",
-    updatedAt: "2024-01-15T09:15:00Z",
-  },
-  {
-    _id: "507f1f77bcf86cd799439015",
-    name: "Robert Brown",
-    email: "robert.brown@inventorypro.com",
-    role: "user",
-    createdAt: "2024-01-15T11:00:00Z",
-    updatedAt: "2024-01-15T11:00:00Z",
-  },
-];
+const ITEMS_PER_PAGE = 15;
 
-export function UsersClient() {
-  const [users, setUsers] = useState(usersData);
+interface UserClientProps {
+  users: Awaited<ReturnType<typeof getUsers>>;
+}
+export function UsersClient({ users }: UserClientProps) {
+  // const [users, setUsers] = useState(initialUsers);
   const [searchTerm, setSearchTerm] = useState("");
-  const [roleFilter, setRoleFilter] = useState<"all" | "admin" | "user">("all");
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
+  const filteredUsers = useMemo(() => {
+    return users.filter(
+      (user) =>
+        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [users, searchTerm]);
 
-  const filteredUsers = users.filter((user) => {
-    const matchesSearch =
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase());
+  const paginatedUsers = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    return filteredUsers.slice(startIndex, endIndex);
+  }, [filteredUsers, currentPage]);
 
-    const matchesRole = roleFilter === "all" || user.role === roleFilter;
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  };
 
-    return matchesSearch && matchesRole;
-  });
-
-  const handleAddUser = (newUser: {
-    name: string;
-    email: string;
-    role: "admin" | "user";
-  }) => {
+  const handleAddUser = async (newUser: { name: string; email: string }) => {
     const user = {
-      _id: `507f1f77bcf86cd79943901${users.length + 6}`,
-      ...newUser,
+      _id: Date.now().toString(),
+      name: newUser.name,
+      email: newUser.email,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    setUsers([...users, user]);
-    setIsAddDialogOpen(false);
+    // setUsers([user, ...users]);
+    const result = await registerUser(newUser.name, newUser.email, "Test1234");
+    console.log(result);
+    if (!result.success) {
+      setError(result.error);
+      return;
+    }
+    handleClose();
+    router.refresh();
   };
+
+  const handleUpdateUser = async (
+    userId: string,
+    updates: Partial<{
+      _id: string;
+      name: string;
+      email: string;
+      createdAt: string;
+      updatedAt: string;
+    }>
+  ) => {};
 
   const handleDeleteUser = (userId: string) => {
-    setUsers(users.filter((user) => user._id !== userId));
+    // setUsers(users.filter((user) => user._id !== userId));
   };
-
-  const handleUpdateUser = (
-    userId: string,
-    updates: Partial<(typeof usersData)[0]>
-  ) => {
-    setUsers(
-      users.map((user) =>
-        user._id === userId
-          ? { ...user, ...updates, updatedAt: new Date().toISOString() }
-          : user
-      )
-    );
+  const handleClose = () => {
+    setError("");
+    setShowAddDialog(false);
   };
 
   return (
     <div className="space-y-6">
       <UsersStats users={users} />
 
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between">
         <UsersSearch
           searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          roleFilter={roleFilter}
-          onRoleFilterChange={setRoleFilter}
+          onSearchChange={handleSearchChange}
         />
-
         <Button
-          onClick={() => setIsAddDialogOpen(true)}
+          onClick={() => setShowAddDialog(true)}
           className="bg-green-600 hover:bg-green-700 text-white"
         >
-          <Plus className="h-4 w-4 mr-2" />
+          <UserPlus className="h-4 w-4 mr-2" />
           Add User
         </Button>
       </div>
 
-      <UsersTable
-        users={filteredUsers}
-        onDeleteUser={handleDeleteUser}
-        onUpdateUser={handleUpdateUser}
+      <UsersTable users={paginatedUsers} onDeleteUser={handleDeleteUser} />
+
+      <Pagination
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+        totalItems={filteredUsers.length}
+        itemsPerPage={ITEMS_PER_PAGE}
       />
 
       <AddUserDialog
-        open={isAddDialogOpen}
-        onOpenChange={setIsAddDialogOpen}
+        error={error}
+        open={showAddDialog}
+        onOpenChange={setShowAddDialog}
         onAddUser={handleAddUser}
+        handleClose={handleClose}
       />
     </div>
   );

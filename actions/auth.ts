@@ -1,10 +1,13 @@
 "use server";
 
-import User from "@/models/user";
+import User, { UserType } from "@/models/user";
 import { connectToDatabase } from "@/utils/db";
 import { z } from "zod";
 import bcrypt from "bcrypt";
 import { cookies } from "next/headers";
+import { nameSchema } from "@/utils/schema";
+import { isValidObjectId } from "mongoose";
+
 const loginSchema = z.object({
   email: z
     .string()
@@ -82,13 +85,23 @@ export async function loginUser(
   }
 }
 
+const userSchema = z.object({
+  name: nameSchema,
+  email: z.string().email("Invalid email address"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters long"),
+});
+
+
+
 export async function registerUser(
   name: string,
   email: string,
   password: string,
-  role: "admin" | "user" = "user"
+  role: "admin" | "user" = "admin"
 ): Promise<Response> {
-  const result = loginSchema.safeParse({ email, password });
+  const result = userSchema.safeParse({ name, email, password });
   if (!result.success) {
     return {
       success: false,
@@ -117,7 +130,7 @@ export async function registerUser(
 
     await newUser.save();
 
-    return { success: true, data: newUser };
+    return { success: true, data: JSON.parse(JSON.stringify(newUser)) };
   } catch (error) {
     console.error("Error connecting to database:", error);
     return {
@@ -159,4 +172,47 @@ export async function getUserData() {
   } catch {
     return null
   }
+}
+
+export async function getUsers() {
+  try {
+    await connectToDatabase();
+    const isLoggedIn = await isAuthenticated();
+    if (!isLoggedIn) return [];
+    const users = await User.find();
+    return JSON.parse(JSON.stringify(users)) as UserType[]
+
+  } catch {
+    return []
+  }
+
+}
+
+const updateUserSchema = z.object({
+  name: nameSchema,
+  email: z.string({ required_error: "Email is required" }).email("Invalid email address"),
+});
+
+export async function updateUser(data: z.infer<typeof updateUserSchema>, id: string): Promise<{ success: boolean, error?: string, data?: string }> {
+  try {
+    await connectToDatabase();
+    const isLoggedIn = await isAuthenticated();
+    if (!isLoggedIn) return { success: false, error: "User isnot loggedin" };
+    if (!id) return { success: false, error: "Id is missing" };
+    if (!isValidObjectId(id)) return { success: false, error: "Invalid Id" };
+    const parsedData = updateUserSchema.safeParse(data);
+    if (!parsedData.success) return { success: false, error: parsedData.error.errors[0].message };
+    const user = await User.findById(id);
+    if (!user) return { success: false, error: "User not found" };
+    const emailExists = await User.findOne({ email: parsedData.data.email })
+    if (emailExists) return { success: false, error: "Email already exists" };
+    user.name = parsedData.data.name;
+    user.email = parsedData.data.email;
+    await user.save();
+    return { success: true, data: "User updated successfully" };
+  }
+  catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to update data" }
+  }
+
 }

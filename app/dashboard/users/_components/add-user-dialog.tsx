@@ -1,70 +1,81 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Loader2, UserPlus } from "lucide-react"
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Loader2, UserPlus } from "lucide-react";
+import { nameSchema } from "@/utils/schema";
 
 const addUserSchema = z
   .object({
-    name: z.string().min(2, "Name must be at least 2 characters"),
+    name: nameSchema,
     email: z.string().email("Please enter a valid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string(),
-    role: z.enum(["admin", "user"]),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
-  })
+  });
 
-type AddUserFormData = z.infer<typeof addUserSchema>
+type AddUserFormData = z.infer<typeof addUserSchema>;
 
 interface AddUserDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onAddUser: (user: {
-    name: string
-    email: string
-    role: "admin" | "user"
-  }) => void
+  open: boolean;
+  error: string;
+  onOpenChange: (open: boolean) => void;
+  handleClose: () => void;
+  onAddUser: (user: { name: string; email: string }) => void;
 }
 
-export function AddUserDialog({ open, onOpenChange, onAddUser }: AddUserDialogProps) {
-  const [isLoading, setIsLoading] = useState(false)
+export function AddUserDialog({
+  open,
+  error,
+  onOpenChange,
+  handleClose,
+  onAddUser,
+}: AddUserDialogProps) {
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<AddUserFormData>({
     resolver: zodResolver(addUserSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-      role: "user",
+      name: "Admin",
+      email: `test@gmail${Math.round(Math.random() * 10)}.com`,
+      password: "Test1234",
+      confirmPassword: "Test1234",
     },
-  })
+  });
 
   const onSubmit = async (data: AddUserFormData) => {
-    setIsLoading(true)
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    setIsLoading(true);
 
     onAddUser({
       name: data.name,
       email: data.email,
-      role: data.role,
-    })
+    });
 
-    form.reset()
-    setIsLoading(false)
-  }
+    form.reset();
+    setIsLoading(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -74,7 +85,9 @@ export function AddUserDialog({ open, onOpenChange, onAddUser }: AddUserDialogPr
             <UserPlus className="h-5 w-5" />
             Add New User
           </DialogTitle>
-          <DialogDescription>Create a new user account for the inventory management system.</DialogDescription>
+          <DialogDescription>
+            Create a new user account for the inventory management system.
+          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -102,7 +115,9 @@ export function AddUserDialog({ open, onOpenChange, onAddUser }: AddUserDialogPr
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-green-900">Email Address</FormLabel>
+                  <FormLabel className="text-green-900">
+                    Email Address
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="email"
@@ -140,7 +155,9 @@ export function AddUserDialog({ open, onOpenChange, onAddUser }: AddUserDialogPr
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-green-900">Confirm Password</FormLabel>
+                  <FormLabel className="text-green-900">
+                    Confirm Password
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="password"
@@ -153,39 +170,21 @@ export function AddUserDialog({ open, onOpenChange, onAddUser }: AddUserDialogPr
                 </FormItem>
               )}
             />
-
-            <FormField
-              control={form.control}
-              name="role"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-green-900">User Role</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="border-green-200 focus:border-green-500 focus:ring-green-500">
-                        <SelectValue placeholder="Select user role" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="user">User - Standard Access</SelectItem>
-                      <SelectItem value="admin">Admin - Full Access</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
+            <p className="text-destructive">{error}</p>
             <div className="flex justify-end gap-3 pt-4">
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => onOpenChange(false)}
+                onClick={() => handleClose()}
                 className="border-green-200 text-green-700 hover:bg-green-50"
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isLoading} className="bg-green-600 hover:bg-green-700 text-white">
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="bg-green-600 hover:bg-green-700 text-white"
+              >
                 {isLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -203,5 +202,5 @@ export function AddUserDialog({ open, onOpenChange, onAddUser }: AddUserDialogPr
         </Form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
