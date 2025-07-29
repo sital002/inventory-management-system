@@ -1,0 +1,72 @@
+[{
+  "_id": {
+    "$oid": "685976e8521e79ccac2e93fd"
+  },
+  "name": "FreshFarm Distributors",
+  "email": "contact@freshfarm.com",
+  "phone": "+1-555-1234",
+  "address": "123 Orchard Lane",
+  "city": "Springfield",
+  "state": "Illinois",
+  "postalCode": "62704",
+  "taxId": "FF-987654321",
+  "website": "https://freshfarm.com",
+  "contactPerson": "Emily Green",
+  "status": "Active",
+  "createdAt": "2025-01-01T09:00:00Z",
+  "updatedAt": "2025-01-01T09:00:00Z"
+},
+{
+  "_id": {
+    "$oid": "685976e8521e79ccac2e93fe"
+  },
+  "name": "DairyWorld Inc.",
+  "email": "support@dairyworld.com",
+  "phone": "+1-555-5678",
+  "address": "456 Milk Street",
+  "city": "Madison",
+  "state": "Wisconsin",
+  "postalCode": "53703",
+  "taxId": "DW-123456789",
+  "website": "https://dairyworld.com",
+  "contactPerson": "John White",
+  "status": "Active",
+  "createdAt": "2025-01-01T09:00:00Z",
+  "updatedAt": "2025-01-01T09:00:00Z"
+},
+{
+  "_id": {
+    "$oid": "685976e8521e79ccac2e93ff"
+  },
+  "name": "Bakers Supply Co.",
+  "email": "orders@bakerssupply.co",
+  "phone": "+1-555-2468",
+  "address": "789 Dough Blvd",
+  "city": "Boston",
+  "state": "Massachusetts",
+  "postalCode": "02118",
+  "taxId": "BS-654321987",
+  "website": "https://bakerssupply.co",
+  "contactPerson": "Laura Dough",
+  "status": "Inactive",
+  "createdAt": "2025-01-01T09:00:00Z",
+  "updatedAt": "2025-01-01T09:00:00Z"
+},
+{
+  "_id": {
+    "$oid": "685976e8521e79ccac2e9400"
+  },
+  "name": "Household Essentials Ltd.",
+  "email": "sales@houseessentials.com",
+  "phone": "+1-555-7890",
+  "address": "321 Clean St",
+  "city": "Phoenix",
+  "state": "Arizona",
+  "postalCode": "85004",
+  "taxId": "HE-321789654",
+  "website": "https://houseessentials.com",
+  "contactPerson": "Tom Broom",
+  "status": "Active",
+  "createdAt": "2025-01-01T09:00:00Z",
+  "updatedAt": "2025-01-01T09:00:00Z"
+}]

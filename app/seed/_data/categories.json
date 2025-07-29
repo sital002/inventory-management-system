@@ -1,0 +1,74 @@
+[
+  {
+    "name": "Fruits",
+    "description": "Fresh and seasonal fruits",
+    "color": "Green",
+    "products": [],
+    "createdAt": "2025-01-01T10:00:00Z",
+    "updatedAt": "2025-01-01T10:00:00Z"
+  },
+  {
+    "name": "Vegetables",
+    "description": "Locally grown vegetables",
+    "color": "Cyan",
+    "products": [],
+    "createdAt": "2025-01-01T10:00:00Z",
+    "updatedAt": "2025-01-01T10:00:00Z"
+  },
+  {
+    "name": "Dairy",
+    "description": "Milk, cheese, butter, and other dairy products",
+    "color": "Blue",
+    "products": [],
+    "createdAt": "2025-01-01T10:00:00Z",
+    "updatedAt": "2025-01-01T10:00:00Z"
+  },
+  {
+    "name": "Bakery",
+    "description": "Bread, cakes, pastries",
+    "color": "Yellow",
+    "products": [],
+    "createdAt": "2025-01-01T10:00:00Z",
+    "updatedAt": "2025-01-01T10:00:00Z"
+  },
+  {
+    "name": "Meat",
+    "description": "Fresh meat and poultry",
+    "color": "Red",
+    "products": [],
+    "createdAt": "2025-01-01T10:00:00Z",
+    "updatedAt": "2025-01-01T10:00:00Z"
+  },
+  {
+    "name": "Beverages",
+    "description": "Soft drinks, juices, and water",
+    "color": "Purple",
+    "products": [],
+    "createdAt": "2025-01-01T10:00:00Z",
+    "updatedAt": "2025-01-01T10:00:00Z"
+  },
+  {
+    "name": "Snacks",
+    "description": "Chips, cookies, and other snacks",
+    "color": "Orange",
+    "products": [],
+    "createdAt": "2025-01-01T10:00:00Z",
+    "updatedAt": "2025-01-01T10:00:00Z"
+  },
+  {
+    "name": "Household",
+    "description": "Cleaning supplies and household items",
+    "color": "Gray",
+    "products": [],
+    "createdAt": "2025-01-01T10:00:00Z",
+    "updatedAt": "2025-01-01T10:00:00Z"
+  },
+  {
+    "name": "Personal Care",
+    "description": "Toiletries and hygiene products",
+    "color": "Pink",
+    "products": [],
+    "createdAt": "2025-01-01T10:00:00Z",
+    "updatedAt": "2025-01-01T10:00:00Z"
+  }
+]
