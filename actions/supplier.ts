@@ -5,6 +5,7 @@ import Supplier, { ISupplier } from "@/models/supplier";
 import { connectToDatabase } from "@/utils/db";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { deleteAllProductData } from "./product";
 
 type Response<T> =
   | { success: true; data: T }
@@ -118,8 +119,8 @@ export async function deleteSupplier(id: string): Promise<Response<string>> {
       return { success: false, error: "Supplier not found" };
     }
     const deletedSupplier = await Supplier.findByIdAndDelete(id);
-    await Product.deleteMany({ supplier: id });
-
+    const productsToDelete = await Product.find({ supplier: id });
+    await deleteAllProductData(productsToDelete)
     if (!deletedSupplier) {
       return { success: false, error: "Failed to delete supplier" };
     }

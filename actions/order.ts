@@ -142,7 +142,7 @@ export async function getOrders(
             .populate({
                 path: "products.product",
             });
-
+        console.log(orders)
         const totalOrders = await Order.countDocuments(query);
 
         return {

@@ -9,6 +9,9 @@ import { cookies } from "next/headers";
 import { z } from "zod";
 import { isAuthenticated } from "./auth";
 import { productSchema } from "@/schema/product";
+import Order from "@/models/order";
+import ReOrder from "@/models/reorder";
+import Activity from "@/models/activity";
 export type Response<T> =
   | { success: true; data: T }
   | { success: false; error: string };
@@ -30,9 +33,9 @@ export async function addNewProduct(
       throw new Error("User not authenticated");
     }
     const user = JSON.parse(data.value);
-    if (user.role !== "admin") {
-      throw new Error("Only admins can add new products");
-    }
+    // if (user.role !== "admin") {
+    //   throw new Error("Only admins can add new products");
+    // }
     const newProduct = await Product.create({
       name: result.data.name,
       description: result.data.description,
@@ -134,7 +137,7 @@ export async function updateProduct(
       trackInventory: result.data.trackInventory || true,
     });
     if (!updateProduct) {
-      throw new Error("Failed to create product");
+      throw new Error("Failed to update product");
     }
     revalidatePath("/dashboard/products");
     return { success: true, data: JSON.parse(JSON.stringify(updatedProduct)) };
@@ -267,6 +270,7 @@ export async function deleteProduct(id: string): Promise<Response<null>> {
     if (!result) {
       return { success: false, error: "Product not found" };
     }
+    await deleteAllProductData(id)
     revalidatePath("/dashboard/products");
     return { success: true, data: null };
   } catch (error) {
@@ -328,3 +332,22 @@ export async function getLowStockProducts(): Promise<(IProduct & { supplier: ISu
     return []
   }
 }
+
+export async function deleteAllProductData(products: IProduct[] | string) {
+  let productIds: string[];
+
+  if (Array.isArray(products)) {
+    productIds = products.map(product => product._id.toString());
+  } else {
+    productIds = [products];
+  }
+  await Product.deleteMany({ _id: { $in: productIds } });
+  await Activity.deleteMany({ product: { $in: productIds } });
+  await Order.updateMany(
+    { "products.product": { $in: productIds } },
+    { $pull: { products: { product: { $in: productIds } } } }
+  );
+  await ReOrder.deleteMany({ productId: { $in: productIds } });
+  console.log(`Deleted ${productIds.length} product(s) and related data.`);
+}
+

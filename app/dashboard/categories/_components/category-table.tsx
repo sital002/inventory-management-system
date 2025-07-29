@@ -33,6 +33,8 @@ import {
 import { IProduct } from "@/models/product";
 import { ISupplier } from "@/models/supplier";
 import Link from "next/link";
+import { deleteProduct } from "@/actions/product";
+import { useRouter } from "next/navigation";
 
 interface InventoryTableProps {
   items: (IProduct & { supplier: ISupplier })[];
@@ -59,6 +61,12 @@ export function CategoryTable({ items }: InventoryTableProps) {
         icon: CheckCircle,
       };
     }
+  };
+  const router = useRouter();
+  const handleDelete = async (id: string) => {
+    const result = await deleteProduct(id);
+    console.log(result);
+    router.refresh();
   };
 
   const getStatusBadge = (item: IProduct & { supplier: ISupplier }) => {
@@ -115,15 +123,24 @@ export function CategoryTable({ items }: InventoryTableProps) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
-                      <Eye className="h-4 w-4 mr-2" />
-                      View Details
+                    <Link href={`/dashboard/products/${item._id.toString()}`}>
+                      <DropdownMenuItem>
+                        <Eye className="h-4 w-4 mr-2" />
+                        View Details
+                      </DropdownMenuItem>
+                    </Link>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={`/dashboard/products/edit/${item._id.toString()}`}
+                      >
+                        <Edit className="h-4 w-4 mr-2" />
+                        Edit Item
+                      </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Edit className="h-4 w-4 mr-2" />
-                      Edit Item
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="text-red-600">
+                    <DropdownMenuItem
+                      className="text-red-600"
+                      onClick={() => handleDelete(item._id.toString())}
+                    >
                       <Trash2 className="h-4 w-4 mr-2" />
                       Delete
                     </DropdownMenuItem>
@@ -218,7 +235,10 @@ export function CategoryTable({ items }: InventoryTableProps) {
                             Edit Item
                           </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600">
+                        <DropdownMenuItem
+                          className="text-red-600"
+                          onClick={() => handleDelete(item._id.toString())}
+                        >
                           <Trash2 className="h-4 w-4 mr-2" />
                           Delete Item
                         </DropdownMenuItem>

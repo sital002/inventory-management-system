@@ -49,7 +49,7 @@ export function ActivityTable({ activities }: ActivityTableProps) {
                   <span>by {activity?.user.name}</span>
                   <span>•</span>
                   <span>{new Date(activity.createdAt).toISOString()}</span>
-                  {activity.product.name && (
+                  {activity.product && (
                     <>
                       <span>•</span>
                       <span className="font-medium">
