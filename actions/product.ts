@@ -357,36 +357,38 @@ export async function deleteAllProductData(products: IProduct[] | string) {
 export const updateSellingUnit = async (id: string, unit: number) => {
   try {
     await connectToDatabase();
+
     const product = await Product.findById(id);
     if (!product) {
       return { success: false, error: "Product not found" };
     }
-    const last5Days = Array.from({ length: 5 }, (_, index) => {
-      const date = new Date();
-      date.setDate(date.getDate() - (4 - index));
-      return date;
-    });
 
-    const updatedUnit = Array(5)
-      .fill(null)
-      .map((_, index) => {
-        const findInfo = product.last5DaySelling.find(
-          (item) => item.date.getDate() == new Date().getDate()
-        );
-        const baseUnit = findInfo?.unit ?? 0;
-        return {
-          date: last5Days[index],
-          unit:
-            index == 4
-              ? baseUnit + unit
-              : product.last5DaySelling[index]?.unit || 0,
-        };
-      });
-    product.last5DaySelling = updatedUnit;
+    const today = new Date();
+    const todayStr = today.toDateString();
+
+    let last5DaySelling = product.last5DaySelling || [];
+
+    while (last5DaySelling.length < 5) {
+      last5DaySelling.push({ date: new Date(), unit: 0 });
+    }
+
+    const lastEntry = last5DaySelling[last5DaySelling.length - 1];
+    const lastEntryDateStr = new Date(lastEntry.date).toDateString();
+
+    if (lastEntryDateStr !== todayStr) {
+      last5DaySelling.shift();
+      last5DaySelling.push({ date: today, unit: 0 });
+    }
+
+    last5DaySelling[last5DaySelling.length - 1].unit += unit;
+
+    product.last5DaySelling = last5DaySelling;
     await product.save();
+
+    return JSON.parse(JSON.stringify(product));
   } catch (error) {
-    console.log("Error:", error);
-    return [];
+    console.error("Error updating selling unit:", error);
+    return { success: false, error };
   }
 };
 
