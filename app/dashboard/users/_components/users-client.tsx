@@ -61,20 +61,6 @@ export function UsersClient({ users }: UserClientProps) {
     router.refresh();
   };
 
-  const handleUpdateUser = async (
-    userId: string,
-    updates: Partial<{
-      _id: string;
-      name: string;
-      email: string;
-      createdAt: string;
-      updatedAt: string;
-    }>
-  ) => {};
-
-  const handleDeleteUser = (userId: string) => {
-    // setUsers(users.filter((user) => user._id !== userId));
-  };
   const handleClose = () => {
     setError("");
     setShowAddDialog(false);
@@ -98,7 +84,7 @@ export function UsersClient({ users }: UserClientProps) {
         </Button>
       </div>
 
-      <UsersTable users={paginatedUsers} onDeleteUser={handleDeleteUser} />
+      <UsersTable users={paginatedUsers} />
 
       <Pagination
         currentPage={currentPage}

@@ -14,13 +14,14 @@ import {
 import { EditUserDialog } from "./edit-user-dialog";
 import { DeleteUserDialog } from "./delete-user-dialog";
 import { UserType } from "@/models/user";
+import { deleteUser } from "@/actions/auth";
+import { useRouter } from "next/navigation";
 
 interface UsersTableProps {
   users: UserType[];
-  onDeleteUser: (userId: string) => void;
 }
 
-export function UsersTable({ users, onDeleteUser }: UsersTableProps) {
+export function UsersTable({ users }: UsersTableProps) {
   const [editingUser, setEditingUser] = useState<UserType | null>(null);
   const [deletingUser, setDeletingUser] = useState<{
     _id: string;
@@ -46,6 +47,13 @@ export function UsersTable({ users, onDeleteUser }: UsersTableProps) {
       .map((n) => n[0])
       .join("")
       .toUpperCase();
+  };
+
+  const router = useRouter();
+  const handleDelete = async (id: string) => {
+    const result = await deleteUser(id);
+    console.log(result);
+    router.refresh();
   };
 
   if (users.length === 0) {
@@ -146,7 +154,7 @@ export function UsersTable({ users, onDeleteUser }: UsersTableProps) {
           open={!!deletingUser}
           onOpenChange={(open) => !open && setDeletingUser(null)}
           onDeleteUser={() => {
-            onDeleteUser(deletingUser._id);
+            handleDelete(deletingUser._id.toString());
             setDeletingUser(null);
           }}
         />

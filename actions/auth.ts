@@ -7,6 +7,7 @@ import bcrypt from "bcrypt";
 import { cookies } from "next/headers";
 import { nameSchema } from "@/utils/schema";
 import { isValidObjectId } from "mongoose";
+import Activity from "@/models/activity";
 
 const loginSchema = z.object({
   email: z
@@ -209,6 +210,23 @@ export async function updateUser(data: z.infer<typeof updateUserSchema>, id: str
   }
   catch (error) {
     return { success: false, error: error instanceof Error ? error.message : "Failed to update data" }
+  }
+
+}
+
+export async function deleteUser(id: string): Promise<{ success: boolean, error?: string, data?: string }> {
+
+  try {
+    await connectToDatabase();
+    if (!id) return { success: false, error: "Id is missing" };
+    if (!isValidObjectId(id)) return { success: false, error: "Invalid Id" };
+    const user = await User.findByIdAndDelete(id);
+    if (!user) return { success: false, error: "Failed to delete user" };
+    await Activity.deleteMany({ user: id });
+    return { success: true, data: "User deleted successfully" };
+  }
+  catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : "Failed to delete data" }
   }
 
 }
