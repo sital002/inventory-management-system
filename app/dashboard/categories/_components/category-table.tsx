@@ -123,13 +123,19 @@ export function CategoryTable({ items }: InventoryTableProps) {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
-                      <Eye className="h-4 w-4 mr-2" />
-                      View Details
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Edit className="h-4 w-4 mr-2" />
-                      Edit Item
+                    <Link href={`/dashboard/products/${item._id.toString()}`}>
+                      <DropdownMenuItem>
+                        <Eye className="h-4 w-4 mr-2" />
+                        View Details
+                      </DropdownMenuItem>
+                    </Link>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={`/dashboard/products/edit/${item._id.toString()}`}
+                      >
+                        <Edit className="h-4 w-4 mr-2" />
+                        Edit Item
+                      </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       className="text-red-600"
