@@ -7,6 +7,9 @@ import { getUserData, isAuthenticated } from "./auth";
 import { revalidatePath } from "next/cache";
 import mongoose from "mongoose";
 import Product from "@/models/product";
+import Activity from "@/models/activity";
+import Order from "@/models/order";
+import ReOrder from "@/models/reorder";
 
 const categorySchma = z.object({
   name: z.string({ message: "Name is missing" }).min(1, "Name is required"),
@@ -152,7 +155,12 @@ export async function deleteCategory(id: string) {
         error: "Category not found",
       };
     }
-    await Product.deleteMany({ category: id });
+    const products = await Product.deleteMany({ category: id });
+    for (const product in products) {
+      await Activity.deleteMany({ product: product });
+      await Order.deleteMany({ "products.product": product });
+      await ReOrder.deleteMany({ productId: product })
+    }
     revalidatePath("/dashboard/categories");
     return {
       success: true,

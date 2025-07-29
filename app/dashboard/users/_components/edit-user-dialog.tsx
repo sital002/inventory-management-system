@@ -115,6 +115,7 @@ export function EditUserDialog({
                   </FormLabel>
                   <FormControl>
                     <Input
+                      disabled={true}
                       type="email"
                       placeholder="Enter email address"
                       className="border-green-200 focus:border-green-500 focus:ring-green-500"

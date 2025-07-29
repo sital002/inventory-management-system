@@ -190,7 +190,6 @@ export async function getUsers() {
 
 const updateUserSchema = z.object({
   name: nameSchema,
-  email: z.string({ required_error: "Email is required" }).email("Invalid email address"),
 });
 
 export async function updateUser(data: z.infer<typeof updateUserSchema>, id: string): Promise<{ success: boolean, error?: string, data?: string }> {
@@ -204,10 +203,7 @@ export async function updateUser(data: z.infer<typeof updateUserSchema>, id: str
     if (!parsedData.success) return { success: false, error: parsedData.error.errors[0].message };
     const user = await User.findById(id);
     if (!user) return { success: false, error: "User not found" };
-    const emailExists = await User.findOne({ email: parsedData.data.email })
-    if (emailExists) return { success: false, error: "Email already exists" };
     user.name = parsedData.data.name;
-    user.email = parsedData.data.email;
     await user.save();
     return { success: true, data: "User updated successfully" };
   }

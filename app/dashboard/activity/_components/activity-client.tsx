@@ -7,7 +7,7 @@ import { Pagination } from "../../../../components/pagination";
 import { ActivityLoading } from "./activity-loading";
 import { getActivity } from "@/actions/activity";
 import { IActivity } from "@/models/activity";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 const itemsPerPage = 10;
 
@@ -35,10 +35,6 @@ export function ActivityClient() {
   );
   const [currentPage, setCurrentPage] = useState(1);
 
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
@@ -48,9 +44,6 @@ export function ActivityClient() {
   const fetchData = useCallback(
     async (page: number, search: string = searchTerm) => {
       setLoading(true);
-      router.replace(
-        `/dashboard/activity?search=${searchTerm}&filter=${typeFilter}`
-      );
       try {
         const result = await getActivity(
           page ? page : currentPage,

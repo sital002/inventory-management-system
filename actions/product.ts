@@ -9,6 +9,9 @@ import { cookies } from "next/headers";
 import { z } from "zod";
 import { isAuthenticated } from "./auth";
 import { productSchema } from "@/schema/product";
+import Order from "@/models/order";
+import ReOrder from "@/models/reorder";
+import Activity from "@/models/activity";
 export type Response<T> =
   | { success: true; data: T }
   | { success: false; error: string };
@@ -267,6 +270,9 @@ export async function deleteProduct(id: string): Promise<Response<null>> {
     if (!result) {
       return { success: false, error: "Product not found" };
     }
+    await Activity.deleteMany({ product: id });
+    await Order.deleteMany({ "products.product": id });
+    await ReOrder.deleteMany({ productId: id })
     revalidatePath("/dashboard/products");
     return { success: true, data: null };
   } catch (error) {
