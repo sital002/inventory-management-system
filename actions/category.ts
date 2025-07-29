@@ -10,6 +10,7 @@ import Product from "@/models/product";
 import Activity from "@/models/activity";
 import Order from "@/models/order";
 import ReOrder from "@/models/reorder";
+import { deleteAllProductData } from "./product";
 
 const categorySchma = z.object({
   name: z.string({ message: "Name is missing" }).min(1, "Name is required"),
@@ -157,12 +158,7 @@ export async function deleteCategory(id: string) {
     }
     const productsToDelete = await Product.find({ category: id });
 
-    const productIds = productsToDelete.map(product => product._id);
-
-    await Product.deleteMany({ _id: { $in: productIds } });
-    await Activity.deleteMany({ product: { $in: productIds } });
-    await Order.deleteMany({ "products.product": { $in: productIds } });
-    await ReOrder.deleteMany({ productId: { $in: productIds } });
+    await deleteAllProductData(productsToDelete)
     revalidatePath("/dashboard/categories");
     return {
       success: true,
