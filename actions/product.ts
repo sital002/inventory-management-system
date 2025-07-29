@@ -33,9 +33,9 @@ export async function addNewProduct(
       throw new Error("User not authenticated");
     }
     const user = JSON.parse(data.value);
-    if (user.role !== "admin") {
-      throw new Error("Only admins can add new products");
-    }
+    // if (user.role !== "admin") {
+    //   throw new Error("Only admins can add new products");
+    // }
     const newProduct = await Product.create({
       name: result.data.name,
       description: result.data.description,

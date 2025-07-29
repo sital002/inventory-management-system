@@ -155,12 +155,14 @@ export async function deleteCategory(id: string) {
         error: "Category not found",
       };
     }
-    const products = await Product.deleteMany({ category: id });
-    for (const product in products) {
-      await Activity.deleteMany({ product: product });
-      await Order.deleteMany({ "products.product": product });
-      await ReOrder.deleteMany({ productId: product })
-    }
+    const productsToDelete = await Product.find({ category: id });
+
+    const productIds = productsToDelete.map(product => product._id);
+
+    await Product.deleteMany({ _id: { $in: productIds } });
+    await Activity.deleteMany({ product: { $in: productIds } });
+    await Order.deleteMany({ "products.product": { $in: productIds } });
+    await ReOrder.deleteMany({ productId: { $in: productIds } });
     revalidatePath("/dashboard/categories");
     return {
       success: true,
