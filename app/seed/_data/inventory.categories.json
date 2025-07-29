@@ -1,0 +1,99 @@
+[{
+  "_id": {
+    "$oid": "68597772521e79ccac2e9404"
+  },
+  "name": "Fruits",
+  "description": "Fresh and seasonal fruits",
+  "color": "Green",
+  "products": [],
+  "createdAt": "2025-01-01T10:00:00Z",
+  "updatedAt": "2025-01-01T10:00:00Z"
+},
+{
+  "_id": {
+    "$oid": "68597772521e79ccac2e9405"
+  },
+  "name": "Vegetables",
+  "description": "Locally grown vegetables",
+  "color": "Cyan",
+  "products": [],
+  "createdAt": "2025-01-01T10:00:00Z",
+  "updatedAt": "2025-01-01T10:00:00Z"
+},
+{
+  "_id": {
+    "$oid": "68597772521e79ccac2e9406"
+  },
+  "name": "Dairy",
+  "description": "Milk, cheese, butter, and other dairy products",
+  "color": "Blue",
+  "products": [],
+  "createdAt": "2025-01-01T10:00:00Z",
+  "updatedAt": "2025-01-01T10:00:00Z"
+},
+{
+  "_id": {
+    "$oid": "68597772521e79ccac2e9407"
+  },
+  "name": "Bakery",
+  "description": "Bread, cakes, pastries",
+  "color": "Yellow",
+  "products": [],
+  "createdAt": "2025-01-01T10:00:00Z",
+  "updatedAt": "2025-01-01T10:00:00Z"
+},
+{
+  "_id": {
+    "$oid": "68597772521e79ccac2e9408"
+  },
+  "name": "Meat",
+  "description": "Fresh meat and poultry",
+  "color": "Red",
+  "products": [],
+  "createdAt": "2025-01-01T10:00:00Z",
+  "updatedAt": "2025-01-01T10:00:00Z"
+},
+{
+  "_id": {
+    "$oid": "68597772521e79ccac2e9409"
+  },
+  "name": "Beverages",
+  "description": "Soft drinks, juices, and water",
+  "color": "Purple",
+  "products": [],
+  "createdAt": "2025-01-01T10:00:00Z",
+  "updatedAt": "2025-01-01T10:00:00Z"
+},
+{
+  "_id": {
+    "$oid": "68597772521e79ccac2e940a"
+  },
+  "name": "Snacks",
+  "description": "Chips, cookies, and other snacks",
+  "color": "Orange",
+  "products": [],
+  "createdAt": "2025-01-01T10:00:00Z",
+  "updatedAt": "2025-01-01T10:00:00Z"
+},
+{
+  "_id": {
+    "$oid": "68597772521e79ccac2e940b"
+  },
+  "name": "Household",
+  "description": "Cleaning supplies and household items",
+  "color": "Gray",
+  "products": [],
+  "createdAt": "2025-01-01T10:00:00Z",
+  "updatedAt": "2025-01-01T10:00:00Z"
+},
+{
+  "_id": {
+    "$oid": "68597772521e79ccac2e940c"
+  },
+  "name": "Personal Care",
+  "description": "Toiletries and hygiene products",
+  "color": "Pink",
+  "products": [],
+  "createdAt": "2025-01-01T10:00:00Z",
+  "updatedAt": "2025-01-01T10:00:00Z"
+}]
