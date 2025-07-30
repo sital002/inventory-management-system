@@ -5,7 +5,7 @@ import { connectToDatabase } from "@/utils/db";
 import { z } from "zod";
 import { getUserData, isAuthenticated } from "./auth";
 import { revalidatePath } from "next/cache";
-import mongoose from "mongoose";
+import mongoose, { isValidObjectId } from "mongoose";
 import Product from "@/models/product";
 import Activity from "@/models/activity";
 import Order from "@/models/order";
@@ -120,6 +120,26 @@ export async function getCategories() {
   }
 }
 
+export async function updateCategory(data: z.infer<typeof categorySchma>, id: string): Promise<{ success: boolean, data?: unknown, error?: string }> {
+  try {
+    await connectToDatabase();
+    const parsedData = categorySchma.safeParse(data);
+    if (!parsedData.success) return { success: false, error: parsedData.error.errors[0].message }
+    if (!id) return { success: false, error: "Id is required" }
+    if (!isValidObjectId(id)) return { success: false, error: "Invalid Id" }
+    const category = await Category.findById(id);
+    if (!category) return { success: false, error: "Category not found" }
+
+    category.name = parsedData.data.name;
+    category.color = parsedData.data.color;
+    category.description = parsedData.data.description;
+    await category.save();
+    return { success: true, data: "Category updated successfully" }
+  } catch (err) {
+    return { success: false, data: err instanceof Error ? err.message : "Something went wrong" }
+
+  }
+}
 
 export async function deleteCategory(id: string) {
   if (!id) {
