@@ -23,6 +23,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ProductResponse } from "../page";
 import { createOrder } from "@/actions/order";
 import { useRouter } from "next/navigation";
+import { updateSellingUnit } from "@/actions/product";
 
 interface CartItem {
   product: ProductResponse;
@@ -93,6 +94,9 @@ export function CheckoutDialog({
     setError(null);
     setIsProcessing(false);
     setIsComplete(true);
+    cartItems.forEach(async (item) => {
+      await updateSellingUnit(item.product, Number(item.quantity));
+    });
   };
 
   const handleClose = () => {

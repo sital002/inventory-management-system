@@ -12,11 +12,11 @@ import { productSchema } from "@/schema/product";
 import Order from "@/models/order";
 import ReOrder from "@/models/reorder";
 import Activity from "@/models/activity";
+import { predictNextDayDemand } from "@/utils/predict-next-demand";
+import { calculateUnitsForTodayTarget } from "@/utils/target";
 export type Response<T> =
   | { success: true; data: T }
   | { success: false; error: string };
-
-
 
 export async function addNewProduct(
   product: z.infer<typeof productSchema>
@@ -108,7 +108,7 @@ export async function updateProduct(
     }
     const productExists = await Product.findById(id);
     if (!productExists) {
-      return { success: false, error: "Product Not found" }
+      return { success: false, error: "Product Not found" };
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(id, {
@@ -171,7 +171,8 @@ export async function getProductDetail(
     await connectToDatabase();
     await Supplier.exists({});
     await Category.exists({});
-    if (!mongoose.isValidObjectId(id)) return { success: false, error: "Invalid Product Id" }
+    if (!mongoose.isValidObjectId(id))
+      return { success: false, error: "Invalid Product Id" };
     const product = await Product.findOne({ _id: id })
       .populate<{ supplier: ISupplier }>("supplier")
       .populate<{ categories: ICategory }>("category");
@@ -286,7 +287,7 @@ export async function deleteProduct(id: string): Promise<Response<null>> {
 export async function findProductsByCategory(
   id: string
 ): Promise<Response<(IProduct & { supplier: ISupplier })[]>> {
-  await connectToDatabase()
+  await connectToDatabase();
   const isLoggedIn = await isAuthenticated();
   if (!isLoggedIn) {
     return { success: false, error: "User is not authenticated" };
@@ -302,11 +303,12 @@ export async function findProductsByCategory(
     supplier: ISupplier;
   }>("supplier");
 
-
   return { success: true, data: JSON.parse(JSON.stringify(products)) };
 }
 
-export async function getLowStockProducts(): Promise<(IProduct & { supplier: ISupplier } & { category: ICategory })[]> {
+export async function getLowStockProducts(): Promise<
+  (IProduct & { supplier: ISupplier } & { category: ICategory })[]
+> {
   try {
     await connectToDatabase();
     const lowStockProducts = await Product.find({
@@ -316,20 +318,21 @@ export async function getLowStockProducts(): Promise<(IProduct & { supplier: ISu
           $expr: {
             $and: [
               { $gt: ["$currentStock", 0] },
-              { $lte: ["$currentStock", "$lowStockThreshold"] }
-            ]
-          }
-        }
-      ]
+              { $lte: ["$currentStock", "$lowStockThreshold"] },
+            ],
+          },
+        },
+      ],
     })
       .populate<{ category: ICategory }>("category")
-      .populate("supplier").sort({ currentStock: 1 })
+      .populate("supplier")
+      .sort({ currentStock: 1 })
       .lean();
-    console.log(lowStockProducts)
+    console.log(lowStockProducts);
     return JSON.parse(JSON.stringify(lowStockProducts));
   } catch (error) {
     console.log("Error fetching low stock products:", error);
-    return []
+    return [];
   }
 }
 
@@ -351,3 +354,58 @@ export async function deleteAllProductData(products: IProduct[] | string) {
   console.log(`Deleted ${productIds.length} product(s) and related data.`);
 }
 
+export const updateSellingUnit = async (id: string, unit: number) => {
+  try {
+    await connectToDatabase();
+
+    const product = await Product.findById(id);
+    if (!product) {
+      return { success: false, error: "Product not found" };
+    }
+
+    const today = new Date();
+    const todayStr = today.toDateString();
+
+    let last5DaySelling = product.last5DaySelling || [];
+
+    while (last5DaySelling.length < 5) {
+      last5DaySelling.push({ date: new Date(), unit: 0 });
+    }
+
+    const lastEntry = last5DaySelling[last5DaySelling.length - 1];
+    const lastEntryDateStr = new Date(lastEntry.date).toDateString();
+
+    if (lastEntryDateStr !== todayStr) {
+      last5DaySelling.shift();
+      last5DaySelling.push({ date: today, unit: 0 });
+    }
+
+    last5DaySelling[last5DaySelling.length - 1].unit += unit;
+
+    product.last5DaySelling = last5DaySelling;
+    await product.save();
+
+    return JSON.parse(JSON.stringify(product));
+  } catch (error) {
+    console.error("Error updating selling unit:", error);
+    return { success: false, error };
+  }
+};
+
+export const forcastSellingUnit = async () => {
+  const product = await Product.find();
+  const productSales: Record<string, number[]> = {};
+  product.forEach((item) => {
+    productSales[item.name] = item.last5DaySelling.map(
+      (entry: { unit: number }) => entry.unit
+    );
+  });
+  console.log("he>>", product);
+
+  return predictNextDayDemand(productSales);
+};
+
+export const targetProduct = async (targetRevenue: number) => {
+  const product = await Product.find();
+  return await calculateUnitsForTodayTarget(product, targetRevenue);
+};

@@ -23,120 +23,130 @@ export interface IProduct {
   isActive: boolean;
   trackInventory: boolean;
   requiresRefrigeration: boolean;
+  last5DaySelling: { date: Date; unit: number }[];
   isOrganic: boolean;
   lastRestocked?: Date;
   createdAt: Date;
   updatedAt: Date;
-
 }
 
-const productSchema = new Schema<IProduct>({
-  name: {
-    type: String,
-    required: true,
-    minlength: 2,
-    maxlength: 100,
+const productSchema = new Schema<IProduct>(
+  {
+    name: {
+      type: String,
+      required: true,
+      minlength: 2,
+      maxlength: 100,
+    },
+    sku: {
+      type: String,
+      required: true,
+      minlength: 3,
+      maxlength: 50,
+    },
+    barcode: {
+      type: String,
+      default: "",
+    },
+    last5DaySelling: [
+      {
+        date: Date,
+        unit: Number,
+      },
+    ],
+
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
+    },
+    supplier: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Supplier",
+      required: true,
+    },
+    currentStock: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    brand: {
+      type: String,
+      default: "",
+    },
+    description: {
+      type: String,
+      default: "",
+    },
+    unit: {
+      type: String,
+      required: true,
+    },
+    costPrice: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+    sellingPrice: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+    discountPrice: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    initialStock: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+    lowStockThreshold: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+    weight: {
+      type: Number,
+      default: null,
+      min: 0,
+    },
+    dimensions: {
+      type: String,
+      default: "",
+    },
+    isPerishable: {
+      type: Boolean,
+      required: true,
+    },
+    isActive: {
+      type: Boolean,
+      required: true,
+    },
+    trackInventory: {
+      type: Boolean,
+      required: true,
+    },
+    requiresRefrigeration: {
+      type: Boolean,
+      required: true,
+    },
+    isOrganic: {
+      type: Boolean,
+      required: true,
+    },
+    lastRestocked: {
+      type: Date,
+      default: null,
+    },
   },
-  sku: {
-    type: String,
-    required: true,
-    minlength: 3,
-    maxlength: 50,
-  },
-  barcode: {
-    type: String,
-    default: "",
-  },
-  category: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Category",
-    required: true,
-  },
-  supplier: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Supplier",
-    required: true,
-  },
-  currentStock: {
-    type: Number,
-    default: 0,
-    min: 0,
-  },
-  brand: {
-    type: String,
-    default: "",
-  },
-  description: {
-    type: String,
-    default: "",
-  },
-  unit: {
-    type: String,
-    required: true,
-  },
-  costPrice: {
-    type: Number,
-    required: true,
-    min: 0,
-  },
-  sellingPrice: {
-    type: Number,
-    required: true,
-    min: 0,
-  },
-  discountPrice: {
-    type: Number,
-    default: 0,
-    min: 0,
-  },
-  initialStock: {
-    type: Number,
-    required: true,
-    min: 0,
-  },
-  lowStockThreshold: {
-    type: Number,
-    required: true,
-    min: 0,
-  },
-  weight: {
-    type: Number,
-    default: null,
-    min: 0,
-  },
-  dimensions: {
-    type: String,
-    default: "",
-  },
-  isPerishable: {
-    type: Boolean,
-    required: true,
-  },
-  isActive: {
-    type: Boolean,
-    required: true,
-  },
-  trackInventory: {
-    type: Boolean,
-    required: true,
-  },
-  requiresRefrigeration: {
-    type: Boolean,
-    required: true,
-  },
-  isOrganic: {
-    type: Boolean,
-    required: true,
-  },
-  lastRestocked: {
-    type: Date,
-    default: null
+  {
+    timestamps: true,
   }
+);
 
-}, {
-  timestamps: true
-});
-
-const Product: Model<IProduct> = models.Product || mongoose.model("Product", productSchema);
+const Product: Model<IProduct> =
+  models.Product || mongoose.model("Product", productSchema);
 
 export default Product;

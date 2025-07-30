@@ -9,6 +9,7 @@ import { nameSchema } from "@/utils/schema";
 import { isValidObjectId } from "mongoose";
 import Activity from "@/models/activity";
 
+import { comparePassword, hashPassword } from "@/utils/hash";
 const loginSchema = z.object({
   email: z
     .string()
@@ -22,13 +23,13 @@ const loginSchema = z.object({
 
 type Response =
   | {
-    success: false;
-    error: string;
-  }
+      success: false;
+      error: string;
+    }
   | {
-    success: true;
-    data: unknown;
-  };
+      success: true;
+      data: unknown;
+    };
 
 export async function loginUser(
   email: string,
@@ -53,7 +54,8 @@ export async function loginUser(
       };
     }
 
-    const isPasswordValid = bcrypt.compareSync(password, userExists.password);
+    // const isPasswordValid = bcrypt.compareSync(password, userExists.password);
+    const isPasswordValid = comparePassword(password, userExists.password);
     if (!isPasswordValid) {
       return {
         success: false,
@@ -120,7 +122,8 @@ export async function registerUser(
       };
     }
 
-    const hashedPassword = bcrypt.hashSync(password, 10);
+    // const hashedPassword = bcrypt.hashSync(password, 10);
+    const hashedPassword = hashPassword(password);
 
     const newUser = new User({
       name,
@@ -169,9 +172,8 @@ export async function getUserData() {
       return null;
     }
     return user;
-
   } catch {
-    return null
+    return null;
   }
 }
 
