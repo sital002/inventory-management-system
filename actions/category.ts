@@ -113,7 +113,7 @@ export async function getCategories() {
     const isLoggedIn = await isAuthenticated();
     if (!isLoggedIn) return [];
     const categories = await Category.find().lean();
-    return JSON.parse(JSON.stringify(categories));
+    return JSON.parse(JSON.stringify(categories)) as ICategory[];
   } catch (error) {
     console.log("Error fetching categories:", error);
     return []

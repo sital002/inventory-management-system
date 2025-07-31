@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { deleteProduct } from "@/actions/product";
+import { useRouter } from "next/navigation";
 
 interface DeleteProductDialogProps {
   product: any;
@@ -25,14 +27,20 @@ export function DeleteProductDialog({
 }: DeleteProductDialogProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState("");
-
+  const router = useRouter();
   const handleDelete = async () => {
     setIsDeleting(true);
     setError("");
 
     try {
       onOpenChange(false);
-      window.location.href = "/dashboard/products";
+      const result = await deleteProduct(product._id.toString());
+      console.log(result);
+      if (!result.success) {
+        console.log(result.error);
+      }
+      router.push("/dashboard/products");
+      router.refresh();
     } catch (err) {
       setError("Failed to delete product. Please try again.");
     } finally {
