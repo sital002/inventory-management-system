@@ -1,4 +1,4 @@
-import { isAuthenticated } from "@/actions/auth";
+import { getUserData } from "@/actions/auth";
 import { Navbar } from "@/components/navbar";
 import { InventorySidebar } from "@/components/sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -15,12 +15,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const isLoggedIn = await isAuthenticated();
-  if (!isLoggedIn) redirect("/");
+  const user = await getUserData();
+  if (!user) redirect("/");
   return (
     <div>
       <SidebarProvider>
-        <InventorySidebar />
+        <InventorySidebar user={JSON.parse(JSON.stringify(user))} />
         <SidebarInset>
           <Navbar />
           <div className="bg-green-50/30">{children}</div>

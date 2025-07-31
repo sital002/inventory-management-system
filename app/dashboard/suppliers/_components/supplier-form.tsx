@@ -16,50 +16,55 @@ import { redirect } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { nameSchema, phoneSchema } from "@/utils/schema";
 
 const formSchema = z.object({
-  name: z
-    .string()
-    .min(1, "Name is required")
-    .max(100, "Name must be less than 100 characters"),
+  name: nameSchema,
   email: z
     .string()
+    .trim()
     .min(1, "Email is required")
     .email("Invalid email address")
     .max(100, "Email must be less than 100 characters"),
-  phone: z
-    .string()
-    .min(1, "Phone is required")
-    .regex(/^\d{10}$/, "Phone number must be exactly 10 digits"),
+  phone: phoneSchema,
   address: z
     .string()
+    .trim()
     .min(1, "Address is required")
     .max(200, "Address must be less than 200 characters"),
   city: z
     .string()
+    .trim()
     .min(1, "City is required")
     .max(100, "City must be less than 100 characters"),
   state: z
     .string()
+    .trim()
     .min(1, "State is required")
     .max(100, "State must be less than 100 characters"),
   postalCode: z
     .string()
+    .trim()
     .max(20, "Postal code must be less than 20 characters")
+    .regex(/^\d*$/, "Postal code must contain only digits")
     .optional()
     .nullable(),
+
   taxId: z
     .string()
+    .trim()
     .min(1, "Tax ID is required")
     .max(50, "Tax ID must be less than 50 characters"),
   website: z
     .string()
+    .trim()
     .url("Invalid URL")
     .max(100, "Website must be less than 100 characters")
     .optional()
     .nullable(),
   contactPerson: z
     .string()
+    .trim()
     .min(1, "Contact person is required")
     .max(100, "Contact person must be less than 100 characters"),
 });
@@ -80,16 +85,16 @@ export default function SupplierForm(props: SupplierFormProps) {
     defaultValues: props.update
       ? props.data
       : {
-          name: "Test Supplier",
-          email: "test@gmail.com",
-          phone: "9876543212",
-          address: "Test ",
-          city: "test",
-          state: "test",
-          postalCode: "44200",
-          taxId: "test3223",
+          name: "",
+          email: "",
+          phone: "",
+          address: "",
+          city: "",
+          state: "",
+          postalCode: "",
+          taxId: "",
           website: null,
-          contactPerson: "432432432",
+          contactPerson: "",
         },
   });
 

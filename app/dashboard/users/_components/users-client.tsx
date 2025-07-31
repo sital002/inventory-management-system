@@ -42,16 +42,20 @@ export function UsersClient({ users }: UserClientProps) {
     setCurrentPage(1);
   };
 
-  const handleAddUser = async (newUser: { name: string; email: string }) => {
-    const user = {
-      _id: Date.now().toString(),
-      name: newUser.name,
-      email: newUser.email,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+  const handleAddUser = async (newUser: {
+    name: string;
+    email: string;
+    password: string;
+    role: "admin" | "user";
+  }) => {
     // setUsers([user, ...users]);
-    const result = await registerUser(newUser.name, newUser.email, "Test1234");
+    const { name, email, password, role } = newUser;
+    const result = await registerUser({
+      name,
+      email,
+      password,
+      role,
+    });
     console.log(result);
     if (!result.success) {
       setError(result.error);

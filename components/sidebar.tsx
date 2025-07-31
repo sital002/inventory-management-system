@@ -1,5 +1,4 @@
 "use client";
-
 import { usePathname } from "next/navigation";
 
 import {
@@ -8,12 +7,12 @@ import {
   Home,
   Package,
   Truck,
-  Users,
   CreditCard,
   RefreshCw,
   Activity,
   BubblesIcon,
   Calculator,
+  Users,
 } from "lucide-react";
 import {
   Sidebar,
@@ -29,6 +28,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
+import { getUserData } from "@/actions/auth";
 
 const mainMenuItems = [
   { icon: Home, label: "Dashboard", href: "/dashboard" },
@@ -61,7 +61,10 @@ const footerMenuItems = [
   { icon: Users, label: "Users", href: "/dashboard/users" },
 ];
 
-export function InventorySidebar() {
+interface InventorySidebarProps {
+  user: Awaited<ReturnType<typeof getUserData>>;
+}
+export function InventorySidebar({ user }: InventorySidebarProps) {
   const pathname = usePathname();
 
   const renderMenuItems = (items: typeof mainMenuItems) =>
@@ -69,7 +72,7 @@ export function InventorySidebar() {
       <SidebarMenuItem key={label}>
         <SidebarMenuButton
           className="text-green-900 hover:bg-green-200 hover:text-green-900 data-[active=true]:bg-green-200 data-[active=true]:text-green-900"
-          data-active={pathname === href || pathname.startsWith(href + "/")}
+          data-active={pathname === href}
           asChild
         >
           <Link href={href} className="flex items-center gap-2">
@@ -110,11 +113,11 @@ export function InventorySidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
-      <SidebarFooter className="border-t border-green-200 bg-green-100">
-        <SidebarMenu>{renderMenuItems(footerMenuItems)}</SidebarMenu>
-      </SidebarFooter>
-
+      {user?.role === "admin" ? (
+        <SidebarFooter className="border-t border-green-200 bg-green-100">
+          <SidebarMenu>{renderMenuItems(footerMenuItems)}</SidebarMenu>
+        </SidebarFooter>
+      ) : null}
       <SidebarRail />
     </Sidebar>
   );

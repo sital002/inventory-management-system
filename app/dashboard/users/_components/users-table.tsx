@@ -102,6 +102,11 @@ export function UsersTable({ users }: UsersTableProps) {
                       </h3>
                     </div>
                     <p className="text-sm text-green-600">{user.email}</p>
+                    <p className="text-sm text-green-600 capitalize">
+                      {" "}
+                      Role: {user.role}
+                    </p>
+
                     <p className="text-xs text-green-500">
                       Created: {formatDate(user.createdAt)}
                     </p>

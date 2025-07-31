@@ -6,7 +6,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Package, ShoppingCart, BarChart3, FileText } from "lucide-react";
+import { Plus, Package, ShoppingCart, FileText } from "lucide-react";
 import Link from "next/link";
 
 export async function QuickActions() {
@@ -33,13 +33,6 @@ export async function QuickActions() {
       icon: ShoppingCart,
       href: "/dashboard/pos",
       color: "bg-purple-600 hover:bg-purple-700",
-    },
-    {
-      title: "Reports",
-      description: "View inventory reports",
-      icon: BarChart3,
-      href: "/reports",
-      color: "bg-orange-600 hover:bg-orange-700",
     },
     {
       title: "Reorder Stocks",

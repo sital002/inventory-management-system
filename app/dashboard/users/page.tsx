@@ -1,9 +1,13 @@
 import { Suspense } from "react";
 import { UsersClient } from "./_components/users-client";
 import { UsersLoading } from "./_components/users-loading";
-import { getUsers } from "@/actions/auth";
+import { getUserData, getUsers } from "@/actions/auth";
+import { redirect } from "next/navigation";
 
 export default async function UsersPage() {
+  const user = await getUserData();
+  if (!user) redirect("/");
+  if (user.role !== "admin") return <p>You are not admin</p>;
   const users = await getUsers();
   return (
     <div className="flex-1 space-y-6 p-6">
