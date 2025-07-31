@@ -16,16 +16,19 @@ import Link from "next/link";
 import { IProduct } from "@/models/product";
 import { ISupplier } from "@/models/supplier";
 import { ICategory } from "@/models/category";
+import { getCategories } from "@/actions/category";
 
 export function ListProducts({
   initialProducts,
   totalPages,
   initialPage,
+  categories,
   itemsPerPage,
 }: {
   initialProducts: (IProduct & { supplier: ISupplier } & {
     category: ICategory;
   })[];
+  categories: Awaited<ReturnType<typeof getCategories>>;
   totalPages: number;
   initialPage: number;
   itemsPerPage: number;
@@ -34,13 +37,20 @@ export function ListProducts({
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [totalPage, setTotalPage] = useState(totalPages);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
 
   type Options = {
     searchTerm?: string;
     category?: string;
   };
   const fetchProducts = async (page: number, options?: Options) => {
-    const result = await getPaginatedProducts(page, itemsPerPage, options);
+    const selectedCategory = categories.find(
+      (category) => category.name === options?.category
+    );
+    const result = await getPaginatedProducts(page, itemsPerPage, {
+      category: selectedCategory ? selectedCategory._id.toString() : "",
+      searchTerm: options?.searchTerm,
+    });
     if (result.success) {
       setProducts(result.data.products);
       setTotalPage(result.data.pages);
@@ -54,18 +64,22 @@ export function ListProducts({
   };
 
   const handleNextPage = async () => {
-    if (currentPage < totalPages) {
+    if (currentPage < totalPage) {
       const nextPage = currentPage + 1;
-      setCurrentPage(nextPage);
-      await fetchProducts(nextPage);
+      await fetchProducts(nextPage, {
+        searchTerm: searchTerm.trim(),
+        category: selectedCategory !== "all" ? selectedCategory : undefined,
+      });
     }
   };
 
   const handlePreviousPage = async () => {
     if (currentPage > 1) {
       const prevPage = currentPage - 1;
-      setCurrentPage(prevPage);
-      await fetchProducts(prevPage);
+      await fetchProducts(prevPage, {
+        searchTerm: searchTerm.trim(),
+        category: selectedCategory !== "all" ? selectedCategory : undefined,
+      });
     }
   };
 
@@ -73,6 +87,7 @@ export function ListProducts({
     e.preventDefault();
     await fetchProducts(1, {
       searchTerm: searchTerm.trim(),
+      category: selectedCategory !== "all" ? selectedCategory : undefined,
     });
   }
 
@@ -88,15 +103,29 @@ export function ListProducts({
           />
           <Button>Search</Button>
         </form>
-        <Select>
+        <Select
+          value={selectedCategory}
+          onValueChange={async (value) => {
+            setSelectedCategory(value);
+            await fetchProducts(1, {
+              searchTerm: searchTerm.trim(),
+              category: value !== "all" ? value : undefined,
+            });
+          }}
+        >
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Category" />
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="Furniture">Furniture</SelectItem>
-            <SelectItem value="Electronics">Electronics</SelectItem>
+            <SelectItem value="all">All</SelectItem>
+            {categories.map((category) => (
+              <SelectItem key={category._id.toString()} value={category.name}>
+                {category.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
+
         <Link href={"/dashboard/products/new"}>
           <Button>Add New</Button>
         </Link>
