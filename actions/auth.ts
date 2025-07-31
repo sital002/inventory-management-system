@@ -23,13 +23,13 @@ const loginSchema = z.object({
 
 type Response =
   | {
-      success: false;
-      error: string;
-    }
+    success: false;
+    error: string;
+  }
   | {
-      success: true;
-      data: unknown;
-    };
+    success: true;
+    data: unknown;
+  };
 
 export async function loginUser(
   email: string,
@@ -198,8 +198,9 @@ const updateUserSchema = z.object({
 export async function updateUser(data: z.infer<typeof updateUserSchema>, id: string): Promise<{ success: boolean, error?: string, data?: string }> {
   try {
     await connectToDatabase();
-    const isLoggedIn = await isAuthenticated();
+    const isLoggedIn = await getUserData();
     if (!isLoggedIn) return { success: false, error: "User isnot loggedin" };
+    if (isLoggedIn.role !== "admin") return { success: false, error: "Only admin can update user" }
     if (!id) return { success: false, error: "Id is missing" };
     if (!isValidObjectId(id)) return { success: false, error: "Invalid Id" };
     const parsedData = updateUserSchema.safeParse(data);
@@ -220,8 +221,12 @@ export async function deleteUser(id: string): Promise<{ success: boolean, error?
 
   try {
     await connectToDatabase();
+
     if (!id) return { success: false, error: "Id is missing" };
     if (!isValidObjectId(id)) return { success: false, error: "Invalid Id" };
+    const isLoggedIn = await getUserData();
+    if (!isLoggedIn) return { success: false, error: "User isnot loggedin" };
+    if (isLoggedIn.role !== "admin") return { success: false, error: "Only admin can delete user" }
     const user = await User.findByIdAndDelete(id);
     if (!user) return { success: false, error: "Failed to delete user" };
     await Activity.deleteMany({ user: id });

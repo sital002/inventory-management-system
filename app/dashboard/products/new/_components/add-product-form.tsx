@@ -41,15 +41,15 @@ export default function ProductForm({
   }
 
   const [formData, setFormData] = useState({
-    name: "Test Product",
+    name: "",
     sku: "FU-3232",
-    category: "Furniture",
-    supplier: "Furniture Wholesale",
-    price: "300",
-    cost: "200",
-    stock: "1000",
-    minStock: "200",
-    description: "This is a description",
+    category: "",
+    supplier: "",
+    price: "",
+    cost: "",
+    stock: "",
+    minStock: "",
+    description: "",
     status: ProductStatus.Active,
   });
   const [error, setError] = useState<string | null>(null);
