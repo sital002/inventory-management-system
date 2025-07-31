@@ -27,6 +27,8 @@ import {
 import { colorOptions } from "@/utils/color-options";
 import { deleteCategory } from "@/actions/category";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { UpdateCategoryDialog } from "./update-category-dialog";
 
 interface CategoryCardProps {
   category: {
@@ -41,8 +43,10 @@ interface CategoryCardProps {
 }
 
 export function CategoryCard({ category }: CategoryCardProps) {
+  const [open, setOpen] = useState(false);
   const handleEdit = () => {
     console.log("Edit category:", category.name);
+    setOpen(true);
   };
   const router = useRouter();
   const handleDelete = async () => {
@@ -88,6 +92,11 @@ export function CategoryCard({ category }: CategoryCardProps) {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <UpdateCategoryDialog
+          setOpen={setOpen}
+          category={category}
+          open={open}
+        />
       </div>
 
       {/* Mobile Actions - Always visible on mobile */}
@@ -117,7 +126,6 @@ export function CategoryCard({ category }: CategoryCardProps) {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-
       <Link
         href={`/dashboard/categories/${category._id.toString()}`}
         className="block"
