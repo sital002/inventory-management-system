@@ -18,6 +18,7 @@ import { colorOptions } from "@/utils/color-options";
 import { IProduct } from "@/models/product";
 import { ISupplier } from "@/models/supplier";
 import { ICategory } from "@/models/category";
+import { getSalesStats } from "@/actions/product";
 
 interface ProductDetailsAsyncProps {
   product: IProduct & { supplier: ISupplier } & { category: ICategory };
@@ -48,21 +49,16 @@ export async function ProductDetailsAsync({
     }
   };
 
+  const salesData = await getSalesStats(product._id.toString());
+
   const status = getStockStatus();
   const StatusIcon = status.icon;
-
-  const salesData = {
-    totalSold: Math.floor(Math.random() * 100) + 50,
-    revenue: (Math.floor(Math.random() * 1000) + 500).toFixed(2),
-    avgDailySales: (Math.random() * 10 + 2).toFixed(1),
-    lastSale: "2 hours ago",
-  };
 
   return (
     <div className="space-y-6">
       <Card className="bg-white border-green-200">
         <CardHeader>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex  justify-between items-center  ">
             <div>
               <CardTitle className="text-green-900 flex items-center gap-2">
                 <Package className="h-5 w-5" />

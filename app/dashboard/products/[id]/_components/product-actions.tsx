@@ -24,8 +24,8 @@ export function ProductActions({ product }: ProductActionsProps) {
 
   return (
     <>
-      <div className="flex gap-2">
-        <div className="hidden sm:flex gap-2">
+      <div className="flex gap-2 ">
+        {/* <div className="hidden sm:flex gap-2">
           <Link href={`/dashboard/products/edit/${product._id.toString()}`}>
             <Button
               variant="outline"
@@ -36,7 +36,7 @@ export function ProductActions({ product }: ProductActionsProps) {
               Edit
             </Button>
           </Link>
-        </div>
+        </div> */}
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
