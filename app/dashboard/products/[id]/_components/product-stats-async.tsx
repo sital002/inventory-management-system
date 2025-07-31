@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, DollarSign, TrendingUp, Clock } from "lucide-react";
 import { IProduct } from "@/models/product";
+import { getSalesStats } from "@/actions/product";
 
 interface ProductStatsAsyncProps {
   product: IProduct;
@@ -12,7 +13,12 @@ export async function ProductStatsAsync({ product }: ProductStatsAsyncProps) {
   const totalValue = product.sellingPrice * product.currentStock;
   const profitPerUnit = product.sellingPrice - product.costPrice;
   const totalProfit = profitPerUnit * product.currentStock;
-  const daysInStock = Math.floor(Math.random() * 30) + 1;
+  const result = await getSalesStats(product._id.toString());
+  const averageDailySales = Number(result.avgDailySales);
+  const daysInStock =
+    averageDailySales > 0
+      ? Math.floor(product.currentStock / averageDailySales)
+      : null;
 
   const stats = [
     {
@@ -38,7 +44,7 @@ export async function ProductStatsAsync({ product }: ProductStatsAsyncProps) {
     },
     {
       title: "Days in Stock",
-      value: `${daysInStock} days`,
+      value: daysInStock !== null ? `${daysInStock} days` : "N/A",
       icon: Clock,
       color: "bg-orange-50 border-orange-200 text-orange-700",
       valueColor: "text-orange-900",

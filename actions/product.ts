@@ -409,3 +409,104 @@ export const targetProduct = async (targetRevenue: number) => {
   const product = await Product.find();
   return await calculateUnitsForTodayTarget(product, targetRevenue);
 };
+
+
+
+
+
+
+function formatTimeSince(date: Date): string {
+  const now = new Date().getTime();
+  const diff = now - date.getTime();
+
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(diff / (1000 * 60));
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+  if (seconds < 60) return `${seconds}s ago`;
+  if (minutes < 60) return `${minutes}m ago`;
+  if (hours < 24) return `${hours}h ago`;
+  return `${days}d ago`;
+}
+
+export async function getSalesStats(productId: string) {
+  try {
+    const objectId = new mongoose.Types.ObjectId(productId);
+
+    const salesAgg = await Order.aggregate([
+      { $match: { status: "completed" } },
+      { $unwind: "$products" },
+      { $match: { "products.product": objectId } },
+      {
+        $group: {
+          _id: null,
+          totalSold: { $sum: "$products.quantity" },
+          revenue: { $sum: "$products.subtotal" },
+        },
+      },
+    ]);
+
+    const totalSold = salesAgg[0]?.totalSold || 0;
+    const revenue = (salesAgg[0]?.revenue || 0).toFixed(2);
+
+    const past30Days = new Date();
+    past30Days.setDate(past30Days.getDate() - 30);
+
+    const dailyAgg = await Order.aggregate([
+      {
+        $match: {
+          status: "completed",
+          createdAt: { $gte: past30Days },
+        },
+      },
+      { $unwind: "$products" },
+      { $match: { "products.product": objectId } },
+      {
+        $group: {
+          _id: null,
+          totalRevenue: { $sum: "$products.subtotal" },
+        },
+      },
+    ]);
+
+    const avgDailySales = (
+      (dailyAgg[0]?.totalRevenue || 0) / 30
+    ).toFixed(1);
+
+    const lastSale = await Order.aggregate([
+      {
+        $match: {
+          status: "completed",
+        },
+      },
+      { $unwind: "$products" },
+      { $match: { "products.product": objectId } },
+      { $sort: { createdAt: -1 } },
+      { $limit: 1 },
+      {
+        $project: {
+          _id: 0,
+          createdAt: 1,
+        },
+      },
+    ]);
+
+    const lastSaleTime = lastSale[0]?.createdAt
+      ? formatTimeSince(new Date(lastSale[0].createdAt))
+      : "N/A";
+
+    return {
+      totalSold,
+      revenue,
+      avgDailySales,
+      lastSale: lastSaleTime,
+    };
+  } catch (error) {
+    console.error("Failed to fetch product sales stats:", error);
+    throw new Error("Could not retrieve product sales statistics");
+  }
+}
+
+
+

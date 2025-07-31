@@ -73,7 +73,7 @@ export function ProductSearch({
             </Select>
           </div>
 
-          <Button
+          {/* <Button
             variant="outline"
             className="border-green-200 text-green-700 hover:bg-green-50 bg-transparent"
             onClick={() => {
@@ -82,7 +82,7 @@ export function ProductSearch({
           >
             <Scan className="h-4 w-4 mr-2" />
             Scan
-          </Button>
+          </Button> */}
         </div>
       </CardContent>
     </Card>

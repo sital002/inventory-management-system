@@ -64,7 +64,6 @@ export function UpdateCategoryDialog({
 }: UpdateCategoryDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
   const router = useRouter();
 
   const [formData, setFormData] = useState({
@@ -93,7 +92,6 @@ export function UpdateCategoryDialog({
 
     setIsSubmitting(true);
     setError("");
-    console.log(formData.color);
     try {
       const result = await updateCategory(
         {
@@ -108,10 +106,10 @@ export function UpdateCategoryDialog({
         setError(result.error || "Failed to update category");
         return;
       }
-      setSuccess(true);
       setOpen(false);
-      setFormData(initialFormData);
-      router.push("/dashboard/categories/" + category._id);
+      // setFormData(initialFormData);
+      // router.push("/dashboard/categories/" + category._id);
+      router.refresh();
     } catch (err) {
       console.error("Error update category:", err);
       setError("Failed to update category. Please try again.");
@@ -130,7 +128,6 @@ export function UpdateCategoryDialog({
           color: "bg-green-50 border-green-200",
         });
         setError("");
-        setSuccess(false);
       }
     }
   };
@@ -154,16 +151,6 @@ export function UpdateCategoryDialog({
             </AlertDescription>
           </Alert>
         )}
-
-        {success && (
-          <Alert className="border-green-200 bg-green-50">
-            <AlertCircle className="h-4 w-4 text-green-600" />
-            <AlertDescription className="text-green-800">
-              Category updated successfully!
-            </AlertDescription>
-          </Alert>
-        )}
-
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name" className="text-green-800 font-medium">
