@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Edit, Trash2, Package, MoreHorizontal } from "lucide-react";
+import { Edit, Trash2, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { EditProductDialog } from "./edit-product-dialog";
 import { DeleteProductDialog } from "./delete-product-dialog";
-import { AdjustStockDialog } from "./adjust-stock-dialog";
 import Link from "next/link";
 
 interface ProductActionsProps {
@@ -22,7 +21,6 @@ interface ProductActionsProps {
 export function ProductActions({ product }: ProductActionsProps) {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [adjustStockDialogOpen, setAdjustStockDialogOpen] = useState(false);
 
   return (
     <>
@@ -38,15 +36,6 @@ export function ProductActions({ product }: ProductActionsProps) {
               Edit
             </Button>
           </Link>
-          <Button
-            onClick={() => setAdjustStockDialogOpen(true)}
-            variant="outline"
-            size="sm"
-            className="border-blue-200 text-blue-700 hover:bg-blue-50"
-          >
-            <Package className="h-4 w-4 mr-2" />
-            Adjust Stock
-          </Button>
         </div>
 
         <DropdownMenu>
@@ -66,10 +55,6 @@ export function ProductActions({ product }: ProductActionsProps) {
                 <Edit className="h-4 w-4 mr-2" />
                 Edit Product
               </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setAdjustStockDialogOpen(true)}>
-              <Package className="h-4 w-4 mr-2" />
-              Adjust Stock
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
@@ -92,11 +77,6 @@ export function ProductActions({ product }: ProductActionsProps) {
         product={product}
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
-      />
-      <AdjustStockDialog
-        product={product}
-        open={adjustStockDialogOpen}
-        onOpenChange={setAdjustStockDialogOpen}
       />
     </>
   );

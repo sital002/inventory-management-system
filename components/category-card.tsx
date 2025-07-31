@@ -48,7 +48,7 @@ export function CategoryCard({ category }: CategoryCardProps) {
   const handleDelete = async () => {
     console.log("Delete category:", category.name);
     const result = await deleteCategory(category._id.toString());
-    console.log(result);
+    // console.log(result);
 
     if (!result.success) {
       console.log("Failed to delete category:", result?.error);
