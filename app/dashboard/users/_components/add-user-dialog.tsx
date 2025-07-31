@@ -23,12 +23,20 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2, UserPlus } from "lucide-react";
 import { nameSchema } from "@/utils/schema";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const addUserSchema = z
   .object({
     name: nameSchema,
     email: z.string().email("Please enter a valid email address"),
     password: z.string().min(8, "Password must be at least 8 characters"),
+    role: z.enum(["admin", "user"], { required_error: "Role is required" }),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -43,7 +51,12 @@ interface AddUserDialogProps {
   error: string;
   onOpenChange: (open: boolean) => void;
   handleClose: () => void;
-  onAddUser: (user: { name: string; email: string }) => void;
+  onAddUser: (user: {
+    name: string;
+    email: string;
+    password: string;
+    role: "admin" | "user";
+  }) => void;
 }
 
 export function AddUserDialog({
@@ -61,16 +74,18 @@ export function AddUserDialog({
       name: "Admin",
       email: `test@gmail${Math.round(Math.random() * 10)}.com`,
       password: "Test1234",
+      role: "user",
       confirmPassword: "Test1234",
     },
   });
 
   const onSubmit = async (data: AddUserFormData) => {
     setIsLoading(true);
-
     onAddUser({
       name: data.name,
       email: data.email,
+      password: data.password,
+      role: data.role,
     });
 
     form.reset();
@@ -130,6 +145,35 @@ export function AddUserDialog({
                 </FormItem>
               )}
             />
+            <div className="w-full">
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-green-900">
+                      Select Role
+                    </FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger className="w-full">
+                          {" "}
+                          <SelectValue placeholder="Select a role" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="admin">Admin</SelectItem>
+                          <SelectItem value="user">User</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <FormField
               control={form.control}

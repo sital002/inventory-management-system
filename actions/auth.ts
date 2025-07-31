@@ -91,6 +91,7 @@ export async function loginUser(
 const userSchema = z.object({
   name: nameSchema,
   email: z.string().email("Invalid email address"),
+  role: z.enum(["admin", "user"], { required_error: "Role is required" }),
   password: z
     .string()
     .min(8, "Password must be at least 8 characters long"),
@@ -98,13 +99,9 @@ const userSchema = z.object({
 
 
 
-export async function registerUser(
-  name: string,
-  email: string,
-  password: string,
-  role: "admin" | "user" = "admin"
-): Promise<Response> {
-  const result = userSchema.safeParse({ name, email, password });
+export async function registerUser(data: z.infer<typeof userSchema>): Promise<Response> {
+  console.log(data)
+  const result = userSchema.safeParse(data);
   if (!result.success) {
     return {
       success: false,
@@ -113,7 +110,7 @@ export async function registerUser(
   }
   try {
     await connectToDatabase();
-    const userExists = await User.findOne({ email });
+    const userExists = await User.findOne({ email: result.data.email });
 
     if (userExists) {
       return {
@@ -123,12 +120,12 @@ export async function registerUser(
     }
 
     // const hashedPassword = bcrypt.hashSync(password, 10);
-    const hashedPassword = hashPassword(password);
+    const hashedPassword = hashPassword(result.data.password);
 
     const newUser = new User({
-      name,
-      email,
-      role,
+      name: result.data.name,
+      email: result.data.email,
+      role: result.data.role,
       password: hashedPassword,
     });
 
@@ -193,6 +190,7 @@ export async function getUsers() {
 
 const updateUserSchema = z.object({
   name: nameSchema,
+  role: z.enum(["admin", "user"]),
 });
 
 export async function updateUser(data: z.infer<typeof updateUserSchema>, id: string): Promise<{ success: boolean, error?: string, data?: string }> {
@@ -208,6 +206,7 @@ export async function updateUser(data: z.infer<typeof updateUserSchema>, id: str
     const user = await User.findById(id);
     if (!user) return { success: false, error: "User not found" };
     user.name = parsedData.data.name;
+    user.role = parsedData.data.role;
     await user.save();
     return { success: true, data: "User updated successfully" };
   }

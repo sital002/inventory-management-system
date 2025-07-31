@@ -26,12 +26,20 @@ import { updateUser } from "@/actions/auth";
 import { nameSchema } from "@/utils/schema";
 import { UserType } from "@/models/user";
 import { useRouter } from "next/navigation";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const userSchema = z.object({
   name: nameSchema,
   email: z
     .string({ required_error: "Email is missing" })
     .email("Invalid email address"),
+  role: z.enum(["admin", "user"], { required_error: "Role is required" }),
 });
 
 type EditUserFormData = z.infer<typeof userSchema>;
@@ -55,6 +63,7 @@ export function EditUserDialog({
     resolver: zodResolver(userSchema),
     defaultValues: {
       name: user.name,
+      role: user.role,
       email: user.email,
     },
   });
@@ -104,7 +113,28 @@ export function EditUserDialog({
                 </FormItem>
               )}
             />
-
+            <FormField
+              control={form.control}
+              name="role"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-green-900">Select Role</FormLabel>
+                  <FormControl>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="w-full">
+                        {" "}
+                        <SelectValue placeholder="Select a role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="admin">Admin</SelectItem>
+                        <SelectItem value="user">User</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="email"
@@ -126,6 +156,7 @@ export function EditUserDialog({
                 </FormItem>
               )}
             />
+
             {/* <FormField
               control={form.control}
               name="password"
