@@ -59,6 +59,7 @@ export function calculateUnitsForTodayTarget(
       revenue: unitsNeededToday * p.price,
     });
   });
+  console.log(results);
 
   return results;
 }
