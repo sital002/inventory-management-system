@@ -62,18 +62,17 @@ export function POSClient({ initialProducts, categories }: POSClientProps) {
       }
     });
   };
-
-  useEffect(() => {
-    async function getProducts() {
-      const products = await getPaginatedProducts(1, 10, {
-        searchTerm: searchTerm.trim().toLowerCase(),
-        category: selectedCategory === "all" ? undefined : selectedCategory,
-      });
-      if (!products.success) {
-        return setProducts([]);
-      }
-      setProducts(products.data.products);
+  async function getProducts() {
+    const products = await getPaginatedProducts(1, 10, {
+      searchTerm: searchTerm.trim().toLowerCase(),
+      category: selectedCategory === "all" ? undefined : selectedCategory,
+    });
+    if (!products.success) {
+      return setProducts([]);
     }
+    setProducts(products.data.products);
+  }
+  useEffect(() => {
     getProducts();
   }, [selectedCategory]);
 
@@ -107,6 +106,10 @@ export function POSClient({ initialProducts, categories }: POSClientProps) {
   };
 
   const clearCart = () => {
+    setCart([]);
+  };
+  const onCheckoutComplete = () => {
+    getProducts();
     setCart([]);
   };
 
@@ -164,7 +167,7 @@ export function POSClient({ initialProducts, categories }: POSClientProps) {
         onClose={() => setIsCheckoutOpen(false)}
         cart={cart}
         totals={cartTotals}
-        onCheckoutComplete={clearCart}
+        onCheckoutComplete={onCheckoutComplete}
       />
     </div>
   );

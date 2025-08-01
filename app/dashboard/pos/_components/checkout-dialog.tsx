@@ -93,6 +93,7 @@ export function CheckoutDialog({
     setPaymentMethod("card");
     setError(null);
     setIsProcessing(false);
+    router.refresh();
     setIsComplete(true);
     cartItems.forEach(async (item) => {
       await updateSellingUnit(item.product, Number(item.quantity));

@@ -38,6 +38,7 @@ import { ExtractData } from "@/utils/response-type";
 import { getAllCategories } from "@/actions/category";
 import { getPaginatedProducts, getProductDetail } from "@/actions/product";
 import { reStockOrder } from "@/actions/reorder";
+import { toast } from "sonner";
 
 interface RestockItem {
   productId: string;
@@ -61,28 +62,27 @@ export function ReOrderForm({ categories, initialProducts }: ReOrderFormProps) {
   const [products, setProducts] = useState(initialProducts);
 
   const router = useRouter();
-
-  useEffect(() => {
-    async function fetchProducts() {
-      const response = await getPaginatedProducts(1, 10, {
-        searchTerm: searchQuery,
-        category: selectedCategory !== "all" ? selectedCategory : undefined,
-      });
-      if (!response.success) {
-        setProducts([]);
-        return;
-      }
-      const outOfStock = response.data.products.filter(
-        (p) => getStockStatus(p) === "out-of-stock"
-      );
-      const lowStock = response.data.products.filter(
-        (p) => getStockStatus(p) === "low-stock"
-      );
-      const inStock = response.data.products.filter(
-        (p) => getStockStatus(p) === "in-stock"
-      );
-      setProducts([...outOfStock, ...lowStock, ...inStock]);
+  async function fetchProducts() {
+    const response = await getPaginatedProducts(1, 10, {
+      searchTerm: searchQuery,
+      category: selectedCategory !== "all" ? selectedCategory : undefined,
+    });
+    if (!response.success) {
+      setProducts([]);
+      return;
     }
+    const outOfStock = response.data.products.filter(
+      (p) => getStockStatus(p) === "out-of-stock"
+    );
+    const lowStock = response.data.products.filter(
+      (p) => getStockStatus(p) === "low-stock"
+    );
+    const inStock = response.data.products.filter(
+      (p) => getStockStatus(p) === "in-stock"
+    );
+    setProducts([...outOfStock, ...lowStock, ...inStock]);
+  }
+  useEffect(() => {
     fetchProducts();
   }, [selectedCategory]);
 
@@ -120,6 +120,9 @@ export function ReOrderForm({ categories, initialProducts }: ReOrderFormProps) {
       setRestockItems([]);
       setSearchQuery("");
       setSelectedCategory("all");
+
+      toast("Reordered successfully");
+      fetchProducts();
       router.refresh();
     } catch (error) {
       console.log("Error restocking products:", error);
