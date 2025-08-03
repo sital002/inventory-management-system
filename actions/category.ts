@@ -6,7 +6,7 @@ import { z } from "zod";
 import { getUserData, isAuthenticated } from "./auth";
 import { revalidatePath } from "next/cache";
 import mongoose, { isValidObjectId } from "mongoose";
-import Product from "@/models/product";
+import Product, { IProduct } from "@/models/product";
 import Activity from "@/models/activity";
 import Order from "@/models/order";
 import ReOrder from "@/models/reorder";
@@ -481,4 +481,66 @@ export async function getSingleCategoryStats(id: string): Promise<
       error: (error as Error).message || "Failed to fetch category stats",
     };
   }
+}
+
+
+export async function getTopCategories() {
+  try {
+    await connectToDatabase();
+    const topCategories = await Category.aggregate([
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "category",
+          as: "productDetails",
+        },
+      },
+      {
+        $addFields: {
+          totalValue: {
+            $sum: {
+              $map: {
+                input: "$productDetails",
+                as: "product",
+                in: {
+                  $multiply: [
+                    { $ifNull: ["$$product.sellingPrice", 0] },
+                    { $ifNull: ["$$product.currentStock", 0] },
+                  ],
+                },
+              },
+            },
+          },
+          totalItems: { $size: "$productDetails" },
+          totalLowStockItemsCount: {
+            $size: {
+              $filter: {
+                input: "$productDetails",
+                as: "product",
+                cond: {
+                  $lte: ["$$product.currentStock", "$$product.lowStockThreshold"],
+                },
+              },
+            },
+          },
+
+        },
+      },
+      {
+        $sort: { totalValue: -1 },
+      },
+      {
+        $limit: 5,
+      },
+
+    ]);
+    console.log(topCategories);
+    return topCategories;
+  }
+  catch (err) {
+    console.log(err)
+    return []
+  }
+
 }

@@ -1,20 +1,17 @@
+import { nameSchema, stringSchema } from "@/utils/schema";
 import { z } from "zod";
 
 
 export const productSchema = z.object({
-  name: z
-    .string()
-    .min(2, "Product name must be at least 2 characters")
-    .max(100, "Product name must be less than 100 characters"),
-  sku: z
-    .string()
+  name: nameSchema,
+  sku: stringSchema
     .min(3, "SKU must be at least 3 characters")
     .max(50, "SKU must be less than 50 characters"),
-  barcode: z.string().optional().or(z.literal("")),
+  barcode: stringSchema.optional().or(z.literal("")),
   categoryId: z.string().min(1, "Please select a category"),
   supplierId: z.string().min(1, "Please select a supplier"),
-  brand: z.string().optional().or(z.literal("")),
-  description: z.string().optional().or(z.literal("")),
+  brand: stringSchema.optional().or(z.literal("")),
+  description: stringSchema.optional().or(z.literal("")),
   unit: z.string().min(1, "Unit is required"),
 
   costPrice: z

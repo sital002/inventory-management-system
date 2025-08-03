@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -25,7 +25,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { loginUser } from "@/actions/auth";
+import { loginUser, registerUser } from "@/actions/auth";
 import { useRouter } from "next/navigation";
 
 const loginSchema = z.object({
@@ -45,7 +45,7 @@ export function LoginPage() {
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "test@gmail.com",
-      password: "test1234",
+      password: "Test1234",
     },
   });
 
@@ -67,7 +67,12 @@ export function LoginPage() {
   }
   // useEffect(() => {
   //   async function registerTestUser() {
-  //     await registerUser("Test user", "test@gmail.com", "test1234", "admin");
+  //     await registerUser({
+  //       name: "Admin user",
+  //       email: "test@gmail.com",
+  //       password: "Test1234",
+  //       role: "admin",
+  //     });
   //   }
   //   registerTestUser();
   // }, []);
@@ -151,16 +156,6 @@ export function LoginPage() {
               </form>
             </Form>
           </CardContent>
-          <CardFooter className="flex justify-center bg-green-50 border-t border-green-100">
-            <p className="text-sm text-gray-600">
-              <Link
-                href="/auth/forgot-password"
-                className="text-green-600 hover:underline"
-              >
-                Forgot your password?
-              </Link>
-            </p>
-          </CardFooter>
         </Card>
       </div>
     </div>
