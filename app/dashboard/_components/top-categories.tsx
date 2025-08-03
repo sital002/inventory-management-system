@@ -5,21 +5,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { TrendingUp, ExternalLink } from "lucide-react";
-import { categories } from "@/lib/data";
+import { TrendingUp } from "lucide-react";
 import Link from "next/link";
+import { getTopCategories } from "@/actions/category";
 
 export async function TopCategories() {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  const topCategories = categories
-    .sort((a, b) => b.totalValue - a.totalValue)
-    .slice(0, 5)
-    .map((category, index) => ({
-      ...category,
-      rank: index + 1,
-    }));
+  const topCategories = await getTopCategories();
+  // console.log(topCategories);
 
   return (
     <Card className="bg-white border-green-200">
@@ -34,43 +26,36 @@ export async function TopCategories() {
               By inventory value
             </CardDescription>
           </div>
-          <Link href="/categories">
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-green-200 text-green-700 hover:bg-green-50"
-            >
-              View All
-              <ExternalLink className="h-4 w-4 ml-2" />
-            </Button>
-          </Link>
         </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          {topCategories.map((category) => (
-            <Link key={category.id} href={`/categories/${category.id}`}>
+          {topCategories.map((category, index) => (
+            <Link
+              key={category._id}
+              href={`/dashboard/categories/${category._id}`}
+            >
               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border hover:bg-gray-100 transition-colors cursor-pointer">
                 <div className="flex items-center gap-3">
                   <div className="flex items-center justify-center w-6 h-6 bg-green-100 text-green-800 rounded-full text-xs font-medium">
-                    {category.rank}
+                    {index + 1}
                   </div>
                   <div>
                     <h4 className="font-medium text-gray-900 text-sm">
                       {category.name}
                     </h4>
                     <p className="text-xs text-gray-600">
-                      {category.itemCount} items
+                      {category.totalItems} items
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
                   <p className="font-medium text-gray-900 text-sm">
-                    ${category.totalValue.toLocaleString()}
+                    ${Math.floor(category.totalValue).toFixed(2)}
                   </p>
-                  {category.lowStockItems > 0 && (
+                  {category.totalLowStockItemsCount > 0 && (
                     <p className="text-xs text-red-600">
-                      {category.lowStockItems} low stock
+                      {category.totalLowStockItemsCount} low stock
                     </p>
                   )}
                 </div>

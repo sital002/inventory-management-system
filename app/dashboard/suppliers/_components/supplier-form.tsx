@@ -16,7 +16,7 @@ import { redirect } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { nameSchema, phoneSchema } from "@/utils/schema";
+import { nameSchema, phoneSchema, stringSchema } from "@/utils/schema";
 
 const formSchema = z.object({
   name: nameSchema,
@@ -27,43 +27,28 @@ const formSchema = z.object({
     .email("Invalid email address")
     .max(100, "Email must be less than 100 characters"),
   phone: phoneSchema,
-  address: z
-    .string()
-    .trim()
-    .min(1, "Address is required")
-    .max(200, "Address must be less than 200 characters"),
+  address: stringSchema,
   city: z
     .string()
     .trim()
     .min(1, "City is required")
     .max(100, "City must be less than 100 characters"),
-  state: z
-    .string()
-    .trim()
-    .min(1, "State is required")
-    .max(100, "State must be less than 100 characters"),
-  postalCode: z
-    .string()
-    .trim()
-    .max(20, "Postal code must be less than 20 characters")
+  state: stringSchema,
+  postalCode: stringSchema
     .regex(/^\d*$/, "Postal code must contain only digits")
     .optional()
     .nullable(),
 
-  taxId: z
-    .string()
-    .trim()
+  taxId: stringSchema
     .min(1, "Tax ID is required")
     .max(50, "Tax ID must be less than 50 characters"),
-  website: z
-    .string()
+  website: stringSchema
     .trim()
     .url("Invalid URL")
     .max(100, "Website must be less than 100 characters")
     .optional()
     .nullable(),
-  contactPerson: z
-    .string()
+  contactPerson: stringSchema
     .trim()
     .min(1, "Contact person is required")
     .max(100, "Contact person must be less than 100 characters"),

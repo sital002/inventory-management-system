@@ -328,7 +328,7 @@ export async function getLowStockProducts(): Promise<
       .populate("supplier")
       .sort({ currentStock: 1 })
       .lean();
-    console.log(lowStockProducts);
+    // console.log(lowStockProducts);
     return JSON.parse(JSON.stringify(lowStockProducts));
   } catch (error) {
     console.log("Error fetching low stock products:", error);
@@ -400,7 +400,7 @@ export const forcastSellingUnit = async () => {
       (entry: { unit: number }) => entry.unit
     );
   });
-  console.log("he>>", product);
+  // console.log("he>>", product);
 
   return predictNextDayDemand(productSales);
 };

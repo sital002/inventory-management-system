@@ -10,6 +10,7 @@ import { isValidObjectId } from "mongoose";
 import Activity from "@/models/activity";
 
 import { comparePassword, hashPassword } from "@/utils/hash";
+import { revalidatePath } from "next/cache";
 const loginSchema = z.object({
   email: z
     .string()
@@ -234,5 +235,14 @@ export async function deleteUser(id: string): Promise<{ success: boolean, error?
   catch (error) {
     return { success: false, error: error instanceof Error ? error.message : "Failed to delete data" }
   }
+
+}
+
+
+
+export const logout = async () => {
+  const cookieStore = await cookies();
+  cookieStore.delete('user');
+  revalidatePath('/')
 
 }

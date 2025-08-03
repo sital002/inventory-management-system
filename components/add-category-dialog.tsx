@@ -39,6 +39,20 @@ const initialFormData = {
   description: "",
   color: "Green",
 };
+import { z } from "zod";
+
+export const stringSchema = z
+  .string({ required_error: "Field is missing" })
+  .trim()
+  .min(3, "Field must be at least 3 characters")
+  .max(64, "Field must be at most 64 characters")
+  .regex(/^[A-Za-z\s]+$/, "Field can only contain letters and spaces");
+
+const formSchema = z.object({
+  name: stringSchema,
+  description: stringSchema,
+});
+
 export function AddCategoryDialog() {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -53,10 +67,19 @@ export function AddCategoryDialog() {
   };
 
   const validateForm = () => {
-    if (!formData.name.trim()) {
-      setError("Category name is required");
+    const result = formSchema.safeParse({
+      name: formData.name,
+      description: formData.description,
+    });
+
+    if (!result.success) {
+      const firstError = Object.values(
+        result.error.flatten().fieldErrors
+      )[0]?.[0];
+      setError(firstError || "Validation failed.");
       return false;
     }
+
     return true;
   };
 
