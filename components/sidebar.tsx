@@ -13,6 +13,7 @@ import {
   BubblesIcon,
   Calculator,
   Users,
+  TrendingUp,
 } from "lucide-react";
 import {
   Sidebar,
@@ -41,15 +42,22 @@ const salesMenuItems = [
   { icon: CreditCard, label: "Point of Sale", href: "/dashboard/pos" },
   { icon: Activity, label: "Sales History", href: "/dashboard/sales" },
   {
+    icon: TrendingUp,
+    label: "Sales Report",
+    href: "/dashboard/sales-reports",
+  },
+  {
     icon: RefreshCw,
     label: "Reorder Stock",
     href: "/dashboard/products/reorder/new",
   },
+
   {
     icon: BubblesIcon,
     label: "Predictor",
     href: "/dashboard/predict",
   },
+
   {
     icon: Calculator,
     label: "Target Calculator",
