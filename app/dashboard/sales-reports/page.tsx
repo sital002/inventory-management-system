@@ -1,8 +1,11 @@
 import { Suspense } from "react";
 import { SalesReportsClient } from "./_components/sales-reports-client";
 import { SalesReportsLoading } from "./_components/sales-reports-loading";
+import { productSales } from "@/actions/sales";
 
-export default function SalesReportsPage() {
+export default async function SalesReportsPage() {
+  const salesData = await productSales();
+  console.log(salesData);
   return (
     <div className="space-y-6 p-3">
       <div>

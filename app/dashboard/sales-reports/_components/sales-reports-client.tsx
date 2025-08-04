@@ -30,11 +30,7 @@ export function SalesReportsClient() {
         reportType={reportType}
       />
 
-      <SalesReportsTable
-        dateRange={dateRange}
-        category={category}
-        reportType={reportType}
-      />
+      <SalesReportsTable />
     </div>
   );
 }

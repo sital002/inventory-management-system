@@ -1,14 +1,6 @@
-"use client";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown } from "lucide-react";
-
-interface SalesReportsTableProps {
-  dateRange: string;
-  category: string;
-  reportType: string;
-}
 
 const salesData = [
   {
@@ -79,11 +71,7 @@ const salesData = [
   },
 ];
 
-export function SalesReportsTable({
-  dateRange,
-  category,
-  reportType,
-}: SalesReportsTableProps) {
+export function SalesReportsTable() {
   return (
     <Card className="border-green-200">
       <CardHeader>

@@ -1,5 +1,3 @@
-"use client";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   PieChart,
@@ -176,7 +174,6 @@ export function SalesReportsCharts({
         </CardContent>
       </Card>
 
-      {/* Top Performing Products - Bar Chart */}
       <Card className="border-green-200 lg:col-span-2">
         <CardHeader>
           <CardTitle className="text-green-800">
@@ -233,7 +230,6 @@ export function SalesReportsCharts({
         </CardContent>
       </Card>
 
-      {/* Sales Performance Summary */}
       <Card className="border-green-200 lg:col-span-2">
         <CardHeader>
           <CardTitle className="text-green-800">

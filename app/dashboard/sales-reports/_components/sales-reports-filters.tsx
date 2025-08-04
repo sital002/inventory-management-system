@@ -29,12 +29,10 @@ export function SalesReportsFilters({
   onReportTypeChange,
 }: SalesReportsFiltersProps) {
   const handleExportPDF = () => {
-    // Mock PDF export
     console.log("Exporting sales report as PDF...");
   };
 
   const handleExportExcel = () => {
-    // Mock Excel export
     console.log("Exporting sales report as Excel...");
   };
 
